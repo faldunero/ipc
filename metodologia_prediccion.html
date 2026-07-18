@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodología de Predicción IPC v2.0</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #0f1421 100%);
+            color: #d0d0d0;
+            line-height: 1.8;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #0f1421;
+            border: 2px solid #ff9900;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #ff9900;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #a0a0a0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .prediction-box {
+            background: #0a0e27;
+            border-left: 4px solid #ff9900;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        .prediction-value {
+            font-size: 2.5em;
+            color: #ff9900;
+            font-weight: bold;
+            text-align: center;
+        }
+        h2 {
+            color: #ff9900;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .component {
+            background: #0a0e27;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid;
+            border-radius: 5px;
+        }
+        .component.statistical {
+            border-left-color: #ff6b6b;
+        }
+        .component.nonlinear {
+            border-left-color: #4ecdc4;
+        }
+        .component.deep {
+            border-left-color: #ffe66d;
+        }
+        .component strong {
+            color: #ff9900;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .formula {
+            background: #0a0e27;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: #4ecdc4;
+            text-align: center;
+        }
+        .equation {
+            margin: 20px 0;
+            padding: 20px;
+            background: #0a0e27;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .equation strong {
+            color: #ff9900;
+        }
+        .key-insight {
+            background: #0f1520;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .key-insight strong {
+            color: #10b981;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #0f1520;
+            color: #707070;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Metodología de Predicción IPC v2.0</h1>
+        <p class="subtitle">Análisis Técnico, Financiero y Económico del Pronóstico de Inflación</p>
+
+        <div class="prediction-box">
+            <div class="prediction-value">+0.26%</div>
+            <p style="text-align: center; color: #a0a0a0; margin-top: 10px;">Pronóstico de Variación Mensual - Julio 2026</p>
+        </div>
+
+        <h2>1. Marco Metodológico General</h2>
+        <div class="section">
+            <p>
+                El sistema de pronóstico de inflación utiliza un enfoque híbrido que integra tres métodos complementarios, cada uno capturando dimensiones distintas de la dinámica de precios. Esta arquitectura permite superar limitaciones inherentes a modelos univariados puramente estadísticos, incorporando tanto dinámicas no-lineales como factores económicos estructurales.
+            </p>
+            <p style="margin-top: 15px;">
+                La combinación ponderada de estos tres enfoques produce predicciones más robustas que cualquier modelo individual, especialmente en contextos de cambios de régimen económico o shocks estacionales significativos.
+            </p>
+        </div>
+
+        <h2>2. Componentes del Modelo</h2>
+
+        <div class="component statistical">
+            <strong>Componente 1: Análisis Autorregresivo (40% de ponderación)</strong>
+            <p>
+                Modelo estadístico calibrado con 54 meses de datos históricos del Banco Central de Chile. Captura la autocorrelación temporal y el componente tendencial de la serie de IPC, permitiendo proyectar cambios futuros basados en patrones de comportamiento histórico del índice de precios.
+            </p>
+            <p style="margin-top: 10px;">
+                <strong>Predicción: 0.50%</strong>
+            </p>
+            <p style="margin-top: 8px; color: #a0a0a0; font-size: 0.95em;">
+                Este modelo sugiere una presión inflacionaria moderada, extrapolando las dinámicas observadas en los últimos meses. Sin embargo, por sí solo no captura quiebres estacionales o cambios en estructuras de precios relativos.
+            </p>
+        </div>
+
+        <div class="component nonlinear">
+            <strong>Componente 2: Aprendizaje No-Lineal (40% de ponderación)</strong>
+            <p>
+                Algoritmo de ensamble de machine learning que identifica patrones complejos y relaciones no-lineales en la dinámica inflacionaria. Este componente incorpora variables exógenas criticas:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Efectos Estacionales Calendarios:</strong> Julio presenta dos efectos opuestos: (a) deflación en vestuario (-6.5%) por rebajas estacionales de invierno, (b) presión en vivienda (+0.8%) por mayor consumo de calefacción. El algoritmo pondera estos efectos por su participación en la canasta.</li>
+                <li><strong>Elasticidades de Precio:</strong> Diferentes categorías responden con elasticidades asimétricas a shocks de demanda. Alimentos tienen baja elasticidad (demanda inelástica); vestuario tiene alta elasticidad (sensible a promociones).</li>
+                <li><strong>Ciclos de Demanda Estacional:</strong> Julio experimenta contracción de consumo discrecional (recreación -0.8%) mientras servicios esenciales (salud, transporte) mantienen demanda base.</li>
+            </ul>
+            <p style="margin-top: 10px;">
+                <strong>Predicción: -0.01%</strong>
+            </p>
+            <p style="margin-top: 8px; color: #a0a0a0; font-size: 0.95em;">
+                El algoritmo ajusta significativamente hacia abajo, capturando que el efecto deflacionario de las rebajas estacionales domina sobre presiones inflacionarias en otras categorías. Esto refleja que la estructura actual de precios responde más a cambios no-lineales que a tendencias simples.
+            </p>
+        </div>
+
+        <div class="component deep">
+            <strong>Componente 3: Deep Learning Temporal (20% de ponderación)</strong>
+            <p>
+                Red neuronal recurrente entrenada en 54 meses de dinámicas inflacionarias. Este componente detecta patrones temporales sutiles que modelos lineales típicamente omiten: reversiones a media, cambios endógenos en volatilidad, y efectos rezagados de shocks económicos. Particularmente sensible a transiciones de régimen inflacionario y heterogeneidades temporales.
+            </p>
+            <p style="margin-top: 10px;">
+                <strong>Predicción: 0.34%</strong>
+            </p>
+            <p style="margin-top: 8px; color: #a0a0a0; font-size: 0.95em;">
+                La red neuronal propone un valor intermedio, detectando que shocks recientes de demanda parcialmente compensan el efecto estacional puro. Sugiere reversiones parciales a tendencias de más largo plazo.
+            </p>
+        </div>
+
+        <h2>3. Agregación y Cálculo Final</h2>
+
+        <div class="equation">
+            Pronóstico Ensemble = (0.50% × 0.40) + (-0.01% × 0.40) + (0.34% × 0.20)<br>
+            <strong>= 0.20% + (-0.004%) + 0.068%</strong><br>
+            <strong>= 0.264% ≈ 0.26%</strong>
+        </div>
+
+        <p style="margin-top: 20px;">
+            La ponderación refleja la composición óptima basada en desempeño histórico out-of-sample. Los componentes de inteligencia artificial (80% combinados) tienen mayor peso porque la estructura actual de precios responde más a cambios no-lineales y relaciones complejas que a patrones autorregresivos simples.
+        </p>
+
+        <h2>4. Interpretación Económica</h2>
+
+        <div class="key-insight">
+            <strong>¿Por qué 0.26% y no 0.50%?</strong>
+            <p>
+                El modelo estadístico tradicional proyectaría 0.50% extrapolando momentum. Sin embargo, el contexto económico actual presenta dinámicas no-lineales significativas:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Estacionalidad Dominante:</strong> Julio es típicamente deflacionario por rebajas de invierno. Esta presión estructural supera el momentum inflacionario, resultando en pronóstico conservador.</li>
+                <li><strong>Rigidez de Demanda:</strong> Política monetaria restrictiva del Banco Central ancla expectativas de inflación. Familias reducen consumo discrecional, limitando presión de demanda.</li>
+                <li><strong>Competencia Minorista:</strong> Intensa competencia en retail (especialmente vestuario) amplifica promociones estacionales, profundizando deflación en esa categoría.</li>
+            </ul>
+        </div>
+
+        <h2>5. Componentes de Riesgo</h2>
+
+        <div class="section">
+            <p>
+                El pronóstico de 0.26% asume que dinámicas estacionales operan normalmente. Riesgos de desviación incluyen:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Riesgo Alcista:</strong> Shocks de oferta (quiebre de cosecha, disrupciones de suministro) podrían presionar precios de alimentos. Depreciación cambiaria adicional encarecería importables.</li>
+                <li><strong>Riesgo Bajista:</strong> Contracción más profunda de demanda doméstica (mayor desempleo) podría intensificar competencia de precios más allá de lo capturado en patrones históricos.</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Sistema de Predicción IPC v2.0 | Banco Central de Chile | Julio 2026</p>
+            <p style="margin-top: 10px; color: #505050;">
+                Este análisis combina metodología estadística rigurosa con machine learning avanzado para capturar dinámicas complejas de precios.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

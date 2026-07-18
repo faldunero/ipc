@@ -76,16 +76,16 @@
     },
     "factores_internos": [
       "Política BC restricción activa: TPM mantenida para anclar expectativas inflacionarias",
-      "Mercado laboral: Desempleo 9,4% (INE trimestre MAM 2026), presión salarial 3-4% YoY",
+      "Mercado laboral: Desempleo 9.4% (INE trimestre marzo-mayo 2026), presión salarial 3.5% YoY",
       "Expectativas de inflación: Ancladas meta 3% con rango ±1pp según encuestas BC",
-      "Tipo de cambio: 934,96 CLP/USD (18 julio 2026), debilidad del peso de 3,82% mes",
+      "Tipo de cambio: 934.96 CLP/USD (18 julio 2026), debilidad del peso de -3.82% mes",
       "Impulso fiscal: Gasto público moderado, objetivo estructural superávit"
     ],
     "factores_externos": [
-      "Precios petróleo Brent: 88,26 USD/barril (18 julio 2026), tensiones Ormuz",
-      "Inflación EEUU: 3,5-3,6% (caída desde 4,2% en mayo), deflación energética",
-      "Tasas Fed: 3,50%-3,75% sin cambios, probabilidad 46,5% alza en julio 2026",
-      "Precios cobre Comex: 6,03-6,33 USD/lb, inventarios bajos, producción chilena reducida",
+      "Precios petróleo Brent: 88.26 USD/barril (18 julio 2026), tensiones Ormuz (+27.15% YoY)",
+      "Inflación EEUU: 3.5-3.6% (baja desde 4,2% en mayo), deflación energética",
+      "Tasas Fed: 3.5%-3.75% sin cambios, probabilidad 46.5% alza en julio 2026",
+      "Precios cobre Comex: 6.03-6.33 USD/lb, inventarios bajos, producción chilena reducida",
       "Precios alimentos FAO: Índice moderado con presión agrícola controlada"
     ],
     "prediccion_ipc": 112.85,
@@ -103,6 +103,6 @@
       "confianza": "Intervalo de confianza 95% calculado por ARIMA"
     },
     "fuente": "Banco Central de Chile + Groq IA (Modelo Híbrido ARIMA-IA)",
-    "timestamp": "2026-07-18T10:07:50.650159"
+    "timestamp": "2026-07-18T16:27:52.997084"
   }
 ]

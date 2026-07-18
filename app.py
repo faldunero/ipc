@@ -69,6 +69,11 @@ def root():
     """Servir index.html"""
     return FileResponse("index.html", media_type="text/html")
 
+@app.get("/metodologia-prediccion")
+def metodologia():
+    """Servir página de metodología técnica"""
+    return FileResponse("metodologia_prediccion.html", media_type="text/html")
+
 @app.get("/api/predecir")
 def predecir(mes: str = None):
     """Endpoint de predicción FRESCA sin cachés - genera datos nuevos cada vez"""
