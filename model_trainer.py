@@ -78,9 +78,31 @@ class AdvancedModelTrainer:
             with open(self.data_path, 'r', encoding='utf-8') as f:
                 bcch = json.load(f)
 
-            # Extraer histórico
+            # Extraer histórico - buscar en diferentes estructuras
             historico = bcch.get('datos_historicos', [])
+
+            if not historico:
+                logger.error("❌ No se encontró 'datos_historicos' en el JSON")
+                self.data = None
+                return
+
+            # Crear DataFrame
             df = pd.DataFrame(historico)
+
+            # Renombrar columnas si es necesario
+            rename_map = {
+                'var_mensual': 'variacion_mensual',
+                'var_12_meses': 'variacion_12_meses',
+                'indice': 'ipc_index'
+            }
+            df = df.rename(columns=rename_map)
+
+            # Verificar que tiene las columnas necesarias
+            required_cols = ['mes', 'variacion_mensual', 'variacion_12_meses', 'ipc_index']
+            if not all(col in df.columns for col in required_cols):
+                logger.error(f"❌ Faltan columnas. Tiene: {df.columns.tolist()}")
+                self.data = None
+                return
 
             # Convertir a datetime
             df['fecha'] = pd.to_datetime(df['mes'])
@@ -90,6 +112,8 @@ class AdvancedModelTrainer:
             logger.info(f"✅ Datos cargados: {len(df)} registros ({df['mes'].iloc[0]} a {df['mes'].iloc[-1]})")
         except Exception as e:
             logger.error(f"❌ Error cargando datos: {e}")
+            import traceback
+            traceback.print_exc()
             self.data = None
 
     def _load_calendar_data(self):

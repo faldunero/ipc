@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from ipc_predictor import IPCPredictor
+from advanced_predictor import AdvancedPredictor
 import os
 import json
 from dotenv import load_dotenv
@@ -35,6 +36,13 @@ class PredictionResponse(BaseModel):
     ipc_actual: float
     metodo_estadistico: float
     metodo_groq: float
+
+class PredictionV2Response(BaseModel):
+    ensemble_prediccion: float
+    predicciones_por_modelo: dict
+    pesos: dict
+    confianza: float
+    timestamp: str
 
 @app.on_event("startup")
 def startup():
@@ -95,6 +103,61 @@ def predecir_meses(num: int = 3):
 
         resultado = predictor.predict_forward_months(num)
         return {"predicciones": resultado, "total": len(resultado)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/predecir-v2")
+def predecir_v2():
+    """Predicción Ensemble v2.0: ARIMA (40%) + XGBoost (40%) + LSTM (20%)
+
+    Combina 3 modelos avanzados con variables exógenas calendarias.
+    Respuesta: ensemble_prediccion (%), predicciones individuales, confianza
+    """
+    try:
+        advanced_predictor = AdvancedPredictor()
+        resultado = advanced_predictor.predict_ensemble()
+
+        if not resultado:
+            raise HTTPException(status_code=500, detail="No hay predicciones disponibles")
+
+        from fastapi.responses import JSONResponse
+        response = JSONResponse(content=resultado)
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/validar-prediccion-v2")
+def validar_prediccion_v2(prediccion_fecha: str, prediccion_valor: float, valor_real: float):
+    """Registra predicción v2.0 contra valor real publicado por INE
+
+    Args:
+        prediccion_fecha: "Julio 2026"
+        prediccion_valor: 0.26 (valor predicho)
+        valor_real: 0.28 (valor real de INE)
+    """
+    try:
+        advanced_predictor = AdvancedPredictor()
+        advanced_predictor.validate_and_log(
+            prediccion_fecha=prediccion_fecha,
+            prediccion_valor=prediccion_valor,
+            valor_real=valor_real
+        )
+
+        perf = advanced_predictor.get_model_performance()
+
+        from fastapi.responses import JSONResponse
+        response = JSONResponse(content={
+            "success": True,
+            "mensaje": f"Predicción de {prediccion_fecha} validada",
+            "error": abs(prediccion_valor - valor_real),
+            "performance": perf
+        })
+        return response
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

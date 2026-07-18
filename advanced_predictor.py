@@ -63,6 +63,14 @@ class AdvancedPredictor:
                 bcch = json.load(f)
             historico = bcch.get('datos_historicos', [])
             self.data = pd.DataFrame(historico)
+
+            # Renombrar columnas
+            rename_map = {
+                'var_mensual': 'variacion_mensual',
+                'var_12_meses': 'variacion_12_meses',
+                'indice': 'ipc_index'
+            }
+            self.data = self.data.rename(columns=rename_map)
         except Exception as e:
             logger.warning(f"⚠️  Error cargando datos: {e}")
 
@@ -112,7 +120,8 @@ class AdvancedPredictor:
         try:
             results = self.models['arima']
             forecast = results.get_forecast(steps=1)
-            return float(forecast.predicted_mean.iloc[0])
+            # predicted_mean es array, acceder directamente
+            return float(forecast.predicted_mean[0])
         except Exception as e:
             logger.warning(f"⚠️  Error prediciendo ARIMA: {e}")
             return None
@@ -126,11 +135,11 @@ class AdvancedPredictor:
             series = self.data['variacion_mensual'].values
             i = len(series) - 1
 
-            # Features
-            lag1 = series[i] if i >= 0 else 0
-            lag3 = series[i-2] if i >= 2 else 0
-            lag6 = series[i-5] if i >= 5 else 0
-            lag12 = series[i-11] if i >= 11 else 0
+            # Features (mismo que en entrenamiento)
+            lag1 = series[i-1] if i >= 1 else 0
+            lag3 = series[i-3] if i >= 3 else 0
+            lag6 = series[i-6] if i >= 6 else 0
+            lag12 = series[i-12] if i >= 12 else 0
             trend = np.mean(series[max(0, i-5):i+1])
 
             # Calendar impact
