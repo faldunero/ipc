@@ -20,6 +20,14 @@ except ImportError:
     ARIMA_AVAILABLE = False
     print("⚠️  statsmodels no instalado. Usando predicción simplificada.")
 
+# Importar manager de datos macroeconómicos
+try:
+    from datos_macro_manager import DatosMacroManager
+    MACRO_MANAGER_AVAILABLE = True
+except ImportError:
+    MACRO_MANAGER_AVAILABLE = False
+    print("⚠️  DatosMacroManager no disponible. Usando datos hardcodeados.")
+
 # Configuración
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
@@ -35,12 +43,14 @@ class IPCPredictor:
         self.ipc_data = None
         self.datos_bcch = None
         self.predicciones_historico = []
+        self.macro_manager = None
         self.meses_castellano = {
             1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
             7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
         }
         self._load_datos_bcch()
         self._load_historico_predicciones()
+        self._init_macro_manager()
 
         # Inicializar Groq si hay API key válida
         if groq_api_key and not groq_api_key.startswith("demo"):
@@ -84,6 +94,18 @@ class IPCPredictor:
         except Exception as e:
             print(f"⚠️  Error cargando histórico: {e}")
             self.predicciones_historico = []
+
+    def _init_macro_manager(self):
+        """Inicializa manager de datos macroeconómicos con cache inteligente"""
+        if MACRO_MANAGER_AVAILABLE:
+            try:
+                self.macro_manager = DatosMacroManager()
+                print("✅ Manager de datos macro inicializado")
+            except Exception as e:
+                print(f"⚠️  Error inicializando macro manager: {e}")
+                self.macro_manager = None
+        else:
+            print("ℹ️  Modo compatible: usando datos hardcodeados")
 
     def _guardar_prediccion(self, prediccion_data: Dict):
         """Guarda predicción en histórico (evita duplicados)"""
@@ -502,22 +524,27 @@ Predice variación % mensual para Julio 2026 (NO índice, la VARIACIÓN)"""
         arima_var_esperada = round((arima_pred - ipc_actual_index), 3)
         canasta_prediccion = self._predict_canasta_for_month(mes_predicho, arima_var_esperada)
 
-        # Factores análisis rigurosos
-        factores_internos = [
-            "Política BC restricción activa: TPM mantenida para anclar expectativas inflacionarias",
-            "Mercado laboral: Desempleo 9,4% (INE trimestre MAM 2026), presión salarial 3-4% YoY",
-            "Expectativas de inflación: Ancladas meta 3% con rango ±1pp según encuestas BC",
-            "Tipo de cambio: 934,96 CLP/USD (18 julio 2026), debilidad del peso de 3,82% mes",
-            "Impulso fiscal: Gasto público moderado, objetivo estructural superávit"
-        ]
+        # Factores análisis rigurosos - obtenidos desde cache inteligente
+        if self.macro_manager:
+            factores_internos = self.macro_manager.obtener_todos_factores_internos()
+            factores_externos = self.macro_manager.obtener_todos_factores_externos()
+        else:
+            # Fallback a datos hardcodeados si manager no está disponible
+            factores_internos = [
+                "Política BC restricción activa: TPM mantenida para anclar expectativas inflacionarias",
+                "Mercado laboral: Desempleo 9,4% (INE trimestre MAM 2026), presión salarial 3-4% YoY",
+                "Expectativas de inflación: Ancladas meta 3% con rango ±1pp según encuestas BC",
+                "Tipo de cambio: 934,96 CLP/USD (18 julio 2026), debilidad del peso de 3,82% mes",
+                "Impulso fiscal: Gasto público moderado, objetivo estructural superávit"
+            ]
 
-        factores_externos = [
-            "Precios petróleo Brent: 88,26 USD/barril (18 julio 2026), tensiones Ormuz",
-            "Inflación EEUU: 3,5-3,6% (caída desde 4,2% en mayo), deflación energética",
-            "Tasas Fed: 3,50%-3,75% sin cambios, probabilidad 46,5% alza en julio 2026",
-            "Precios cobre Comex: 6,03-6,33 USD/lb, inventarios bajos, producción chilena reducida",
-            "Precios alimentos FAO: Índice moderado con presión agrícola controlada"
-        ]
+            factores_externos = [
+                "Precios petróleo Brent: 88,26 USD/barril (18 julio 2026), tensiones Ormuz",
+                "Inflación EEUU: 3,5-3,6% (caída desde 4,2% en mayo), deflación energética",
+                "Tasas Fed: 3,50%-3,75% sin cambios, probabilidad 46,5% alza en julio 2026",
+                "Precios cobre Comex: 6,03-6,33 USD/lb, inventarios bajos, producción chilena reducida",
+                "Precios alimentos FAO: Índice moderado con presión agrícola controlada"
+            ]
 
         # ========== INFORMACIÓN DE METODOLOGÍA ==========
         metodologia = {
