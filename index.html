@@ -391,29 +391,11 @@
                 }
 
                 let html = `
-                    <div style="background: #0a0e27; border: 3px solid #667eea; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
-                        <div style="color: #667eea; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">🚀 PREDICCIÓN JULIO 2026</div>
-                        <div style="font-size: 56px; font-weight: bold; color: #667eea; letter-spacing: 3px; margin-bottom: 8px;">${ensembleData ? (ensembleData.ensemble_prediccion > 0 ? '+' : '') + ensembleData.ensemble_prediccion + '%' : 'Cargando...'}</div>
+                    <div style="background: #0a0e27; border: 2px solid #ff9900; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
+                        <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">PREDICCIÓN JULIO 2026</div>
+                        <div style="font-size: 56px; font-weight: bold; color: #ff9900; letter-spacing: 3px; margin-bottom: 12px;">${ensembleData ? (ensembleData.ensemble_prediccion > 0 ? '+' : '') + ensembleData.ensemble_prediccion + '%' : (d.variacion_esperada > 0 ? '+' : '') + formatearChile(d.variacion_esperada) + '%'}</div>
 
-                        ${ensembleData ? `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                            <div style="background: #0f1520; padding: 12px; border-radius: 8px; border-left: 3px solid #ff6b6b;">
-                                <div style="color: #707070; font-size: 9px;">ARIMA</div>
-                                <div style="color: #ff6b6b; font-size: 18px; font-weight: bold;">${ensembleData.predicciones_por_modelo.arima.toFixed(2)}%</div>
-                                <div style="color: #707070; font-size: 8px;">40%</div>
-                            </div>
-                            <div style="background: #0f1520; padding: 12px; border-radius: 8px; border-left: 3px solid #4ecdc4;">
-                                <div style="color: #707070; font-size: 9px;">XGBoost</div>
-                                <div style="color: #4ecdc4; font-size: 18px; font-weight: bold;">${ensembleData.predicciones_por_modelo.xgboost.toFixed(2)}%</div>
-                                <div style="color: #707070; font-size: 8px;">40%</div>
-                            </div>
-                            <div style="background: #0f1520; padding: 12px; border-radius: 8px; border-left: 3px solid #ffe66d;">
-                                <div style="color: #707070; font-size: 9px;">LSTM</div>
-                                <div style="color: #ffe66d; font-size: 18px; font-weight: bold;">${ensembleData.predicciones_por_modelo.lstm.toFixed(2)}%</div>
-                                <div style="color: #707070; font-size: 8px;">20%</div>
-                            </div>
-                        </div>` : ''}
-
-                        <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0; border-top: 1px solid #0f1520;">
+                        <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0; border-top: 1px solid #0f1520; border-bottom: 1px solid #0f1520;">
                             Variación Actual (Junio): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.variacion_mensual_actual)}%</span><br>
                             Índice Actual (Base 2023): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.ipc_percent, 2)}%</span>
                         </div>
