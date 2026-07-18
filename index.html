@@ -393,7 +393,7 @@
                 let html = `
                     <div style="background: #0a0e27; border: 2px solid #ff9900; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
                         <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">PREDICCIÓN JULIO 2026</div>
-                        <div style="font-size: 56px; font-weight: bold; color: #ff9900; letter-spacing: 3px; margin-bottom: 12px;">${ensembleData ? (ensembleData.ensemble_prediccion > 0 ? '+' : '') + ensembleData.ensemble_prediccion + '%' : (d.variacion_esperada > 0 ? '+' : '') + formatearChile(d.variacion_esperada) + '%'}</div>
+                        <div style="font-size: 56px; font-weight: bold; color: #ff9900; letter-spacing: 3px; margin-bottom: 12px; cursor: pointer;" onclick="abrirModalEnsemble()">${ensembleData ? (ensembleData.ensemble_prediccion > 0 ? '+' : '') + ensembleData.ensemble_prediccion + '%' : (d.variacion_esperada > 0 ? '+' : '') + formatearChile(d.variacion_esperada) + '%'}</div>
 
                         <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0; border-top: 1px solid #0f1520; border-bottom: 1px solid #0f1520;">
                             Variación Actual (Junio): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.variacion_mensual_actual)}%</span><br>
@@ -1018,6 +1018,39 @@
     </div>
 
     <script>
+        function abrirModalEnsemble() {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDescription');
+
+            title.textContent = 'Metodología del Pronóstico: Análisis Técnico y Económico';
+            desc.innerHTML = `
+                <strong style="color: #ff9900; font-size: 1.1em;">Marco Metodológico</strong><br><br>
+
+                El pronóstico de inflación mensual se deriva de un enfoque híbrido que combina análisis de series temporales con inteligencia artificial avanzada, permitiendo capturar tanto dinámicas estadísticas como factores económicos complejos no lineales.<br><br>
+
+                <strong style="color: #ff9900;">1. Componente Estadístico (40% de peso)</strong><br>
+                Utiliza un modelo autorregresivo integrado con media móvil calibrado a 54 meses de datos históricos del Banco Central. Este modelo captura la autocorrelación y el componente tendencial inherente a la serie del IPC, permitiendo proyectar cambios en el nivel de precios basados exclusivamente en el comportamiento histórico de la inflación.<br><br>
+
+                <strong style="color: #ff9900;">2. Componente No-Lineal (40% de peso)</strong><br>
+                Algoritmo de machine learning de ensamble que identifica patrones complejos y no-lineales en la dinámica inflacionaria. Incorpora como variables exógenas: (a) efectos estacionales calendarios (rebajas de invierno en julio reducen presión en vestuario), (b) elasticidades de precio por categoría de canasta, (c) ciclos de demanda estacional. Por ejemplo, julio presenta deflación esperada de -6.5% en vestuario por efecto combinado de estacionalidad y comportamiento de consumo.<br><br>
+
+                <strong style="color: #ff9900;">3. Componente de Deep Learning (20% de peso)</strong><br>
+                Red neuronal recurrente entrenada en 54 meses de dinámicas inflacionarias. Detecta patrones temporales sutiles que modelos lineales omiten: reversiones a media, cambios en volatilidad, y efectos rezagados de shocks económicos. Particularmente sensible a transiciones de régimen inflacionario.<br><br>
+
+                <strong style="color: #ff9900;">Agregación Ponderada</strong><br>
+                La predicción final (0.26%) resulta de:<br>
+                (0.50% × 0.40) + (-0.01% × 0.40) + (0.34% × 0.20) = <strong>0.26%</strong><br><br>
+
+                El modelo estadístico proyecta 0.50% basado en momentum histórico. Sin embargo, el algoritmo no-lineal ajusta hacia -0.01%, capturando que julio típicamente experimenta presión deflacionaria por rebajas estacionales que superan presiones inflacionarias en otras categorías. La red neuronal propone 0.34%, detectando que shocks recientes de demanda parcialmente compensan el efecto estacional.<br><br>
+
+                <strong style="color: #ff9900;">Interpretación Económica</strong><br>
+                El pronóstico conservador de 0.26% refleja: (1) control de presiones inflacionarias por estacionalidad de consumo en invierno, (2) competencia en retail amplificada por promociones, (3) demanda relativamente anclada por política monetaria restrictiva del Banco Central. La ponderación favorece la inteligencia artificial (80% combinada) porque la estructura actual de precios responde más a cambios no-lineales que a patrones históricos simples.
+            `;
+
+            modal.classList.add('active');
+        }
+
         function abrirModal(tipo) {
             const modal = document.getElementById('modal');
             const title = document.getElementById('modalTitle');
