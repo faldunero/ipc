@@ -337,8 +337,11 @@
 
     <script>
         const API_URL = 'http://localhost:8000/api';
+        const API_URL_PROD = 'https://ipc-predictor.onrender.com/api';
         let prediccionData = null;
         let datosHistoricos = null;
+        let ensembleData = null;
+        const useProduction = window.location.host.includes('onrender.com');
 
         function formatearChile(num, decimales = 2) {
             return parseFloat(num).toFixed(decimales).replace('.', ',');
@@ -363,14 +366,29 @@
             btn.disabled = true;
             btn.textContent = 'Procesando...';
             try {
-                // FORZAR REQUEST FRESCO - sin caché
+                // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
                 const ts = new Date().getTime();
+
+                // v1.0
                 const r = await fetch(`${API_URL}/predecir?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const d = await r.json();
                 if (!r.ok) throw new Error(d.detail);
                 prediccionData = d;
+
+                // v2.0 (ensemble)
+                try {
+                    const currentAPI = useProduction ? API_URL_PROD : API_URL;
+                    const r2 = await fetch(`${currentAPI}/predecir-v2?t=${ts}`, {
+                        cache: 'no-store'
+                    });
+                    if (r2.ok) {
+                        ensembleData = await r2.json();
+                    }
+                } catch (e) {
+                    console.warn('v2.0 no disponible:', e.message);
+                }
 
                 let html = `
                     <div style="background: #0f1520; padding: 15px; margin: 15px 0;">
