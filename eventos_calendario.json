@@ -1,0 +1,220 @@
+{
+  "version": "1.0",
+  "eventos_mensuales": {
+    "enero": {
+      "nombre": "Enero - Verano",
+      "impacto_general": 0.3,
+      "eventos": [
+        {
+          "nombre": "Inicio de año / Vacaciones verano",
+          "impacto_consumo": 1.2,
+          "categorias_afectadas": ["Recreación, deportes y cultura", "Restaurantes y alojamiento", "Transporte"],
+          "cambio_esperado": 0.5
+        }
+      ]
+    },
+    "febrero": {
+      "nombre": "Febrero - Verano tardío",
+      "impacto_general": 0.2,
+      "eventos": [
+        {
+          "nombre": "Fin de temporada estival",
+          "impacto_consumo": 0.8,
+          "categorias_afectadas": ["Vestuario y calzado", "Alimentos y bebidas no alcohólicas"],
+          "cambio_esperado": 0.1
+        }
+      ]
+    },
+    "marzo": {
+      "nombre": "Marzo - Inicio año escolar",
+      "impacto_general": 0.4,
+      "eventos": [
+        {
+          "nombre": "Vuelta a clases (útiles escolares)",
+          "impacto_consumo": 1.1,
+          "categorias_afectadas": ["Educación", "Vestuario y calzado", "Bienes y servicios diversos"],
+          "cambio_esperado": 0.6
+        }
+      ]
+    },
+    "abril": {
+      "nombre": "Abril - Post escolar",
+      "impacto_general": 0.1,
+      "eventos": []
+    },
+    "mayo": {
+      "nombre": "Mayo - Otoño",
+      "impacto_general": 0.2,
+      "eventos": [
+        {
+          "nombre": "Día de la Madre (segundo domingo)",
+          "impacto_consumo": 0.9,
+          "categorias_afectadas": ["Bienes y servicios diversos", "Restaurantes y alojamiento", "Flores/regalos"],
+          "cambio_esperado": 0.3
+        }
+      ]
+    },
+    "junio": {
+      "nombre": "Junio - Inicio invierno",
+      "impacto_general": 0.3,
+      "eventos": [
+        {
+          "nombre": "Día del Padre (tercer domingo)",
+          "impacto_consumo": 0.8,
+          "categorias_afectadas": ["Bienes y servicios diversos", "Restaurantes y alojamiento"],
+          "cambio_esperado": 0.2
+        },
+        {
+          "nombre": "Inicio invierno - Mayor consumo energía",
+          "impacto_consumo": 1.3,
+          "categorias_afectadas": ["Vivienda y servicios básicos"],
+          "cambio_esperado": 0.5
+        }
+      ]
+    },
+    "julio": {
+      "nombre": "Julio - Invierno pico",
+      "impacto_general": 0.5,
+      "eventos": [
+        {
+          "nombre": "Vacaciones de invierno escolares",
+          "impacto_consumo": 1.1,
+          "categorias_afectadas": ["Recreación, deportes y cultura", "Restaurantes y alojamiento", "Transporte"],
+          "cambio_esperado": 0.4
+        },
+        {
+          "nombre": "Rebajas invierno - Descuentos en ropa",
+          "impacto_consumo": 0.7,
+          "categorias_afectadas": ["Vestuario y calzado"],
+          "cambio_esperado": -6.5
+        },
+        {
+          "nombre": "Pico consumo calefacción",
+          "impacto_consumo": 1.5,
+          "categorias_afectadas": ["Vivienda y servicios básicos"],
+          "cambio_esperado": 0.8
+        }
+      ]
+    },
+    "agosto": {
+      "nombre": "Agosto - Fin invierno",
+      "impacto_general": 0.3,
+      "eventos": [
+        {
+          "nombre": "Fin de rebajas invierno",
+          "impacto_consumo": 0.8,
+          "categorias_afectadas": ["Vestuario y calzado"],
+          "cambio_esperado": -2.0
+        },
+        {
+          "nombre": "Transición otoño-primavera",
+          "impacto_consumo": 1.0,
+          "categorias_afectadas": ["Vivienda y servicios básicos"],
+          "cambio_esperado": 0.2
+        }
+      ]
+    },
+    "septiembre": {
+      "nombre": "Septiembre - Primavera",
+      "impacto_general": 0.2,
+      "eventos": [
+        {
+          "nombre": "Inicio primavera - Menor consumo energía",
+          "impacto_consumo": 0.8,
+          "categorias_afectadas": ["Vivienda y servicios básicos"],
+          "cambio_esperado": -0.3
+        },
+        {
+          "nombre": "Fiestas patrias (18-19 sep)",
+          "impacto_consumo": 1.0,
+          "categorias_afectadas": ["Alimentos y bebidas no alcohólicas", "Bebidas alcohólicas y tabaco", "Restaurantes y alojamiento"],
+          "cambio_esperado": 0.4
+        }
+      ]
+    },
+    "octubre": {
+      "nombre": "Octubre - Primavera",
+      "impacto_general": 0.1,
+      "eventos": []
+    },
+    "noviembre": {
+      "nombre": "Noviembre - Verano temprano",
+      "impacto_general": 0.2,
+      "eventos": [
+        {
+          "nombre": "Black Friday (último viernes noviembre)",
+          "impacto_consumo": 1.2,
+          "categorias_afectadas": ["Equipamiento y mantenimiento del hogar", "Información y comunicación", "Bienes y servicios diversos"],
+          "cambio_esperado": 0.3
+        }
+      ]
+    },
+    "diciembre": {
+      "nombre": "Diciembre - Verano / Navidad",
+      "impacto_general": 0.8,
+      "eventos": [
+        {
+          "nombre": "Navidad (25 dic) - Mayor consumo",
+          "impacto_consumo": 1.5,
+          "categorias_afectadas": ["Alimentos y bebidas no alcohólicas", "Bebidas alcohólicas y tabaco", "Bienes y servicios diversos", "Recreación, deportes y cultura"],
+          "cambio_esperado": 0.7
+        },
+        {
+          "nombre": "Año Nuevo (31 dic) - Consumo festivo",
+          "impacto_consumo": 1.3,
+          "categorias_afectadas": ["Alimentos y bebidas no alcohólicas", "Restaurantes y alojamiento"],
+          "cambio_esperado": 0.5
+        }
+      ]
+    }
+  },
+  "patrones_estacionales_por_categoria": {
+    "Vestuario y calzado": {
+      "enero": -5.0,
+      "febrero": -2.0,
+      "julio": -6.5,
+      "agosto": -2.0,
+      "diciembre": 2.0
+    },
+    "Vivienda y servicios básicos": {
+      "julio": 0.8,
+      "agosto": 0.3,
+      "septiembre": -0.3
+    },
+    "Alimentos y bebidas no alcohólicas": {
+      "enero": 0.3,
+      "septiembre": 0.2,
+      "diciembre": 0.5
+    },
+    "Recreación, deportes y cultura": {
+      "enero": 1.2,
+      "julio": -0.8,
+      "diciembre": 0.8
+    },
+    "Restaurantes y alojamiento": {
+      "enero": 0.5,
+      "julio": -0.3,
+      "diciembre": 0.4
+    },
+    "Educación": {
+      "marzo": 0.6,
+      "agosto": 0.0
+    }
+  },
+  "feriados_chile_2026": [
+    {"fecha": "2026-01-01", "nombre": "Año Nuevo", "impacto": 0.5},
+    {"fecha": "2026-04-10", "nombre": "Viernes Santo", "impacto": 0.3},
+    {"fecha": "2026-05-01", "nombre": "Día del Trabajo", "impacto": 0.1},
+    {"fecha": "2026-05-10", "nombre": "Día de la Madre", "impacto": 0.3},
+    {"fecha": "2026-06-20", "nombre": "Día del Padre", "impacto": 0.2},
+    {"fecha": "2026-06-21", "nombre": "Inicio Invierno", "impacto": 0.5},
+    {"fecha": "2026-09-18", "nombre": "Fiestas Patrias", "impacto": 0.4},
+    {"fecha": "2026-09-19", "nombre": "Fiestas Patrias", "impacto": 0.4},
+    {"fecha": "2026-09-20", "nombre": "Fiestas Patrias", "impacto": 0.2},
+    {"fecha": "2026-10-12", "nombre": "Día del Descubrimiento", "impacto": 0.1},
+    {"fecha": "2026-11-01", "nombre": "Día de Muertos", "impacto": 0.1},
+    {"fecha": "2026-11-27", "nombre": "Black Friday", "impacto": 0.3},
+    {"fecha": "2026-12-25", "nombre": "Navidad", "impacto": 0.7},
+    {"fecha": "2026-12-31", "nombre": "Año Nuevo", "impacto": 0.5}
+  ]
+}
