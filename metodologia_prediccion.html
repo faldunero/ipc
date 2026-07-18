@@ -12,19 +12,19 @@
             color: #d0d0d0;
             line-height: 1.8;
             padding: 40px 20px;
+            font-size: 14px;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
             background: #0f1421;
-            border: 2px solid #ff9900;
             border-radius: 10px;
             padding: 40px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
         h1 {
             color: #ff9900;
-            font-size: 2em;
+            font-size: 1.6em;
             margin-bottom: 10px;
             text-align: center;
         }
@@ -32,11 +32,10 @@
             color: #a0a0a0;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
         .prediction-box {
             background: #0a0e27;
-            border-left: 4px solid #ff9900;
             padding: 20px;
             margin: 30px 0;
             border-radius: 5px;
@@ -51,12 +50,16 @@
             color: #ff9900;
             margin-top: 30px;
             margin-bottom: 15px;
-            font-size: 1.4em;
-            border-bottom: 2px solid #ff9900;
+            font-size: 1.2em;
             padding-bottom: 10px;
         }
         .section {
             margin-bottom: 25px;
+        }
+        .section p {
+            text-align: justify;
+            font-size: 0.95em;
+            line-height: 1.7;
         }
         .component {
             background: #0a0e27;
@@ -78,6 +81,16 @@
             color: #ff9900;
             display: block;
             margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .component p {
+            font-size: 0.9em;
+            text-align: justify;
+            line-height: 1.7;
+        }
+        .component ul {
+            font-size: 0.9em;
+            text-align: justify;
         }
         .formula {
             background: #0a0e27;
@@ -94,19 +107,30 @@
             background: #0a0e27;
             border-radius: 5px;
             font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            text-align: center;
         }
         .equation strong {
             color: #ff9900;
         }
         .key-insight {
             background: #0f1520;
-            border-left: 4px solid #10b981;
             padding: 15px;
             margin: 15px 0;
             border-radius: 5px;
         }
         .key-insight strong {
             color: #10b981;
+            font-size: 0.95em;
+        }
+        .key-insight p {
+            font-size: 0.9em;
+            text-align: justify;
+            line-height: 1.7;
+        }
+        .key-insight ul {
+            font-size: 0.9em;
+            text-align: justify;
         }
         footer {
             text-align: center;
@@ -120,12 +144,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Metodología de Predicción IPC v2.0</h1>
+        <h1>Metodología de Predicción IPC v2.0</h1>
         <p class="subtitle">Análisis Técnico, Financiero y Económico del Pronóstico de Inflación</p>
 
         <div class="prediction-box">
             <div class="prediction-value">+0.26%</div>
-            <p style="text-align: center; color: #a0a0a0; margin-top: 10px;">Pronóstico de Variación Mensual - Julio 2026</p>
+            <p style="text-align: center; color: #a0a0a0; margin-top: 10px; font-size: 0.9em;">Pronóstico de Variación Mensual - Julio 2026</p>
         </div>
 
         <h2>1. Marco Metodológico General</h2>
@@ -199,7 +223,7 @@
         <h2>4. Interpretación Económica</h2>
 
         <div class="key-insight">
-            <strong>¿Por qué 0.26% y no 0.50%?</strong>
+            <strong style="font-size: 0.95em;">¿Por qué 0.26% y no 0.50%?</strong>
             <p>
                 El modelo estadístico tradicional proyectaría 0.50% extrapolando momentum. Sin embargo, el contexto económico actual presenta dinámicas no-lineales significativas:
             </p>
@@ -223,8 +247,8 @@
         </div>
 
         <footer>
-            <p>Sistema de Predicción IPC v2.0 | Banco Central de Chile | Julio 2026</p>
-            <p style="margin-top: 10px; color: #505050;">
+            <p>Sistema de Predicción IPC v2.0 | Julio 2026 | Felipe Aldunate Romero</p>
+            <p style="margin-top: 10px; color: #505050; font-size: 0.85em;">
                 Este análisis combina metodología estadística rigurosa con machine learning avanzado para capturar dinámicas complejas de precios.
             </p>
         </footer>
