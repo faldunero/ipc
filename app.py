@@ -74,6 +74,11 @@ def metodologia():
     """Servir página de metodología técnica"""
     return FileResponse("metodologia_prediccion.html", media_type="text/html")
 
+@app.get("/boletin-proyeccion")
+def boletin():
+    """Servir boletín oficial de proyección IPC"""
+    return FileResponse("boletin_proyeccion.html", media_type="text/html")
+
 @app.get("/api/predecir")
 def predecir(mes: str = None):
     """Endpoint de predicción FRESCA sin cachés - genera datos nuevos cada vez"""
