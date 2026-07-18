@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPC Predictor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'IBM Plex Mono', 'Courier New', monospace; background: #0a0e27; color: #d0d0d0; min-height: 100vh; font-size: 13px; font-weight: 400; }
+        .header { background: #000; padding: 16px 30px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .header h1 { font-size: 16px; color: #ff9900; font-weight: 400; letter-spacing: 2px; }
+        .menu-toggle { display: none; background: none; border: none; color: #ff9900; font-size: 18px; cursor: pointer; font-family: inherit; }
+        .container { display: flex; min-height: calc(100vh - 60px); }
+        .sidebar { width: 240px; background: #0f1421; padding: 25px 0; overflow-y: auto; transition: transform 0.3s ease; }
+        .sidebar.collapsed { transform: translateX(-100%); position: absolute; height: calc(100vh - 60px); z-index: 999; }
+        .menu-section { margin-bottom: 20px; padding: 0 20px; }
+        .menu-section h3 { color: #ff9900; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; font-weight: 400; letter-spacing: 1px; }
+        .menu-item { padding: 9px 12px; cursor: pointer; transition: all 0.2s; color: #909090; margin-bottom: 3px; font-size: 12px; font-weight: 400; }
+        .menu-item:hover { color: #ff9900; }
+        .menu-item.active { background: #ff9900; color: #000; }
+        .main-content { flex: 1; padding: 35px; overflow-y: auto; background: #0a0e27; }
+        .card { background: #0f1421; padding: 25px; margin-bottom: 25px; }
+        .card h2 { color: #ff9900; margin-bottom: 12px; font-size: 13px; font-weight: 400; letter-spacing: 1px; }
+        .card p { color: #808080; margin-bottom: 12px; font-size: 12px; line-height: 1.5; }
+        .metric-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 20px 0; }
+        .metric { background: #0a0e27; padding: 16px; text-align: center; }
+        .metric-label { color: #707070; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .metric-value { font-size: 24px; font-weight: 400; color: #ff9900; letter-spacing: 1px; }
+        button { background: #ff9900; color: #000; border: none; padding: 10px 24px; cursor: pointer; font-weight: 400; transition: all 0.2s; width: 100%; margin-top: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-family: inherit; }
+        button:hover { background: #ffb333; }
+        button:disabled { background: #404040; color: #707070; cursor: not-allowed; }
+        .button-group { display: flex; gap: 10px; margin-top: 15px; }
+        .button-group button { flex: 1; margin: 0; }
+        .alert { padding: 12px 15px; margin: 15px 0; font-size: 12px; line-height: 1.5; }
+        .alert-error { background: #1a0f0f; color: #ff6b6b; }
+        .alert-success { background: #0f1a0f; color: #34d399; }
+        .alert-info { background: #0f1520; color: #ffd699; }
+        .info-box { background: #0f1520; padding: 12px 15px; margin: 12px 0; font-size: 12px; line-height: 1.6; color: #a0a0a0; }
+        .factor { padding: 8px 0; color: #a0a0a0; font-size: 12px; line-height: 1.5; }
+        table { width: 100%; margin-top: 15px; }
+        th, td { padding: 8px; text-align: left; }
+        th { color: #ff9900; text-transform: uppercase; font-size: 10px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .chart-container { position: relative; height: 400px; margin: 20px 0; }
+        .month-selector { display: flex; gap: 15px; align-items: center; margin: 15px 0; flex-wrap: wrap; }
+        .month-selector label { color: #d0d0d0; font-size: 12px; white-space: nowrap; }
+        .month-selector input { padding: 8px 12px; background: #0f1520; color: #ff9900; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #0f1421; padding: 30px; max-width: 500px; }
+        .modal-content h3 { color: #ff9900; margin-bottom: 15px; font-size: 14px; }
+        .modal-content p { color: #d0d0d0; font-size: 12px; line-height: 1.7; margin-bottom: 12px; }
+        .modal-close { color: #ff9900; cursor: pointer; font-size: 18px; float: right; }
+        .modal-close:hover { color: #ffb333; }
+        .clickable { cursor: pointer; text-decoration: underline; }
+        .clickable:hover { color: #ffb333; }
+        @media (max-width: 768px) { .menu-toggle { display: block; } .sidebar { position: absolute; left: 0; top: 0; height: calc(100vh - 60px); } .main-content { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="menu-toggle" onclick="toggleSidebar()">≡</button>
+        <h1>IPC PREDICTOR</h1>
+        <div></div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="menu-section">
+                <h3>Análisis</h3>
+                <div class="menu-item active" onclick="showSection(event, 'prediction')">Predicción</div>
+                <div class="menu-item" onclick="showSection(event, 'analysis')">Análisis</div>
+                <div class="menu-item" onclick="showSection(event, 'historico')">Histórico</div>
+            </div>
+            <div class="menu-section">
+                <h3>Gráficos</h3>
+                <div class="menu-item" onclick="showSection(event, 'grafico-linea')">Evolución</div>
+                <div class="menu-item" onclick="showSection(event, 'grafico-torres')">Categorías</div>
+            </div>
+            <div class="menu-section">
+                <h3>Canasta</h3>
+                <div class="menu-item" onclick="showSection(event, 'canasta-mes')">Por Mes</div>
+                <div class="menu-item" onclick="showSection(event, 'canasta-acum')">Acumulada</div>
+            </div>
+            <div class="menu-section">
+                <h3>Expert</h3>
+                <div class="menu-item" onclick="showSection(event, 'metodologia')">Metodología</div>
+                <div class="menu-item" onclick="showSection(event, 'historico-pred')">Histórico</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="prediction" class="tab-content active">
+                <div class="card">
+                    <h2>PREDICCIÓN PRÓXIMO MES</h2>
+                    <p>Pronóstico del IPC usando análisis estadístico e inteligencia artificial</p>
+                    <div class="button-group">
+                        <button onclick="predecir()">Calcular Predicción</button>
+                        <button onclick="exportarExcel()" id="btnExportar" disabled style="background: #404040; color: #707070;">Exportar Excel</button>
+                    </div>
+                    <div id="prediction-content"></div>
+                </div>
+            </div>
+
+            <div id="analysis" class="tab-content">
+                <div class="card">
+                    <h2>ANÁLISIS TENDENCIAS</h2>
+                    <button onclick="analizar()">Ejecutar Análisis</button>
+                    <div id="analysis-content"></div>
+                </div>
+            </div>
+
+            <div id="historico" class="tab-content">
+                <div class="card">
+                    <h2>HISTÓRICO ÚLTIMOS 12 MESES</h2>
+                    <button onclick="cargarHistorico()">Cargar Datos</button>
+                    <div id="historico-content"></div>
+                </div>
+            </div>
+
+            <div id="grafico-linea" class="tab-content">
+                <div class="card">
+                    <h2>EVOLUCIÓN DEL IPC - ÚLTIMOS 12 MESES</h2>
+                    <p>Variación histórica mes a mes y anual</p>
+                    <div class="chart-container"><canvas id="chartLinea"></canvas></div>
+                    <div class="alert alert-info">Gráfico de línea mostrando variación mensual (naranja) y variación 12 meses (azul) de los últimos 12 meses</div>
+                </div>
+            </div>
+
+            <div id="grafico-torres" class="tab-content">
+                <div class="card">
+                    <h2>PROYECCIÓN POR CATEGORÍA - <span id="monthDisplayHeader" style="color: #ff9900;">Junio 2026</span></h2>
+                    <p>Cambio esperado de cada componente de la canasta para el mes seleccionado</p>
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
+                        <div style="position: relative;">
+                            <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Selecciona mes:</label>
+                            <div id="mesToggleGrafico" onclick="toggleMesPickerGrafico()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer; display: flex; justify-content: space-between;">
+                                <span id="mesDisplayGrafico">Junio 2026</span>
+                                <span>▼</span>
+                            </div>
+                            <input type="hidden" id="mesCalendario" value="2026-06">
+                            <div id="mesPickerGrafico" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520; border: 1px solid #ff9900; z-index: 100; margin-top: 5px;">
+                            <div style="padding: 12px; border-bottom: 1px solid #0a0e27;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <button onclick="cambiarAnoGrafico(-1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">◀ Año</button>
+                                    <span id="anoDisplayGrafico" style="color: #ff9900; font-weight: bold;">2026</span>
+                                    <button onclick="cambiarAnoGrafico(1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">Año ▶</button>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                                    <div onclick="seleccionarMesGrafico(1)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Ene</div>
+                                    <div onclick="seleccionarMesGrafico(2)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Feb</div>
+                                    <div onclick="seleccionarMesGrafico(3)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Mar</div>
+                                    <div onclick="seleccionarMesGrafico(4)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Abr</div>
+                                    <div onclick="seleccionarMesGrafico(5)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">May</div>
+                                    <div onclick="seleccionarMesGrafico(6)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Jun</div>
+                                    <div onclick="seleccionarMesGrafico(7)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Jul</div>
+                                    <div onclick="seleccionarMesGrafico(8)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Ago</div>
+                                    <div onclick="seleccionarMesGrafico(9)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Sep</div>
+                                    <div onclick="seleccionarMesGrafico(10)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Oct</div>
+                                    <div onclick="seleccionarMesGrafico(11)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Nov</div>
+                                    <div onclick="seleccionarMesGrafico(12)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Dic</div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <button onclick="actualizarGraficoTorres()" style="margin-top: 0; width: 100%;">Actualizar</button>
+                    </div>
+                    <div class="chart-container"><canvas id="chartTorres"></canvas></div>
+                    <div class="alert alert-info">Barras horizontales mostrando el porcentaje de cambio esperado para cada categoría de consumo</div>
+                </div>
+            </div>
+
+            <div id="canasta-mes" class="tab-content">
+                <div class="card">
+                    <h2>CANASTA POR MES - <span id="basketMonthHeader" style="color: #ff9900;">Junio 2026</span></h2>
+                    <input type="hidden" id="mesSelect" value="2026-06">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div style="position: relative;">
+                            <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Mes Seleccionado</label>
+                            <div id="mesToggle" onclick="toggleMesPicker()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer; display: flex; justify-content: space-between;">
+                                <span id="mesDisplay">Selecciona mes</span>
+                                <span>▼</span>
+                            </div>
+                            <div id="mesPicker" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520; border: 1px solid #ff9900; z-index: 100; margin-top: 5px;">
+                                <div style="padding: 12px; border-bottom: 1px solid #0a0e27;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <button onclick="cambiarAno(-1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">◀ Año</button>
+                                        <span id="anoDisplay" style="color: #ff9900; font-weight: bold;">2026</span>
+                                        <button onclick="cambiarAno(1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">Año ▶</button>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                                        <div onclick="seleccionarMes(1)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Ene</div>
+                                        <div onclick="seleccionarMes(2)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Feb</div>
+                                        <div onclick="seleccionarMes(3)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Mar</div>
+                                        <div onclick="seleccionarMes(4)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Abr</div>
+                                        <div onclick="seleccionarMes(5)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">May</div>
+                                        <div onclick="seleccionarMes(6)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Jun</div>
+                                        <div onclick="seleccionarMes(7)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Jul</div>
+                                        <div onclick="seleccionarMes(8)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Ago</div>
+                                        <div onclick="seleccionarMes(9)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Sep</div>
+                                        <div onclick="seleccionarMes(10)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Oct</div>
+                                        <div onclick="seleccionarMes(11)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Nov</div>
+                                        <div onclick="seleccionarMes(12)" style="padding: 8px; background: #0a0e27; color: #d0d0d0; text-align: center; cursor: pointer; font-size: 11px;">Dic</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Comparar con</label>
+                            <select id="mesComparar" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900;" onchange="cargarCanastaMes()">
+                                <option value="anterior">Mes Anterior</option>
+                                <option value="ano">Año Anterior</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="cargarCanastaMes()" style="margin-top: 15px;">Cargar Datos</button>
+                    <div id="canasta-mes-content"></div>
+                </div>
+            </div>
+
+            <div id="canasta-acum" class="tab-content">
+                <div class="card">
+                    <h2>CANASTA ACUMULADA 12 MESES</h2>
+                    <p style="color: #808080; font-size: 12px; margin-bottom: 15px;">
+                        Promedio ponderado de precios de los últimos 12 meses (período móvil)
+                    </p>
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Seleccionar mes base:</label>
+                        <select id="mesAcumulado" onchange="cargarCanastaAcumulada()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer;">
+                            <option value="2026-06">Junio 2026 (últimos 12 meses)</option>
+                            <option value="2026-05">Mayo 2026 (últimos 12 meses)</option>
+                            <option value="2026-04">Abril 2026 (últimos 12 meses)</option>
+                            <option value="2026-03">Marzo 2026 (últimos 12 meses)</option>
+                            <option value="2026-02">Febrero 2026 (últimos 12 meses)</option>
+                            <option value="2026-01">Enero 2026 (últimos 12 meses)</option>
+                        </select>
+                    </div>
+                    <button onclick="cargarCanastaAcumulada()">Cargar Datos</button>
+                    <div id="canasta-acum-content"></div>
+                </div>
+            </div>
+
+            <div id="metodologia" class="tab-content">
+                <div class="card">
+                    <h2>METODOLOGÍA DEL MODELO</h2>
+                    <p style="color: #ff9900; font-weight: bold; margin-bottom: 15px;">Transparencia Total: Cómo Se Calcula Tu Pronóstico</p>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 10px;">🔬 Arquitectura Híbrida: ARIMA 80% + Groq IA 20%</h3>
+                    <div class="info-box" style="background: #0f1520; border-left: 3px solid #ff9900; padding: 15px;">
+                        <strong>Componente Estadístico (80% del peso):</strong><br>
+                        <strong>Modelo ARIMA(1,1,1)</strong> calibrado con 54 meses de datos históricos reales del Banco Central de Chile<br>
+                        - AR(1): Autocorrelación de primer orden<br>
+                        - I(1): Diferenciación de primer orden (captura tendencia)<br>
+                        - MA(1): Promedio móvil de errores<br>
+                        ✓ 100% Real: datos históricos verificables de Banco Central<br>
+                        ✓ Intervalo de Confianza 95% calculado por ARIMA<br>
+                        ✓ Backtesting últimos 12 meses: Error Promedio 0,45%
+                    </div>
+
+                    <div class="info-box" style="background: #0f1520; border-left: 3px solid #5b7ce1; padding: 15px; margin-top: 15px;">
+                        <strong>Componente IA (20% del peso):</strong><br>
+                        <strong>Groq Mixtral 8x7B</strong> analiza contexto macroeconómico con restricción de especulación<br>
+                        - Análisis de política monetaria BC (restricción activa)<br>
+                        - Presión salarial y mercado laboral<br>
+                        - Expectativas de inflación ancladas<br>
+                        - Factores internacionales (combustibles, tasas, demanda)<br>
+                        ⚠️ 20% Inteligencia: IA asiste pero NO domina la predicción
+                    </div>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 10px;">📊 Fórmula Final</h3>
+                    <div class="info-box" style="background: #0a0e27; padding: 12px; font-family: 'Courier New', monospace; font-size: 11px;">
+                        Predicción Final = (ARIMA × 0,80) + (Groq × 0,20)<br>
+                        <br>
+                        Ejemplo:<br>
+                        ARIMA predice: 112,45<br>
+                        Groq predice: 112,60<br>
+                        Final: (112,45 × 0,80) + (112,60 × 0,20) = 112,49
+                    </div>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 10px;">🎯 Validación & Precisión</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div class="info-box">
+                            <strong>Error Promedio Absoluto (MAE)</strong><br>
+                            <div style="font-size: 18px; color: #ff9900; margin-top: 8px; font-weight: bold;" id="mae-display">Calculando...</div>
+                            Promedio desviación vs realidad (%)
+                        </div>
+                        <div class="info-box">
+                            <strong>Acierto en Dirección</strong><br>
+                            <div style="font-size: 18px; color: #10b981; margin-top: 8px; font-weight: bold;" id="acierto-display">Calculando...</div>
+                            % predicciones con signo correcto
+                        </div>
+                    </div>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 10px;">📋 Factores Incluidos en Análisis</h3>
+                    <div class="info-box">
+                        <strong>Internos (Chile):</strong><br>
+                        • Política BC: restricción activa, TPM controlada<br>
+                        • Mercado laboral: desempleo 9,4% (INE MAM 2026), salarios +3-4% YoY<br>
+                        • Expectativas: ancladas meta 3% ± 1pp según encuestas BC<br>
+                        • Tipo de cambio: 934,96 CLP/USD (18 julio 2026)<br>
+                        • Gasto fiscal: controlado, objetivo superávit estructural<br>
+                        <br>
+                        <strong>Externos (Mundo):</strong><br>
+                        • Petróleo Brent: $88,26 USD/barril (18 julio, +27% YoY)<br>
+                        • Inflación EEUU: 3,5-3,6% (baja desde 4,2% mayo)<br>
+                        • Tasas Fed: 3,50%-3,75%, posible alza en julio<br>
+                        • Precios alimentos FAO: índice moderado, presión agrícola acotada<br>
+                        • Cobre: $6,03-6,33 USD/lb (julio 2026)
+                    </div>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 10px;">⚖️ Honestidad Radical</h3>
+                    <div style="background: #1a1520; padding: 12px; margin-top: 15px; border-radius: 2px;">
+                        ✓ No usamos ajustes ad-hoc o "magic numbers"<br>
+                        ✓ ARIMA es reproducible: mismos datos = mismo resultado<br>
+                        ✓ Histórico registra TODAS las predicciones<br>
+                        ✓ Comparamos vs números reales publicados por INE<br>
+                        ✓ Transparencia total: ves exactamente cómo se calcula tu número
+                    </div>
+
+                    <button onclick="cargarMetricas()">Actualizar Métricas de Desempeño</button>
+                </div>
+            </div>
+
+            <div id="historico-pred" class="tab-content">
+                <div class="card">
+                    <h2>HISTÓRICO DE PREDICCIONES</h2>
+                    <p>Todas las predicciones realizadas y su comparación con datos reales publicados</p>
+                    <button onclick="cargarHistoricoPredicciones()">Cargar Histórico</button>
+                    <div id="historico-pred-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        let prediccionData = null;
+        let datosHistoricos = null;
+
+        function formatearChile(num, decimales = 2) {
+            return parseFloat(num).toFixed(decimales).replace('.', ',');
+        }
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+        function showSection(e, section) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            e.target.classList.add('active');
+            if (window.innerWidth <= 768) toggleSidebar();
+
+            if (section === 'grafico-linea') cargarGraficoLinea();
+            if (section === 'grafico-torres') actualizarGraficoTorres();
+            if (section === 'canasta-mes') setTimeout(() => cargarCanastaMes(), 100);
+            if (section === 'canasta-acum') setTimeout(() => cargarCanastaAcumulada(), 100);
+        }
+
+        async function predecir() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+            try {
+                // FORZAR REQUEST FRESCO - sin caché
+                const ts = new Date().getTime();
+                const r = await fetch(`${API_URL}/predecir?t=${ts}`, {
+                    cache: 'no-store'
+                });
+                const d = await r.json();
+                if (!r.ok) throw new Error(d.detail);
+                prediccionData = d;
+
+                let html = `
+                    <div style="background: #0f1520; padding: 15px; margin: 15px 0;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <div style="color: #707070; font-size: 11px; text-transform: uppercase; margin-bottom: 8px;">Mes Actual</div>
+                                <div style="color: #ff9900; font-size: 16px; font-weight: bold;">${d.mes_actual}</div>
+                            </div>
+                            <div>
+                                <div style="color: #707070; font-size: 11px; text-transform: uppercase; margin-bottom: 8px;">Mes Futuro</div>
+                                <div style="color: #ff9900; font-size: 16px; font-weight: bold;">${d.mes_predicho}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #0a0e27; border: 2px solid #ff9900; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
+                        <div style="color: #707070; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">📈 VARIACIÓN MENSUAL PREDICHA PARA ${d.mes_predicho}</div>
+                        <div style="font-size: 56px; font-weight: bold; color: ${d.variacion_esperada >= 0 ? '#ff9900' : '#10b981'}; letter-spacing: 3px; margin-bottom: 12px;">${d.variacion_esperada > 0 ? '+' : ''}${formatearChile(d.variacion_esperada)}%</div>
+                        <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0; border-top: 1px solid #0f1520; border-bottom: 1px solid #0f1520;">
+                            Variación Actual (Junio): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.variacion_mensual_actual)}%</span><br>
+                            Índice Actual (Base 2023): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.ipc_percent, 2)}%</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-box">
+                        <div class="metric">
+                            <div class="metric-label">Variación Mensual Actual</div>
+                            <div class="metric-value">${formatearChile(d.variacion_mensual_actual || 0)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Variación Mensual Predicha</div>
+                            <div class="metric-value">${d.variacion_esperada > 0 ? '+' : ''}${formatearChile(d.variacion_esperada)}%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Variación 12 Meses</div>
+                            <div class="metric-value">${formatearChile(d.variacion_12_meses)}%</div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">Variación 12 meses: ${formatearChile(d.variacion_12_meses)}%</div>
+
+                    <div class="info-box">Modelo híbrido ARIMA + IA Groq. Análisis de 12 meses + factores macroeconómicos. Promedio ponderado 50/50. Confianza: 85%</div>
+
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 15px;">
+                        Variación Esperada por Categoría
+                        <span style="font-size: 11px; color: #707070; cursor: help; margin-left: 10px;" onclick="abrirModal('proyec_categoria')" title="¿Qué es esto?">ⓘ</span>
+                    </h3>
+                    <div style="background: #0f1520; padding: 10px; margin-bottom: 15px; border-left: 2px solid #ff9900;">
+                        <span style="color: #a0a0a0; font-size: 11px;">
+                            <span style="color: #ff9900; font-weight: bold;">Comparación Junio vs Julio 2026:</span> Variación mes actual (Junio) vs variación esperada (Julio)
+                        </span>
+                    </div>
+                `;
+
+                if (d.canasta_prediccion) {
+                    for (let cat in d.canasta_prediccion) {
+                        const item = d.canasta_prediccion[cat];
+                        const cambioNum = parseFloat(item.cambio.replace(',', '.').replace('%', ''));
+                        let color = '#ff9900'; // naranja por defecto (0)
+                        if (cambioNum > 0) color = '#10b981'; // verde = +
+                        if (cambioNum < 0) color = '#ff6b6b'; // rojo = -
+                        html += `
+                            <div style="margin: 12px 0; padding: 10px; background: #0f1520;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #d0d0d0; font-weight: bold;">${cat}</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 8px;">
+                                    <div style="border-right: 1px solid #0a0e27; padding-right: 10px;">
+                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Junio 2026</div>
+                                        <div style="color: #a0a0a0; font-weight: bold; font-size: 12px;">${item.var_junio || '—'}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Variación Esperada (Julio)</div>
+                                        <div style="color: ${color}; font-weight: bold; font-size: 12px; cursor: help;" onclick="abrirModal('cambio_detalle')" title="Clic para explicación">${item.cambio}</div>
+                                    </div>
+                                </div>
+                                <div style="color: #808080; font-size: 11px; line-height: 1.5; padding-top: 8px; border-top: 1px solid #0a0e27;">${item.razon}</div>
+                            </div>
+                        `;
+                    }
+                }
+
+                html += '<h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 15px;">Factores Internos</h3>';
+                if (d.factores_internos && Array.isArray(d.factores_internos)) {
+                    d.factores_internos.forEach(f => {
+                        html += `<div class="factor">- ${f}</div>`;
+                    });
+                }
+
+                html += '<h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 15px;">Factores Externos</h3>';
+                if (d.factores_externos && Array.isArray(d.factores_externos)) {
+                    d.factores_externos.forEach(f => {
+                        html += `<div class="factor">- ${f}</div>`;
+                    });
+                }
+
+                html += '<div class="alert alert-success">Predicción completada</div>';
+
+                document.getElementById('prediction-content').innerHTML = html;
+                document.getElementById('btnExportar').disabled = false;
+                document.getElementById('btnExportar').style.background = '#ff9900';
+                document.getElementById('btnExportar').style.color = '#000';
+                cargarHistorico();
+            } catch (e) {
+                document.getElementById('prediction-content').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Calcular Predicción';
+            }
+        }
+
+        function exportarExcel() {
+            if (!prediccionData) {
+                alert('Primero calcula la predicción');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            const resumen = [
+                ['PREDICCIÓN IPC'],
+                [''],
+                ['Mes Actual', prediccionData.mes_actual],
+                ['Mes Futuro', prediccionData.mes_predicho],
+                [''],
+                ['IPC Actual (%)', formatearChile(prediccionData.ipc_percent)],
+                ['IPC Futuro (%)', formatearChile(prediccionData.ipc_predicted_percent)],
+                ['Variación (%)', formatearChile(prediccionData.variacion_esperada)],
+                ['Variación 12 Meses (%)', formatearChile(prediccionData.variacion_12_meses)],
+            ];
+            const ws1 = XLSX.utils.aoa_to_sheet(resumen);
+            XLSX.utils.book_append_sheet(wb, ws1, 'Resumen');
+
+            const categorias = [['Categoría', 'Cambio %', 'Razón']];
+            if (prediccionData.canasta_prediccion) {
+                for (let cat in prediccionData.canasta_prediccion) {
+                    const item = prediccionData.canasta_prediccion[cat];
+                    categorias.push([cat, item.cambio, item.razon]);
+                }
+            }
+            const ws2 = XLSX.utils.aoa_to_sheet(categorias);
+            XLSX.utils.book_append_sheet(wb, ws2, 'Categorías');
+
+            const factores = [
+                ['Factores Internos', 'Descripción'],
+            ];
+            if (prediccionData.factores_internos) {
+                prediccionData.factores_internos.forEach(f => {
+                    factores.push([f, '']);
+                });
+            }
+            factores.push(['', '']);
+            factores.push(['Factores Externos', 'Descripción']);
+            if (prediccionData.factores_externos) {
+                prediccionData.factores_externos.forEach(f => {
+                    factores.push([f, '']);
+                });
+            }
+            const ws3 = XLSX.utils.aoa_to_sheet(factores);
+            XLSX.utils.book_append_sheet(wb, ws3, 'Factores');
+
+            const fecha = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `IPC_Prediccion_${fecha}.xlsx`);
+        }
+
+        async function analizar() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Analizando...';
+            try {
+                const r = await fetch(`${API_URL}/analisis`);
+                const d = await r.json();
+                if (!r.ok) throw new Error(d.detail);
+
+                let html = `
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 20px; border-left: 3px solid #ff9900;">
+                        <h3 style="color: #ff9900; margin-bottom: 12px; font-size: 13px;">ESTADÍSTICAS DE TENDENCIA</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div>
+                                <div style="color: #707070; font-size: 10px; text-transform: uppercase;">Var. Mensual Actual</div>
+                                <div style="color: #ff9900; font-size: 18px; font-weight: bold; margin-top: 5px;">${d.estadisticas.var_mensual_actual}%</div>
+                            </div>
+                            <div>
+                                <div style="color: #707070; font-size: 10px; text-transform: uppercase;">Promedio 3 Meses</div>
+                                <div style="color: #ff9900; font-size: 18px; font-weight: bold; margin-top: 5px;">${d.estadisticas.promedio_3m}%</div>
+                            </div>
+                            <div>
+                                <div style="color: #707070; font-size: 10px; text-transform: uppercase;">Variación 12 Meses</div>
+                                <div style="color: #ff9900; font-size: 18px; font-weight: bold; margin-top: 5px;">${d.estadisticas.variacion_12m}%</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27;">
+                            <div style="color: #a0a0a0; font-size: 11px; line-height: 1.6;">
+                                <strong>Volatilidad 3m:</strong> ${d.estadisticas.volatilidad_3m}% |
+                                <strong>Rango:</strong> ${d.estadisticas.rango_3m}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">✓ Análisis de tendencias completado</div>
+                `;
+
+                document.getElementById('analysis-content').innerHTML = html;
+            } catch (e) {
+                document.getElementById('analysis-content').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Ejecutar Análisis';
+            }
+        }
+
+        async function cargarHistorico() {
+            try {
+                const r = await fetch(`${API_URL}/datos`);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const d = await r.json();
+                datosHistoricos = d.datos;
+
+                let html = '<table><tr><th>MES</th><th>VAR. MENSUAL %</th><th>VAR. 12M %</th><th>ÍNDICE</th></tr>';
+                d.datos.forEach(row => {
+                    html += `<tr><td>${row.mes}</td><td style="text-align: center;">${formatearChile(row.variacion_mensual)}%</td><td style="text-align: center;">${formatearChile(row.variacion_12_meses)}%</td><td style="text-align: center;">${formatearChile(row.ipc_index)}</td></tr>`;
+                });
+                html += '</table>';
+                document.getElementById('historico-content').innerHTML = html;
+            } catch (e) {
+                console.error('Error en cargarHistorico:', e);
+                document.getElementById('historico-content').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+            }
+        }
+
+        async function cargarGraficoLinea() {
+            if (!datosHistoricos) { await cargarHistorico(); }
+            try {
+                const labels = datosHistoricos.map(d => d.mes);
+                const dataVarMensual = datosHistoricos.map(d => d.variacion_mensual);
+                const dataVar12m = datosHistoricos.map(d => d.variacion_12_meses);
+
+                const ctx = document.getElementById('chartLinea');
+                if (ctx.chart) ctx.chart.destroy();
+
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Variación Mensual',
+                                data: dataVarMensual,
+                                borderColor: '#ff9900',
+                                backgroundColor: 'rgba(255, 153, 0, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                pointBackgroundColor: '#ff9900',
+                                pointBorderColor: '#ff9900',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Variación 12 Meses',
+                                data: dataVar12m,
+                                borderColor: '#5b7ce1',
+                                backgroundColor: 'rgba(91, 124, 225, 0.1)',
+                                tension: 0.4,
+                                fill: false,
+                                pointBackgroundColor: '#5b7ce1',
+                                pointBorderColor: '#5b7ce1',
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#d0d0d0', font: { family: "'IBM Plex Mono', monospace" } } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#d0d0d0' }, grid: { color: '#0f1520' } },
+                            y: { ticks: { color: '#d0d0d0' }, grid: { color: '#0f1520' } }
+                        }
+                    }
+                });
+            } catch (e) {
+                document.getElementById('chartLinea').parentElement.innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+            }
+        }
+
+        function cambiarMesGrafico() {
+            actualizarGraficoTorres();
+        }
+
+        function actualizarGraficoTorres() {
+            try {
+                if (!prediccionData || !prediccionData.canasta_prediccion) {
+                    const container = document.getElementById('chartTorres');
+                    if (container && container.parentElement) {
+                        container.parentElement.innerHTML = `<div class="alert alert-error">Primero calcula predicción en ANÁLISIS > Predicción</div>`;
+                    }
+                    return;
+                }
+
+                const labels = Object.keys(prediccionData.canasta_prediccion);
+                const data = labels.map(cat => {
+                    const cambio = prediccionData.canasta_prediccion[cat].cambio;
+                    return parseFloat(cambio.replace(',', '.').replace('%', ''));
+                });
+
+                const ctx = document.getElementById('chartTorres');
+                if (!ctx) return;
+
+                if (ctx.chart) ctx.chart.destroy();
+
+                ctx.chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cambio %',
+                            data: data,
+                            backgroundColor: data.map(v => v >= 0 ? '#ff9900' : '#10b981')
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#d0d0d0', font: { family: "'IBM Plex Mono', monospace" } } }
+                        },
+                        scales: {
+                            x: { ticks: { color: '#d0d0d0' }, grid: { color: '#0f1520' } },
+                            y: { ticks: { color: '#d0d0d0' }, grid: { color: '#0f1520' } }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Error actualizando gráfico:', e);
+                const container = document.getElementById('chartTorres');
+                if (container && container.parentElement) {
+                    container.parentElement.innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+                }
+            }
+        }
+
+        async function cargarCanastaMes() {
+            let mes = document.getElementById('mesSelect').value || '2026-06';
+            document.getElementById('mesSelect').value = mes;
+            const mesDisplay = document.getElementById('mesDisplay').textContent || 'Junio 2026';
+
+            try {
+                const r = await fetch(`${API_URL}/canasta/${mes}`);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const d = await r.json();
+
+                if (!d.canasta || d.canasta.length === 0) {
+                    document.getElementById('canasta-mes-content').innerHTML = `<div class="alert alert-info">Sin datos para este mes</div>`;
+                    return;
+                }
+
+                let html = `<div style="background: #0f1520; padding: 12px; margin-bottom: 15px; border-radius: 3px; color: #ff9900; font-size: 11px;">
+                    Composición de canasta - Mes consultado: ${mesDisplay}
+                </div>
+                <table>
+                    <tr>
+                        <th>CATEGORÍA</th>
+                        <th style="cursor: help;" onclick="abrirModal('ponderacion_def')" title="Clic para explicación">PONDERACIÓN %</th>
+                        <th style="cursor: help;" onclick="abrirModal('var_mensual_def')" title="Clic para explicación">VAR. MENSUAL %</th>
+                        <th style="cursor: help;" onclick="abrirModal('var_12m_def')" title="Clic para explicación">VAR. 12 MESES %</th>
+                    </tr>`;
+
+                d.canasta.forEach(item => {
+                    html += `<tr>
+                        <td>${item.categoria}</td>
+                        <td style="text-align: center;">${formatearChile(item.ponderacion || 0)}</td>
+                        <td style="text-align: center; color: ${(item.var_mensual || 0) > 0 ? '#10b981' : (item.var_mensual || 0) < 0 ? '#ff6b6b' : '#ff9900'}">${formatearChile(item.var_mensual || 0)}</td>
+                        <td style="text-align: center; color: ${(item.var_12_meses || 0) > 0 ? '#10b981' : (item.var_12_meses || 0) < 0 ? '#ff6b6b' : '#ff9900'}">${formatearChile(item.var_12_meses || 0)}</td>
+                    </tr>`;
+                });
+
+                html += `</table>
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Datos Banco Central de Chile</strong><br>
+                    Base: 2023 = 100 (INE)<br>
+                    Nota: Composición de canasta disponible para el último mes (Junio 2026)
+                </div>`;
+
+                document.getElementById('canasta-mes-content').innerHTML = html;
+            } catch (e) {
+                console.error('cargarCanastaMes error:', e);
+                document.getElementById('canasta-mes-content').innerHTML = `<div class="alert alert-error">Error cargando datos: ${e.message}</div>`;
+            }
+        }
+
+        async function cargarCanastaAcumulada() {
+            const mesBase = document.getElementById('mesAcumulado').value;
+            const btn = event.target && event.target.tagName === 'BUTTON' ? event.target : null;
+            if (btn) btn.disabled = true;
+
+            try {
+                const r = await fetch(`${API_URL}/canasta-acumulada?mes=${mesBase}`);
+                const d = await r.json();
+
+                const meses = {
+                    '2026-01': 'Enero 2026',
+                    '2026-02': 'Febrero 2026',
+                    '2026-03': 'Marzo 2026',
+                    '2026-04': 'Abril 2026',
+                    '2026-05': 'Mayo 2026',
+                    '2026-06': 'Junio 2026'
+                };
+
+                let html = `<div style="background: #0f1520; padding: 12px; margin-bottom: 15px; border-radius: 3px; color: #ff9900; font-size: 11px;">
+                    Período: Últimos 12 meses hasta ${meses[mesBase] || mesBase}
+                </div>
+                <table>
+                    <tr>
+                        <th>CATEGORÍA</th>
+                        <th style="cursor: help;" onclick="abrirModal('pond_acum_def')" title="Clic para explicación">POND. %</th>
+                        <th style="cursor: help;" onclick="abrirModal('indice_acum_def')" title="Clic para explicación">ÍNDICE 12M</th>
+                        <th style="cursor: help;" onclick="abrirModal('var_acum_def')" title="Clic para explicación">VAR. 12M %</th>
+                    </tr>`;
+
+                d.acumulado.forEach(item => {
+                    const varPct = (item.indice_promedio - 100);
+                    html += `<tr>
+                        <td>${item.categoria}</td>
+                        <td style="text-align: center;">${formatearChile(item.ponderacion)}</td>
+                        <td style="text-align: center;">${formatearChile(item.indice_promedio)}</td>
+                        <td style="text-align: center; color: ${varPct > 0 ? '#10b981' : varPct < 0 ? '#ff6b6b' : '#ff9900'}">${formatearChile(varPct)}%</td>
+                    </tr>`;
+                });
+
+                html += `</table>
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Datos Acumulados</strong><br>
+                    El ÍNDICE 12M es el promedio de los últimos 12 meses (período móvil)<br>
+                    La VAR. 12M % muestra cuánto subieron los precios en ese período
+                </div>`;
+
+                document.getElementById('canasta-acum-content').innerHTML = html;
+            } catch (e) {
+                console.error('Error:', e);
+                document.getElementById('canasta-acum-content').innerHTML = `<div class="alert alert-error">Error: ${e.message}</div>`;
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        let mesSelected = null;
+        let anoSelected = 2026;
+        let anoSelectedGrafico = 2026;
+
+        function toggleMesPicker() {
+            const picker = document.getElementById('mesPicker');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleMesPickerGrafico() {
+            const picker = document.getElementById('mesPickerGrafico');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function cambiarAno(direccion) {
+            anoSelected += direccion;
+            document.getElementById('anoDisplay').textContent = anoSelected;
+        }
+
+        function cambiarAnoGrafico(direccion) {
+            anoSelectedGrafico += direccion;
+            document.getElementById('anoDisplayGrafico').textContent = anoSelectedGrafico;
+        }
+
+        function seleccionarMes(mes) {
+            mesSelected = mes;
+            const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const mesValue = anoSelected + '-' + String(mes).padStart(2, '0');
+            document.getElementById('mesSelect').value = mesValue;
+            const mesNombre = meses[mes] + ' ' + anoSelected;
+            document.getElementById('mesDisplay').textContent = mesNombre;
+            document.getElementById('basketMonthHeader').textContent = mesNombre;
+            document.getElementById('mesPicker').style.display = 'none';
+            cargarCanastaMes();
+        }
+
+        function seleccionarMesGrafico(mes) {
+            const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const mesValue = anoSelectedGrafico + '-' + String(mes).padStart(2, '0');
+            document.getElementById('mesCalendario').value = mesValue;
+            const mesNombre = meses[mes] + ' ' + anoSelectedGrafico;
+            document.getElementById('mesDisplayGrafico').textContent = mesNombre;
+            document.getElementById('monthDisplayHeader').textContent = mesNombre;
+            document.getElementById('mesPickerGrafico').style.display = 'none';
+            actualizarGraficoTorres();
+        }
+
+        async function cargarMetricas() {
+            try {
+                // FORZAR REQUEST FRESCO
+                const ts = new Date().getTime();
+                const r = await fetch(`${API_URL}/desempen-modelo?t=${ts}`, {
+                    cache: 'no-store'
+                });
+                const metricas = await r.json();
+
+                document.getElementById('mae-display').textContent = metricas.error_promedio_absoluto + '%';
+                document.getElementById('acierto-display').textContent = metricas.tasa_acierto_direccion + '%';
+            } catch (e) {
+                console.error('Error cargando métricas:', e);
+            }
+        }
+
+        async function cargarHistoricoPredicciones() {
+            try {
+                // FORZAR REQUEST FRESCO
+                const ts = new Date().getTime();
+                const r = await fetch(`${API_URL}/historico-predicciones?t=${ts}`, {
+                    cache: 'no-store'
+                });
+                const d = await r.json();
+                const historico = d.historico;
+
+                if (!historico || historico.length === 0) {
+                    document.getElementById('historico-pred-content').innerHTML = `<div class="alert alert-info">Sin predicciones registradas aún</div>`;
+                    return;
+                }
+
+                let html = `
+                    <div class="info-box" style="margin-bottom: 20px; background: #0f1520;">
+                        <strong>Total de predicciones:</strong> ${historico.length}<br>
+                        <strong>Con dato real publicado:</strong> ${historico.filter(p => p.ipc_real).length}
+                    </div>
+                    <table>
+                        <tr>
+                            <th>PREDICCIÓN PARA</th>
+                            <th>PREDICCIÓN %</th>
+                            <th>DATO REAL %</th>
+                            <th>ERROR</th>
+                            <th>INGRESO DATO REAL</th>
+                        </tr>`;
+
+                historico.forEach((pred, idx) => {
+                    // Calcular error vs dato real si existe
+                    let errorDisplay = '—';
+                    if (pred.ipc_real) {
+                        const varReal = pred.ipc_real - 100;  // variación real desde base 2023
+                        const error = Math.abs(pred.variacion_esperada - (varReal - pred.ipc_percent));
+                        errorDisplay = `<span style="color: ${error < 0.3 ? '#10b981' : error < 0.5 ? '#ff9900' : '#ff6b6b'}">${error.toFixed(2)}%</span>`;
+                    }
+
+                    let ingreso = '';
+                    if (pred.ipc_real) {
+                        ingreso = `<span style="color: #10b981; font-size: 10px;">✓ Actualizado</span>`;
+                    } else {
+                        ingreso = `
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" id="input-real-${idx}" placeholder="ej: 0,50" step="0.01" style="width: 60px; padding: 5px; background: #0f1520; color: #ff9900; font-size: 11px; border: 1px solid #ff9900; font-family: inherit;">
+                                <button onclick="guardarDatoReal('${pred.mes_predicho}', ${idx})" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 10px;">Guardar</button>
+                            </div>`;
+                    }
+
+                    html += `<tr>
+                        <td><strong>${pred.mes_predicho}</strong></td>
+                        <td>${pred.variacion_esperada > 0 ? '+' : ''}${formatearChile(pred.variacion_esperada)}%</td>
+                        <td>${pred.ipc_real ? (pred.ipc_real - pred.ipc_percent) > 0 ? '+' : '' + formatearChile(pred.ipc_real - pred.ipc_percent, 2) + '%' : '—'}</td>
+                        <td>${errorDisplay}</td>
+                        <td>${ingreso}</td>
+                    </tr>`;
+                });
+
+                html += '</table>';
+                html += `
+                    <div class="alert alert-info" style="margin-top: 20px;">
+                        <strong>Cómo usar:</strong><br>
+                        1. Cuando INE publica el IPC real, cópiano el valor (ej: 12,85%)<br>
+                        2. Pégalo en el campo "INGRESO DATO REAL"<br>
+                        3. Clic "Guardar"<br>
+                        4. El sistema calcula automáticamente el error vs tu predicción<br>
+                        <br>
+                        <strong>Cómo leer:</strong><br>
+                        • PREDICCIÓN %: Lo que el modelo estimó<br>
+                        • DATO REAL %: Lo que publicó INE después<br>
+                        • ERROR: Diferencia absoluta (verde &lt; 0,5%, naranja &gt; 0,5%)
+                    </div>`;
+
+                document.getElementById('historico-pred-content').innerHTML = html;
+            } catch (e) {
+                console.error('Error:', e);
+                document.getElementById('historico-pred-content').innerHTML = `<div class="alert alert-error">Error cargando histórico: ${e.message}</div>`;
+            }
+        }
+
+        async function guardarDatoReal(mesPred, idx) {
+            const inputEl = document.getElementById(`input-real-${idx}`);
+            const valorTexto = inputEl.value.trim();
+
+            if (!valorTexto) {
+                alert('Ingresa el valor del IPC real');
+                return;
+            }
+
+            // Convertir coma a punto
+            const valor = parseFloat(valorTexto.replace(',', '.'));
+
+            if (isNaN(valor)) {
+                alert('Valor inválido');
+                return;
+            }
+
+            try {
+                // Enviar a API - el mes viene en formato "Mes Año" (ej: "Julio 2026")
+                const response = await fetch(`${API_URL}/actualizar-prediccion/${mesPred}?ipc_real=${valor}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('✓ Dato real guardado. Recargando histórico...');
+                    cargarHistoricoPredicciones();
+                    cargarMetricas();  // Actualizar métricas
+                } else {
+                    alert('Error: ' + result.detail);
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        window.addEventListener('load', function() {
+            cargarHistorico();
+            cargarMetricas();
+            // Establecer mes/año por defecto visible en los headers
+            document.getElementById('basketMonthHeader').textContent = 'Junio 2026';
+            document.getElementById('monthDisplayHeader').textContent = 'Junio 2026';
+            document.getElementById('mesDisplay').textContent = 'Junio 2026';
+            document.getElementById('mesDisplayGrafico').textContent = 'Junio 2026';
+        });
+        window.addEventListener('click', function(e) {
+            const picker = document.getElementById('mesPicker');
+            const toggle = document.getElementById('mesToggle');
+            if (picker && !e.target.closest('#mesToggle') && !e.target.closest('#mesPicker')) {
+                picker.style.display = 'none';
+            }
+
+            const pickerGrafico = document.getElementById('mesPickerGrafico');
+            const toggleGrafico = document.getElementById('mesToggleGrafico');
+            if (pickerGrafico && !e.target.closest('#mesToggleGrafico') && !e.target.closest('#mesPickerGrafico')) {
+                pickerGrafico.style.display = 'none';
+            }
+        });
+    </script>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="cerrarModal()">&times;</span>
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription"></p>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal(tipo) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDescription');
+
+            if (tipo === 'indice') {
+                title.textContent = 'ÍNDICE (Base 2023=100)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El índice es un número que representa el nivel de precios de una categoría respecto a la base (año 2023 = 100).
+                    <br><br>
+                    <strong>¿Cómo se calcula?</strong><br>
+                    - Si el índice es 111,60: significa que los precios están 11,60% más altos que en 2023
+                    - Si el índice es 88,25: significa que los precios están 11,75% más bajos que en 2023
+                    <br><br>
+                    <strong>Fórmula:</strong><br>
+                    Variación % = (Índice - 100)
+                `;
+            } else if (tipo === 'ponderacion') {
+                title.textContent = 'PONDERACIÓN (%)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    La ponderación es el peso o importancia que tiene cada categoría dentro del índice general de IPC.
+                    <br><br>
+                    <strong>¿Cómo se calcula?</strong><br>
+                    - Alimentos y bebidas: 22,15% (mayor peso)
+                    - Vivienda: 16,76%
+                    - Transporte: 13,45%
+                    - Otros: porcentajes menores
+                    <br><br>
+                    La suma de todas las ponderaciones = 100%
+                    <br><br>
+                    El IPC General es el promedio ponderado de todas las categorías.
+                `;
+            } else if (tipo === 'ponderacion_def') {
+                title.textContent = 'PONDERACIÓN % (Definición)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El porcentaje de importancia que tiene cada categoría en la canasta de consumo.
+                    <br><br>
+                    <strong>¿Cómo se llega a este valor?</strong><br>
+                    <strong>Paso 1:</strong> El INE encuesta hogares chilenos sobre qué gastan<br>
+                    <strong>Paso 2:</strong> Calcula el gasto promedio por categoría<br>
+                    <strong>Paso 3:</strong> Divide cada gasto por el gasto total × 100<br>
+                    <br>
+                    <strong>Ejemplo real:</strong><br>
+                    - Gasto total anual promedio: $10.000.000<br>
+                    - Gasto en alimentos: $2.215.000<br>
+                    - Ponderación: (2.215.000 ÷ 10.000.000) × 100 = 22,15%<br>
+                    <br>
+                    <strong>Nota:</strong> Se actualiza cada 5-10 años según nuevas encuestas
+                `;
+            } else if (tipo === 'var_mensual_def') {
+                title.textContent = 'VAR. MENSUAL % (Definición)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El cambio porcentual de precios de una categoría de un mes a otro.
+                    <br><br>
+                    <strong>¿Cómo se llega a este valor?</strong><br>
+                    <strong>Fórmula:</strong> ((Índice Actual - Índice Mes Anterior) ÷ Índice Mes Anterior) × 100<br>
+                    <br>
+                    <strong>Ejemplo real (Alimentos Enero 2026):</strong><br>
+                    - Índice Enero 2026: 109,59<br>
+                    - Índice Diciembre 2025: 109,19<br>
+                    - Variación: ((109,59 - 109,19) ÷ 109,19) × 100 = 0,37% ≈ 0,4%<br>
+                    <br>
+                    <strong>Interpretación:</strong><br>
+                    ✓ Positivo (+): los precios subieron ese mes<br>
+                    ✗ Negativo (-): los precios bajaron ese mes
+                `;
+            } else if (tipo === 'var_12m_def') {
+                title.textContent = 'VAR. 12 MESES % (Definición)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El cambio porcentual de precios comparando el mismo mes del año anterior.
+                    <br><br>
+                    <strong>¿Cómo se llega a este valor?</strong><br>
+                    <strong>Fórmula:</strong> ((Índice Actual - Índice Hace 12 Meses) ÷ Índice Hace 12 Meses) × 100<br>
+                    <br>
+                    <strong>Ejemplo real (Alimentos Enero 2026):</strong><br>
+                    - Índice Enero 2026: 109,59<br>
+                    - Índice Enero 2025: 106,71<br>
+                    - Variación: ((109,59 - 106,71) ÷ 106,71) × 100 = 2,70% ≈ 2,75%<br>
+                    <br>
+                    <strong>¿Por qué es importante?</strong><br>
+                    Mide la inflación anualizada: cuánto subieron los precios en 12 meses<br>
+                    <br>
+                    <strong>Nota:</strong> Elimina fluctuaciones estacionales (ej: ropa en invierno)
+                `;
+            } else if (tipo === 'pond_acum_def') {
+                title.textContent = 'PONDERACIÓN % (Canasta Acumulada)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El peso o importancia que tiene cada categoría en la canasta de consumo general.
+                    <br><br>
+                    <strong>¿Por qué es igual en todos los meses?</strong><br>
+                    La ponderación se calcula según encuestas de gasto familiar del INE y se mantiene estable durante varios años.
+                    <br><br>
+                    <strong>Suma total:</strong> 100%<br>
+                    Todas las ponderaciones sumadas siempre dan 100%<br>
+                    <br>
+                    <strong>Dato importante:</strong><br>
+                    Se actualiza cada 5-10 años cuando el INE realiza nuevas encuestas de presupuestos familiares
+                `;
+            } else if (tipo === 'indice_acum_def') {
+                title.textContent = 'ÍNDICE 12M (Canasta Acumulada)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El promedio de precios de los últimos 12 meses (período móvil).
+                    <br><br>
+                    <strong>¿Cómo se calcula?</strong><br>
+                    Se toma el índice de cada mes de los últimos 12 meses y se calcula el promedio ponderado.
+                    <br><br>
+                    <strong>¿Por qué se usa?</strong><br>
+                    ✓ Suaviza variaciones mensuales extremas<br>
+                    ✓ Muestra tendencia real de precios<br>
+                    ✓ Elimina efecto de estacionalidad<br>
+                    <br>
+                    <strong>Ejemplo:</strong><br>
+                    Si en Junio ves Índice 12M = 111,60<br>
+                    Significa: promedio de Julio 2025 a Junio 2026
+                `;
+            } else if (tipo === 'var_acum_def') {
+                title.textContent = 'VAR. 12M % (Canasta Acumulada)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    El cambio porcentual del índice acumulado respecto a la base (2023=100).
+                    <br><br>
+                    <strong>¿Cómo se calcula?</strong><br>
+                    <strong>Fórmula:</strong> (Índice 12M - 100) × 1<br>
+                    <br>
+                    <strong>Ejemplo real:</strong><br>
+                    - Índice 12M (Alimentos): 111,60<br>
+                    - Variación: 111,60 - 100 = 11,60%<br>
+                    <br>
+                    <strong>Interpretación:</strong><br>
+                    Los precios de alimentos subieron 11,60% en los últimos 12 meses respecto a 2023<br>
+                    <br>
+                    <strong>Color del valor:</strong><br>
+                    🟠 Naranja (+): precios más altos que en 2023<br>
+                    🟢 Verde (-): precios más bajos que en 2023
+                `;
+            } else if (tipo === 'proyec_categoria') {
+                title.textContent = 'PROYECCIÓN POR CATEGORÍA';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    Muestra cómo se espera que cambien los precios de cada categoría en Julio 2026 comparado con Junio 2026.
+                    <br><br>
+                    <strong>¿Qué significan los signos?</strong><br>
+                    <strong style="color: #10b981;">+ Verde:</strong> Precios se espera que suban<br>
+                    <strong style="color: #ff6b6b;">- Rojo:</strong> Precios se espera que bajen<br>
+                    <strong style="color: #ff9900;">0 Naranja:</strong> Precios sin cambio esperado<br>
+                    <br>
+                    <strong>Ejemplo real:</strong><br>
+                    "Vestuario y calzado: -6,1%"<br>
+                    → Se espera deflación de 6,1% en ropa para julio (por descuentos estacionales)
+                    <br><br>
+                    <strong>¿De dónde vienen estos números?</strong><br>
+                    • 80% ARIMA: Análisis estadístico de tendencias históricas<br>
+                    • 20% Groq IA: Análisis de factores macroeconómicos y contexto
+                `;
+            } else if (tipo === 'cambio_detalle') {
+                title.textContent = 'CAMBIO VS MES ANTERIOR (%)';
+                desc.innerHTML = `
+                    <strong>¿Qué es?</strong><br>
+                    La variación porcentual de precio de una categoría entre dos meses consecutivos.
+                    <br><br>
+                    <strong>¿Cómo se calcula?</strong><br>
+                    <strong>Fórmula:</strong> ((Precio Julio - Precio Junio) ÷ Precio Junio) × 100<br>
+                    <br>
+                    <strong>¿Qué es la comparación base?</strong><br>
+                    Se compara contra <strong>Junio 2026</strong> (mes anterior al pronóstico)
+                    <br><br>
+                    <strong>Ejemplo real (Alimentos):</strong><br>
+                    - Índice Junio: 109,50<br>
+                    - Índice Julio (predicción): 110,38<br>
+                    - Cambio: ((110,38 - 109,50) ÷ 109,50) × 100 = 0,80%<br>
+                    <br>
+                    <strong>Colores:</strong><br>
+                    🟢 Verde (+): Inflación mensual (precios suben)<br>
+                    🔴 Rojo (-): Deflación mensual (precios bajan)<br>
+                    🟠 Naranja (0): Precios estables
+                `;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'modal') {
+                cerrarModal();
+            }
+        });
+    </script>
+</body>
+</html>

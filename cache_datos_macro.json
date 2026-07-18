@@ -1,0 +1,160 @@
+{
+  "version": "1.0",
+  "ultima_actualizacion": "2026-07-18T00:00:00",
+  "prox_actualizacion_programada": "2026-08-01T00:00:00",
+  "factores_internos": {
+    "pais": "Chile",
+    "datos": [
+      {
+        "id": "desempleo",
+        "descripcion": "Tasa de desocupación nacional",
+        "valor": 9.4,
+        "unidad": "%",
+        "fuente": "INE - Encuesta Nacional de Empleo",
+        "periodo": "marzo-mayo 2026",
+        "fecha_dato": "2026-06-30",
+        "proxima_actualizacion": "2026-08-29"
+      },
+      {
+        "id": "presion_salarial",
+        "descripcion": "Crecimiento salarial anual",
+        "valor": 3.5,
+        "unidad": "%",
+        "fuente": "Banco Central de Chile - Encuestas de Expectativas",
+        "periodo": "último año",
+        "fecha_dato": "2026-07-18",
+        "proxima_actualizacion": "2026-08-01"
+      },
+      {
+        "id": "tpm",
+        "descripcion": "Tasa de Política Monetaria",
+        "valor": 3.75,
+        "unidad": "%",
+        "estado": "controlada",
+        "fuente": "Banco Central de Chile",
+        "fecha_dato": "2026-07-18",
+        "proxima_actualizacion": "2026-07-30"
+      },
+      {
+        "id": "tipo_cambio",
+        "descripcion": "Tipo de cambio CLP/USD",
+        "valor": 934.96,
+        "unidad": "CLP/USD",
+        "fuente": "Banco Central de Chile",
+        "fecha_dato": "2026-07-18",
+        "cambio_mes": -3.82,
+        "proxima_actualizacion": "2026-07-19"
+      },
+      {
+        "id": "meta_inflacion",
+        "descripcion": "Meta de inflación del BC",
+        "valor": 3.0,
+        "rango": "±1pp",
+        "fuente": "Banco Central de Chile",
+        "fecha_dato": "2026-07-18",
+        "proxima_actualizacion": "2026-08-01"
+      }
+    ]
+  },
+  "factores_externos": {
+    "mundo": [
+      {
+        "id": "petroleo_brent",
+        "descripcion": "Precio petróleo Brent",
+        "valor": 88.26,
+        "unidad": "USD/barril",
+        "fuente": "Trading Economics - NYMEX",
+        "fecha_dato": "2026-07-18",
+        "cambio_yoy": 27.15,
+        "observaciones": "Volatilidad por tensiones geopolíticas Ormuz",
+        "proxima_actualizacion": "2026-07-19"
+      },
+      {
+        "id": "inflacion_eeuu",
+        "descripcion": "Tasa de inflación EEUU (CPI)",
+        "valor": 3.5,
+        "unidad": "%",
+        "fuente": "Bureau of Labor Statistics",
+        "fecha_dato": "2026-06-30",
+        "cambio_mes": -0.7,
+        "observaciones": "Baja desde 4,2% en mayo. Deflación energética",
+        "proxima_actualizacion": "2026-08-12"
+      },
+      {
+        "id": "tasas_fed",
+        "descripcion": "Tasa Federal Funds Range",
+        "valor_min": 3.50,
+        "valor_max": 3.75,
+        "unidad": "%",
+        "fuente": "Federal Reserve",
+        "fecha_dato": "2026-07-18",
+        "proxima_decision": "2026-07-29",
+        "probabilidad_alza": 46.5,
+        "proxima_actualizacion": "2026-07-30"
+      },
+      {
+        "id": "cobre_comex",
+        "descripcion": "Precio cobre Comex",
+        "valor_min": 6.03,
+        "valor_max": 6.33,
+        "unidad": "USD/lb",
+        "fuente": "COMEX - CME Group",
+        "fecha_dato": "2026-07-18",
+        "cambio_mes": -2.42,
+        "cambio_yoy": 15.38,
+        "observaciones": "Inventarios bajos, producción chilena reducida",
+        "proxima_actualizacion": "2026-07-19"
+      },
+      {
+        "id": "alimentos_fao",
+        "descripcion": "Índice de Precios de Alimentos (FAO)",
+        "valor": 105.2,
+        "unidad": "índice",
+        "fuente": "Food and Agriculture Organization",
+        "fecha_dato": "2026-06-30",
+        "estado": "moderado",
+        "proxima_actualizacion": "2026-08-01"
+      }
+    ]
+  },
+  "fuentes_api": {
+    "primarias": [
+      {
+        "nombre": "INE Chile",
+        "url": "https://www.ine.gob.cl/estadisticas-por-tema/mercado-laboral",
+        "datos": ["desempleo"],
+        "frecuencia": "trimestral",
+        "metodo": "web_scraping"
+      },
+      {
+        "nombre": "Banco Central de Chile",
+        "url": "https://si3.bcentral.cl/Bdemovil/BDE/",
+        "datos": ["tipo_cambio", "tpm", "meta_inflacion"],
+        "frecuencia": "diaria",
+        "metodo": "api"
+      },
+      {
+        "nombre": "Trading Economics",
+        "url": "https://tradingeconomics.com/",
+        "datos": ["petroleo_brent", "cobre_comex", "inflacion_eeuu"],
+        "frecuencia": "diaria",
+        "metodo": "web_scraping"
+      },
+      {
+        "nombre": "Federal Reserve (FRED)",
+        "url": "https://fred.stlouisfed.org/",
+        "datos": ["tasas_fed"],
+        "frecuencia": "diaria",
+        "metodo": "api"
+      }
+    ]
+  },
+  "politica_actualizacion": {
+    "datos_diarios": ["tipo_cambio", "petroleo_brent", "cobre_comex", "tasas_fed"],
+    "datos_semanales": ["presion_salarial"],
+    "datos_mensuales": ["inflacion_eeuu", "alimentos_fao"],
+    "datos_trimestrales": ["desempleo"],
+    "intervalo_minimo": 86400,
+    "cache_ttl_horas": 24
+  }
+}
