@@ -81,6 +81,66 @@ def startup():
         print(f"⚠️  Error: {e}")
         print("✅ Continuando con datos locales únicamente")
 
+# ============================================================================
+# FUNCIONES HELPER PARA SUPABASE
+# ============================================================================
+
+def guardar_prediccion_a_supabase(mes_predicho: str, variacion_esperada: float, version: str = "v2.0-ensemble"):
+    """Guarda una predicción en Supabase"""
+    if not supabase_client:
+        print("⚠️  Supabase no disponible, predicción no guardada en BD")
+        return False
+
+    try:
+        from datetime import datetime
+        supabase_client.table('predicciones_historico').upsert({
+            "mes_predicho": mes_predicho,
+            "variacion_esperada": variacion_esperada,
+            "version": version,
+            "timestamp": datetime.now().isoformat()
+        }).execute()
+        print(f"✅ Predicción {mes_predicho} guardada en Supabase")
+        return True
+    except Exception as e:
+        print(f"⚠️  Error guardando predicción en Supabase: {str(e)[:100]}")
+        return False
+
+def guardar_dato_real_a_supabase(mes: str, variacion_mensual: float, indice: float = None):
+    """Guarda un dato real de IPC en Supabase"""
+    if not supabase_client:
+        print("⚠️  Supabase no disponible, dato no guardado en BD")
+        return False
+
+    try:
+        supabase_client.table('ipc_datos_reales').upsert({
+            "mes": mes,
+            "variacion_mensual": variacion_mensual,
+            "indice": indice,
+            "source": "Manual - Usuario"
+        }).execute()
+        print(f"✅ Dato real {mes} guardado en Supabase")
+        return True
+    except Exception as e:
+        print(f"⚠️  Error guardando dato real en Supabase: {str(e)[:100]}")
+        return False
+
+def actualizar_prediccion_con_real_a_supabase(mes_predicho: str, ipc_real: float, error_absoluto: float = None):
+    """Actualiza una predicción con el dato real"""
+    if not supabase_client:
+        print("⚠️  Supabase no disponible, actualización no guardada")
+        return False
+
+    try:
+        supabase_client.table('predicciones_historico').update({
+            "ipc_real": ipc_real,
+            "error_absoluto": error_absoluto
+        }).eq('mes_predicho', mes_predicho).execute()
+        print(f"✅ Predicción {mes_predicho} actualizada con dato real en Supabase")
+        return True
+    except Exception as e:
+        print(f"⚠️  Error actualizando predicción en Supabase: {str(e)[:100]}")
+        return False
+
 @app.get("/")
 def root():
     """Servir index.html"""
@@ -147,6 +207,12 @@ def predecir_v2():
 
         if not resultado:
             raise HTTPException(status_code=500, detail="No hay predicciones disponibles")
+
+        # 💾 GUARDAR automáticamente a Supabase
+        if supabase_client:
+            mes_predicho = resultado.get('mes_predicho', '2026-07')
+            variacion = resultado.get('ensemble_prediccion', 0)
+            guardar_prediccion_a_supabase(mes_predicho, variacion, "v2.0-ensemble")
 
         from fastapi.responses import JSONResponse
         response = JSONResponse(content=resultado)
@@ -325,6 +391,13 @@ def actualizar_prediccion(mes: str, ipc_real: float = None):
             raise HTTPException(status_code=400, detail="Parámetro ipc_real requerido")
 
         exito = predictor.actualizar_prediccion_con_real(mes, ipc_real)
+
+        # 💾 GUARDAR dato real a Supabase
+        if exito and supabase_client:
+            guardar_dato_real_a_supabase(mes, ipc_real)
+            # También actualizar la predicción con el error
+            actualizar_prediccion_con_real_a_supabase(mes, ipc_real)
+
         if exito:
             return {"success": True, "mensaje": f"Predicción de {mes} actualizada con IPC real: {ipc_real}"}
         else:
