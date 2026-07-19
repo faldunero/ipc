@@ -59,6 +59,9 @@
         .clickable:hover { color: #ffb333; }
         @media (max-width: 768px) { .menu-toggle { display: block; } .sidebar { position: absolute; left: 0; top: 0; height: calc(100vh - 60px); } .main-content { padding: 20px; } }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -924,10 +927,9 @@
                 historico.forEach((pred, idx) => {
                     // Calcular error vs dato real si existe
                     let errorDisplay = '—';
-                    if (pred.ipc_real) {
-                        const varReal = pred.ipc_real - 100;  // variación real desde base 2023
-                        const error = Math.abs(pred.variacion_esperada - (varReal - pred.ipc_percent));
-                        errorDisplay = `<span style="color: ${error < 0.3 ? '#10b981' : error < 0.5 ? '#ff9900' : '#ff6b6b'}">${error.toFixed(2)}%</span>`;
+                    if (pred.ipc_real !== undefined && pred.ipc_real !== null) {
+                        const error = Math.abs(pred.variacion_esperada - pred.ipc_real);
+                        errorDisplay = `<span style="color: ${error < 0.3 ? '#10b981' : error < 0.5 ? '#ff9900' : '#ff6b6b'}">${error.toFixed(2)}pp</span>`;
                     }
 
                     let ingreso = '';
@@ -966,6 +968,32 @@
                     </div>`;
 
                 document.getElementById('historico-pred-content').innerHTML = html;
+
+                // Inicializar DataTables para sort/filtro
+                setTimeout(() => {
+                    try {
+                        const table = document.querySelector('#historico-pred-content table');
+                        if (table && $.fn.dataTable) {
+                            $.noConflict();
+                            const $ = jQuery.noConflict();
+                            $(table).DataTable({
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                order: [[0, 'asc']],
+                                pageLength: 14,
+                                language: {
+                                    search: "Buscar:",
+                                    lengthMenu: "Mostrar _MENU_ registros",
+                                    info: "Mostrando _START_ a _END_ de _TOTAL_ predicciones",
+                                    paginate: { first: "Primera", last: "Última", next: "Siguiente", previous: "Anterior" }
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.log('DataTables no disponible:', e);
+                    }
+                }, 100);
             } catch (e) {
                 console.error('Error:', e);
                 document.getElementById('historico-pred-content').innerHTML = `<div class="alert alert-error">Error cargando histórico: ${e.message}</div>`;
