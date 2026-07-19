@@ -12,145 +12,106 @@
   },
   {
     "mes_predicho": "2025-06",
-    "variacion_esperada": 0,
+    "variacion_esperada": -0.21,
     "ipc_real": -0.4,
-    "ipc_predicted_percent": 107.64,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.4,
+    "error_absoluto": 0.191,
     "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766348"
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-07",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.55,
     "ipc_real": 0.9,
-    "ipc_predicted_percent": 108.61,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.9,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766351"
+    "error_absoluto": 0.353,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-08",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.49,
     "ipc_real": 0.0,
-    "ipc_predicted_percent": 108.61,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.0,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766353"
+    "error_absoluto": 0.487,
+    "direccion_correcta": false,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-09",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.63,
     "ipc_real": 0.4,
-    "ipc_predicted_percent": 109.04,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.4,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766354"
+    "error_absoluto": 0.225,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-10",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.47,
     "ipc_real": 0.0,
-    "ipc_predicted_percent": 109.04,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.0,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766355"
+    "error_absoluto": 0.466,
+    "direccion_correcta": false,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-11",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.41,
     "ipc_real": 0.3,
-    "ipc_predicted_percent": 109.37,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.3,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766356"
+    "error_absoluto": 0.111,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2025-12",
-    "variacion_esperada": 0,
+    "variacion_esperada": -0.14,
     "ipc_real": -0.2,
-    "ipc_predicted_percent": 109.15,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.2,
+    "error_absoluto": 0.061,
     "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766356"
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-01",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.63,
     "ipc_real": 0.4,
-    "ipc_predicted_percent": 109.59,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.4,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766357"
+    "error_absoluto": 0.229,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-02",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.15,
     "ipc_real": 0.0,
-    "ipc_predicted_percent": 109.59,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.0,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766358"
+    "error_absoluto": 0.149,
+    "direccion_correcta": false,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-03",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.41,
     "ipc_real": 1.0,
-    "ipc_predicted_percent": 110.69,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 1.0,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766359"
+    "error_absoluto": 0.587,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-04",
-    "variacion_esperada": 0,
+    "variacion_esperada": -0.18,
     "ipc_real": 1.3,
-    "ipc_predicted_percent": 112.13,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 1.3,
+    "error_absoluto": 1.483,
     "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766360"
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-05",
-    "variacion_esperada": 0,
+    "variacion_esperada": 0.45,
     "ipc_real": 0.2,
-    "ipc_predicted_percent": 112.35,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.2,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-19T06:06:21.766361"
+    "error_absoluto": 0.254,
+    "direccion_correcta": true,
+    "version": "backtest-proper"
   },
   {
     "mes_predicho": "2026-06",
-    "variacion_esperada": 0,
+    "variacion_esperada": -0.36,
     "ipc_real": 0.0,
-    "ipc_predicted_percent": 112.35,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.0,
+    "error_absoluto": 0.36,
     "direccion_correcta": true,
-    "timestamp": "2026-07-19T06:06:21.766362"
+    "version": "backtest-proper"
   }
 ]
