@@ -12,10 +12,27 @@ import os
 import json
 from dotenv import load_dotenv
 
+# Intentar importar Supabase
+try:
+    from supabase import create_client, Client
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("⚠️  supabase-py no instalado")
+
 # Cargar .env
 load_dotenv()
 
 app = FastAPI(title="Predictor IPC")
+
+# Inicializar Supabase si está disponible
+supabase_client = None
+if SUPABASE_AVAILABLE:
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
+    if SUPABASE_URL and SUPABASE_SECRET_KEY:
+        supabase_client = create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)
+        print(f"✅ Supabase conectado: {SUPABASE_URL}")
 
 # CORS
 app.add_middleware(
@@ -314,6 +331,58 @@ def actualizar_prediccion(mes: str, ipc_real: float = None):
             raise HTTPException(status_code=404, detail=f"No se encontró predicción para {mes}")
 
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/datos-ipc-supabase")
+def datos_ipc_supabase():
+    """Obtener datos IPC desde Supabase + cachea en JSON local"""
+    try:
+        cache_path = "ipc_datos_cache.json"
+        cache_age_minutes = 60  # Cachear por 1 hora
+
+        # Intentar leer desde caché local
+        if os.path.exists(cache_path):
+            import time
+            age = time.time() - os.path.getmtime(cache_path)
+            if age < cache_age_minutes * 60:
+                print(f"📦 Usando caché local (edad: {int(age/60)} min)")
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    from fastapi.responses import JSONResponse
+                    cached = json.load(f)
+                    response = JSONResponse(content={"datos": cached, "source": "cache"})
+                    response.headers["Cache-Control"] = "no-store"
+                    return response
+
+        # Si no hay caché o está viejo, leer de Supabase
+        if supabase_client:
+            print("🌐 Leyendo desde Supabase...")
+            response = supabase_client.table('ipc_datos').select("*").order('mes', desc=False).execute()
+            datos = response.data if response.data else []
+
+            # Guardar en caché local
+            if datos:
+                with open(cache_path, 'w', encoding='utf-8') as f:
+                    json.dump(datos, f, ensure_ascii=False, indent=2)
+                print(f"✅ {len(datos)} registros cacheados")
+
+            from fastapi.responses import JSONResponse
+            resp = JSONResponse(content={"datos": datos, "source": "supabase"})
+            resp.headers["Cache-Control"] = "no-store"
+            return resp
+        else:
+            # Fallback a archivo local si Supabase no disponible
+            print("⚠️  Supabase no disponible, usando datos_bcch.json")
+            with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+                bcch = json.load(f)
+                datos = bcch['datos_historicos']
+
+            from fastapi.responses import JSONResponse
+            resp = JSONResponse(content={"datos": datos, "source": "local"})
+            resp.headers["Cache-Control"] = "no-store"
+            return resp
+
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
