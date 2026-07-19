@@ -880,11 +880,18 @@
                     cache: 'no-store'
                 });
                 const d = await r.json();
-                const historico = d.historico;
+                let historico = d.historico;
 
                 if (!historico || historico.length === 0) {
                     document.getElementById('historico-pred-content').innerHTML = `<div class="alert alert-info">Sin predicciones registradas aún</div>`;
                     return;
+                }
+
+                // REEMPLAZAR PRIMER VALOR CON v2.0 ENSEMBLE SI ESTÁ DISPONIBLE
+                if (ensembleData && historico.length > 0) {
+                    console.log('🔄 Reemplazando histórico con v2.0:', ensembleData.ensemble_prediccion);
+                    historico[0].variacion_esperada = ensembleData.ensemble_prediccion;
+                    historico[0].version = 'v2.0-ensemble';
                 }
 
                 let html = `
