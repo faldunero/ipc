@@ -354,27 +354,21 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico desde Supabase (siempre fresco)"""
+    """Obtener histórico desde Supabase SOLO (fuente de verdad absoluta)"""
     try:
         from fastapi.responses import JSONResponse
 
-        # Intentar leer de Supabase (fuente de verdad)
-        if supabase_client:
-            print("🌐 Leyendo histórico desde Supabase...")
-            response = supabase_client.table('predicciones_historico').select("*").order('mes_predicho', desc=False).execute()
-            historico = response.data if response.data else []
-            print(f"✅ {len(historico)} predicciones leídas de Supabase")
-        else:
-            # Fallback a archivo local si Supabase no está disponible
-            print("⚠️  Supabase no disponible, leyendo desde archivo...")
-            import json
-            historico_path = "predicciones_historico.json"
+        # SOLO SUPABASE - sin fallback a JSON
+        if not supabase_client:
+            raise HTTPException(status_code=500, detail="Supabase no configurado")
 
-            if not os.path.exists(historico_path):
-                raise HTTPException(status_code=404, detail="Histórico no encontrado")
+        print("🌐 Leyendo histórico desde Supabase (fuente única)...")
+        response = supabase_client.table('predicciones_historico').select("*").order('mes_predicho', desc=True).execute()
+        historico = response.data if response.data else []
+        print(f"✅ {len(historico)} predicciones leídas de Supabase")
 
-            with open(historico_path, 'r', encoding='utf-8') as f:
-                historico = json.load(f)
+        if not historico:
+            raise HTTPException(status_code=404, detail="Histórico vacío en Supabase")
 
         # Normalizar formato de mes: asegurar que está en "YYYY-MM"
         for pred in historico:
