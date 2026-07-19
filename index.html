@@ -944,7 +944,7 @@
                     html += `<tr>
                         <td><strong>${pred.mes_predicho}</strong></td>
                         <td>${pred.variacion_esperada > 0 ? '+' : ''}${formatearChile(pred.variacion_esperada)}%</td>
-                        <td>${pred.ipc_real ? (pred.ipc_real - pred.ipc_percent) > 0 ? '+' : '' + formatearChile(pred.ipc_real - pred.ipc_percent, 2) + '%' : '—'}</td>
+                        <td>${pred.ipc_real !== undefined && pred.ipc_real !== null ? (pred.ipc_real > 0 ? '+' : '') + formatearChile(pred.ipc_real, 2) + '%' : '—'}</td>
                         <td>${errorDisplay}</td>
                         <td>${ingreso}</td>
                     </tr>`;
