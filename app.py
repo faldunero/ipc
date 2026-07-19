@@ -343,43 +343,53 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico directo del archivo JSON (sin transformaciones)"""
+    """Obtener histórico desde Supabase (siempre fresco)"""
     try:
-        # LEER DIRECTAMENTE DEL ARCHIVO - es la fuente de verdad
-        import json
-        historico_path = "predicciones_historico.json"
+        from fastapi.responses import JSONResponse
 
-        if not os.path.exists(historico_path):
-            raise HTTPException(status_code=404, detail="Histórico no encontrado")
+        # Intentar leer de Supabase (fuente de verdad)
+        if supabase_client:
+            print("🌐 Leyendo histórico desde Supabase...")
+            response = supabase_client.table('predicciones_historico').select("*").order('mes_predicho', desc=False).execute()
+            historico = response.data if response.data else []
+            print(f"✅ {len(historico)} predicciones leídas de Supabase")
+        else:
+            # Fallback a archivo local si Supabase no está disponible
+            print("⚠️  Supabase no disponible, leyendo desde archivo...")
+            import json
+            historico_path = "predicciones_historico.json"
 
-        with open(historico_path, 'r', encoding='utf-8') as f:
-            historico = json.load(f)
+            if not os.path.exists(historico_path):
+                raise HTTPException(status_code=404, detail="Histórico no encontrado")
 
-        # Normalizar formato de mes: "Julio 2026" → "2026-07"
-        meses_nombres = {
-            'Enero': '01', 'Febrero': '02', 'Marzo': '03', 'Abril': '04',
-            'Mayo': '05', 'Junio': '06', 'Julio': '07', 'Agosto': '08',
-            'Septiembre': '09', 'Octubre': '10', 'Noviembre': '11', 'Diciembre': '12'
-        }
+            with open(historico_path, 'r', encoding='utf-8') as f:
+                historico = json.load(f)
 
+        # Normalizar formato de mes: asegurar que está en "YYYY-MM"
         for pred in historico:
             mes = pred.get('mes_predicho', '')
-            # Si está en formato "Mes Año", convertir a "YYYY-MM"
-            for nombre_mes, num_mes in meses_nombres.items():
-                if nombre_mes in mes:
-                    parts = mes.split()
-                    if len(parts) >= 2:
-                        ano = parts[-1]
-                        pred['mes_predicho'] = f"{ano}-{num_mes}"
-                    break
+            # Si NO está en formato YYYY-MM, intentar convertir
+            if not (len(mes) == 7 and mes[4] == '-'):
+                # Conversión de "Mes Año" a "YYYY-MM"
+                meses_nombres = {
+                    'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
+                    'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
+                    'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
+                }
+                mes_lower = mes.lower()
+                for nombre_mes, num_mes in meses_nombres.items():
+                    if nombre_mes in mes_lower:
+                        parts = mes.split()
+                        if len(parts) >= 2:
+                            ano = parts[-1]
+                            pred['mes_predicho'] = f"{ano}-{num_mes}"
+                        break
 
-        from fastapi.responses import JSONResponse
-        response = JSONResponse(content={"historico": historico})
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
-        print(f"✅ Histórico leído: primer valor = {historico[0].get('variacion_esperada')}%, mes = {historico[0].get('mes_predicho')}")
-        return response
+        resp = JSONResponse(content={"historico": historico})
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        resp.headers["Pragma"] = "no-cache"
+        resp.headers["Expires"] = "0"
+        return resp
 
     except Exception as e:
         print(f"❌ Error: {e}")
