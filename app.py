@@ -355,12 +355,30 @@ def historico_predicciones():
         with open(historico_path, 'r', encoding='utf-8') as f:
             historico = json.load(f)
 
+        # Normalizar formato de mes: "Julio 2026" → "2026-07"
+        meses_nombres = {
+            'Enero': '01', 'Febrero': '02', 'Marzo': '03', 'Abril': '04',
+            'Mayo': '05', 'Junio': '06', 'Julio': '07', 'Agosto': '08',
+            'Septiembre': '09', 'Octubre': '10', 'Noviembre': '11', 'Diciembre': '12'
+        }
+
+        for pred in historico:
+            mes = pred.get('mes_predicho', '')
+            # Si está en formato "Mes Año", convertir a "YYYY-MM"
+            for nombre_mes, num_mes in meses_nombres.items():
+                if nombre_mes in mes:
+                    parts = mes.split()
+                    if len(parts) >= 2:
+                        ano = parts[-1]
+                        pred['mes_predicho'] = f"{ano}-{num_mes}"
+                    break
+
         from fastapi.responses import JSONResponse
         response = JSONResponse(content={"historico": historico})
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
-        print(f"✅ Histórico leído: primer valor = {historico[0].get('variacion_esperada')}%")
+        print(f"✅ Histórico leído: primer valor = {historico[0].get('variacion_esperada')}%, mes = {historico[0].get('mes_predicho')}")
         return response
 
     except Exception as e:
