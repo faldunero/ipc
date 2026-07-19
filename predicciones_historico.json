@@ -1,5 +1,16 @@
 [
   {
+    "mes_actual": "Junio 2026",
+    "mes_predicho": "Julio 2026",
+    "ipc_percent": 112.32,
+    "ipc_predicted_percent": 112.58,
+    "variacion_mensual_actual": 0.0,
+    "variacion_esperada": 0.26,
+    "variacion_12_meses": 3.1,
+    "version": "v2.0-ensemble",
+    "timestamp": "2026-07-19T00:00:00"
+  },
+  {
     "mes_predicho": "2025-06",
     "variacion_esperada": 0.26,
     "ipc_real": -0.4,
@@ -7,139 +18,6 @@
     "ipc_percent": 112.32,
     "version": "backtest-v2.0",
     "error_absoluto": 0.66,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218166"
-  },
-  {
-    "mes_predicho": "2025-07",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.9,
-    "ipc_predicted_percent": 108.61,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.64,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218173"
-  },
-  {
-    "mes_predicho": "2025-08",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.0,
-    "ipc_predicted_percent": 108.61,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.26,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218174"
-  },
-  {
-    "mes_predicho": "2025-09",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.4,
-    "ipc_predicted_percent": 109.04,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.14,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218175"
-  },
-  {
-    "mes_predicho": "2025-10",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.0,
-    "ipc_predicted_percent": 109.04,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.26,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218177"
-  },
-  {
-    "mes_predicho": "2025-11",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.3,
-    "ipc_predicted_percent": 109.37,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.03999999999999998,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218178"
-  },
-  {
-    "mes_predicho": "2025-12",
-    "variacion_esperada": 0.26,
-    "ipc_real": -0.2,
-    "ipc_predicted_percent": 109.15,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.46,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218179"
-  },
-  {
-    "mes_predicho": "2026-01",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.4,
-    "ipc_predicted_percent": 109.59,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.14,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218180"
-  },
-  {
-    "mes_predicho": "2026-02",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.0,
-    "ipc_predicted_percent": 109.59,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.26,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218181"
-  },
-  {
-    "mes_predicho": "2026-03",
-    "variacion_esperada": 0.26,
-    "ipc_real": 1.0,
-    "ipc_predicted_percent": 110.69,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.74,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218182"
-  },
-  {
-    "mes_predicho": "2026-04",
-    "variacion_esperada": 0.26,
-    "ipc_real": 1.3,
-    "ipc_predicted_percent": 112.13,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 1.04,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218183"
-  },
-  {
-    "mes_predicho": "2026-05",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.2,
-    "ipc_predicted_percent": 112.35,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.06,
-    "direccion_correcta": true,
-    "timestamp": "2026-07-18T21:54:57.218184"
-  },
-  {
-    "mes_predicho": "2026-06",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.0,
-    "ipc_predicted_percent": 112.35,
-    "ipc_percent": 112.32,
-    "version": "backtest-v2.0",
-    "error_absoluto": 0.26,
-    "direccion_correcta": false,
-    "timestamp": "2026-07-18T21:54:57.218185"
+    "direccion_correcta": false
   }
 ]
