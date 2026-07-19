@@ -242,34 +242,28 @@ def canasta_acumulada(mes: str = "2026-06"):
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico completo - CON v2.0 ENSEMBLE"""
+    """Obtener histórico directo del archivo JSON (sin transformaciones)"""
     try:
-        if predictor is None:
-            raise HTTPException(status_code=500, detail="Predictor no inicializado")
+        # LEER DIRECTAMENTE DEL ARCHIVO - es la fuente de verdad
+        import json
+        historico_path = "predicciones_historico.json"
 
-        historico = predictor.get_historico_predicciones()
+        if not os.path.exists(historico_path):
+            raise HTTPException(status_code=404, detail="Histórico no encontrado")
 
-        # REEMPLAZAR variacion_esperada CON v2.0 ENSEMBLE EN PRIMERA ENTRADA
-        try:
-            advanced_predictor = AdvancedPredictor()
-            ensemble_result = advanced_predictor.predict_ensemble()
-
-            if ensemble_result and len(historico) > 0:
-                # Reemplazar el valor de variacion_esperada en primera entrada (Julio 2026)
-                historico[0]["variacion_esperada"] = round(ensemble_result.get("ensemble_prediccion", 0.26), 2)
-                historico[0]["version"] = "v2.0-ensemble"
-                historico[0]["modelos"] = ensemble_result.get("predicciones_por_modelo", {})
-                print(f"✅ Histórico actualizado con v2.0: {historico[0]['variacion_esperada']}%")
-        except Exception as e:
-            print(f"⚠️  Error fusionando v2.0: {e}")
+        with open(historico_path, 'r', encoding='utf-8') as f:
+            historico = json.load(f)
 
         from fastapi.responses import JSONResponse
         response = JSONResponse(content={"historico": historico})
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        print(f"✅ Histórico leído: primer valor = {historico[0].get('variacion_esperada')}%")
         return response
 
     except Exception as e:
+        print(f"❌ Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/desempen-modelo")
