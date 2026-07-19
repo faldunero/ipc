@@ -6,6 +6,7 @@ Compara predicción del modelo vs valor real publicado por Banco Central
 
 import json
 import pandas as pd
+import os
 from advanced_predictor import AdvancedPredictor
 from datetime import datetime
 
@@ -112,8 +113,18 @@ def backtest():
                 }
             }, f, indent=2, ensure_ascii=False)
 
-        # GUARDAR EN ARCHIVO SEPARADO PARA NO PERDER DATOS PRINCIPALES
-        with open('backtest_historico.json', 'w', encoding='utf-8') as f:
+        # INTEGRAR EN predicciones_historico.json PRESERVANDO DATOS ACTUALES
+        try:
+            # Cargar histórico actual
+            historico_actual = []
+            if os.path.exists('predicciones_historico.json'):
+                with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
+                    historico_actual = json.load(f)
+
+            # PRESERVAR: Julio 2026 v2.0 (primera entrada)
+            prediccion_v2_actual = historico_actual[0] if historico_actual and historico_actual[0].get('version') == 'v2.0-ensemble' else None
+
+            # CREAR: Datos de backtest
             backtest_data = []
             for r in resultados:
                 backtest_data.append({
@@ -127,10 +138,39 @@ def backtest():
                     "direccion_correcta": r['direccion_correcta'],
                     "timestamp": datetime.now().isoformat()
                 })
-            json.dump(backtest_data, f, indent=2, ensure_ascii=False)
+
+            # ENSAMBLAR: [Julio 2026 v2.0] + [Backtest jun2025-jun2026]
+            historico_integrado = []
+            if prediccion_v2_actual:
+                historico_integrado.append(prediccion_v2_actual)
+            historico_integrado.extend(backtest_data)
+
+            # GUARDAR
+            with open('predicciones_historico.json', 'w', encoding='utf-8') as f:
+                json.dump(historico_integrado, f, indent=2, ensure_ascii=False)
+
+            print(f"✅ Histórico integrado: 1 predicción v2.0 + {len(backtest_data)} resultados backtest")
+            print(f"✅ Total entradas en predicciones_historico.json: {len(historico_integrado)}")
+
+            # Guardar backtest por separado también (para análisis)
+            with open('backtest_resultados_detalle.json', 'w', encoding='utf-8') as f:
+                json.dump({
+                    'fecha_backtest': datetime.now().isoformat(),
+                    'resultados_por_mes': resultados,
+                    'estadisticas': {
+                        'total_predicciones': len(resultados),
+                        'mae': mae,
+                        'rmse': rmse,
+                        'aciertos_direccion': aciertos_direccion,
+                        'porcentaje_acierto': 100 * aciertos_direccion / len(resultados) if resultados else 0
+                    }
+                }, f, indent=2, ensure_ascii=False)
+
+        except Exception as e:
+            print(f"⚠️  Error integrando histórico: {e}")
 
         print(f"✅ Resultados guardados en: backtest_resultados.json")
-        print(f"✅ Histórico backtest en: backtest_historico.json (NO sobrescribe predicciones_historico.json)")
+        print(f"✅ Histórico integrado en: predicciones_historico.json (PRESERVA v2.0 + agrega backtest)")
         print("=" * 80)
 
 if __name__ == "__main__":
