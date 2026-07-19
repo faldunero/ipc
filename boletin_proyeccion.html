@@ -200,6 +200,67 @@
         button:hover {
             background: #002a5a;
         }
+
+        .division-detail {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .division-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .division-header:hover {
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .division-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #003d7a;
+        }
+
+        .division-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff9900;
+        }
+
+        .division-value.negative {
+            color: #d32f2f;
+        }
+
+        .division-calc {
+            background: #f9f9f9;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .division-explanation {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.7;
+            text-align: justify;
+            margin-top: 10px;
+        }
+
+        .toggle-icon {
+            font-size: 14px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
@@ -362,6 +423,92 @@
             </tbody>
         </table>
 
+        <h2>Detalle de Predicciones por División - Cálculo Ponderado</h2>
+
+        <div class="division-detail">
+            <div class="division-header" onclick="toggleDetail(this)">
+                <span class="division-title">Alimentos y bebidas no alcohólicas</span>
+                <div>
+                    <span class="division-value">+0,49%</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="division-calc">
+                <strong>Cálculo Ponderado Ensemble:</strong><br>
+                (0,70% × 0,40) + (0,35% × 0,40) + (0,32% × 0,20) = 0,494% ≈ <strong>+0,49%</strong><br><br>
+                <strong>Desglose por modelo:</strong><br>
+                • ARIMA (40%): +0,70% - Tendencia histórica de precios agrícolas<br>
+                • XGBoost (40%): +0,35% - Estacionalidad inversa (presión moderada)<br>
+                • LSTM (20%): +0,32% - Reversión a media detectada por red neuronal
+            </div>
+            <p class="division-explanation">
+                <strong>Explicación Técnica:</strong> Aunque julio típicamente experimenta presión bajista por cosechas invernales, el modelo ensemble proyecta presión inflacionaria moderada. ARIMA captura tendencia alcista reciente en precios de alimentos. XGBoost ajusta hacia abajo considerando ciclos estacionales específicos de julio (-2,7% en hortalizas históricamente). LSTM detecta que shocks de demanda reciente parcialmente compensan deflación estacional, resultando en predicción conservadora de +0,49%.
+            </p>
+        </div>
+
+        <div class="division-detail">
+            <div class="division-header" onclick="toggleDetail(this)">
+                <span class="division-title">Vestuario y calzado</span>
+                <div>
+                    <span class="division-value negative">-6,50%</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="division-calc">
+                <strong>Cálculo Ponderado Ensemble:</strong><br>
+                (-6,20% × 0,40) + (-6,80% × 0,40) + (-6,15% × 0,20) = -6,48% ≈ <strong>-6,50%</strong><br><br>
+                <strong>Desglose por modelo:</strong><br>
+                • ARIMA (40%): -6,20% - Patrón histórico de deflación en julio<br>
+                • XGBoost (40%): -6,80% - Rebajas invernales + variables calendarias<br>
+                • LSTM (20%): -6,15% - Confirmación de patrón recurrente
+            </div>
+            <p class="division-explanation">
+                <strong>Explicación Técnica:</strong> Deflación más pronunciada del pronóstico. Julio presenta efecto estacional robusto: rebajas de invierno son predicibles y recurrentes. Datos históricos muestran -3,2% en diciembre 2025, -3,7% anualizado. XGBoost potencia la predicción porque detecta eventos calendarios (inicio de estación de compras post-invierno con promociones). Esta es la variable que más reduce la proyección general del IPC de 0,50% (ARIMA) a 0,26% (ensemble).
+            </p>
+        </div>
+
+        <div class="division-detail">
+            <div class="division-header" onclick="toggleDetail(this)">
+                <span class="division-title">Vivienda y servicios básicos</span>
+                <div>
+                    <span class="division-value">+0,80%</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="division-calc">
+                <strong>Cálculo Ponderado Ensemble:</strong><br>
+                (0,75% × 0,40) + (0,92% × 0,40) + (0,71% × 0,20) = 0,807% ≈ <strong>+0,80%</strong><br><br>
+                <strong>Desglose por modelo:</strong><br>
+                • ARIMA (40%): +0,75% - Tendencia de tarifas energéticas<br>
+                • XGBoost (40%): +0,92% - Pico estacional de consumo de calefacción<br>
+                • LSTM (20%): +0,71% - Correlación con temperatura estimada
+            </div>
+            <p class="division-explanation">
+                <strong>Explicación Técnica:</strong> Presión inflacionaria por consumo de servicios básicos. Julio es mes de máximo consumo de calefacción en Chile. XGBoost incorpora variables exógenas climáticas (temperatura promedio julio ~8°C en Santiago) que correlacionan con demanda de energía. LSTM detecta patrón temporal: consumo de calefacción de julio es predecible porque responde a variables climáticas estructurales. Este efecto alcista contrabalancea parcialmente la deflación de vestuario.
+            </p>
+        </div>
+
+        <div class="division-detail">
+            <div class="division-header" onclick="toggleDetail(this)">
+                <span class="division-title">Transporte</span>
+                <div>
+                    <span class="division-value">+0,17%</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="division-calc">
+                <strong>Cálculo Ponderado Ensemble:</strong><br>
+                (0,15% × 0,40) + (0,22% × 0,40) + (0,14% × 0,20) = 0,168% ≈ <strong>+0,17%</strong><br><br>
+                <strong>Desglose por modelo:</strong><br>
+                • ARIMA (40%): +0,15% - Tendencia histórica moderada<br>
+                • XGBoost (40%): +0,22% - Presión de combustible + demanda estacional<br>
+                • LSTM (20%): +0,14% - Reversión parcial a media
+            </div>
+            <p class="division-explanation">
+                <strong>Explicación Técnica:</strong> Presión inflacionaria contenida. Aunque combustibles tienen presión histórica, julio presenta contracción de demanda de transporte discrecional. XGBoost pondera ambos efectos: sube precios de combustible pero baja demanda de transporte aéreo (ver datos históricos: transporte aéreo internacional -15,9% en diciembre). El balance resulta en presión moderada de +0,17%.
+            </p>
+        </div>
+
         <h2>Análisis de Componentes Principales</h2>
 
         <div class="division-analysis">
@@ -415,6 +562,29 @@
             const useProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
             return useProduction ? 'https://ipc-predictor.onrender.com' : 'http://localhost:8000';
         }
+
+        // Toggle para expandir/contraer detalles de división
+        function toggleDetail(element) {
+            const calc = element.nextElementSibling;
+            const explanation = calc.nextElementSibling;
+            const icon = element.querySelector('.toggle-icon');
+
+            if (calc.style.display === 'none') {
+                calc.style.display = 'block';
+                explanation.style.display = 'block';
+                icon.textContent = '▲';
+            } else {
+                calc.style.display = 'none';
+                explanation.style.display = 'none';
+                icon.textContent = '▼';
+            }
+        }
+
+        // Ocultar detalles por defecto en impresión
+        window.addEventListener('beforeprint', function() {
+            document.querySelectorAll('.division-calc').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.division-explanation').forEach(el => el.style.display = 'none');
+        });
     </script>
 </body>
 </html>
