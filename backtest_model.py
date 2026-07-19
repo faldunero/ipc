@@ -112,26 +112,25 @@ def backtest():
                 }
             }, f, indent=2, ensure_ascii=False)
 
-        # GUARDAR TAMBIÉN EN predicciones_historico.json PARA QUE SE MUESTRE EN WEB
-        historico_web = []
-        for r in resultados:
-            historico_web.append({
-                "mes_predicho": r['mes'],
-                "variacion_esperada": r['prediccion'],
-                "ipc_real": r['valor_real'],
-                "ipc_predicted_percent": r['indice_real'],
-                "ipc_percent": 112.32,  # Aproximado
-                "version": "backtest-v2.0",
-                "error_absoluto": r['error_absoluto'],
-                "direccion_correcta": r['direccion_correcta'],
-                "timestamp": datetime.now().isoformat()
-            })
-
-        with open('predicciones_historico.json', 'w', encoding='utf-8') as f:
-            json.dump(historico_web, f, indent=2, ensure_ascii=False)
+        # GUARDAR EN ARCHIVO SEPARADO PARA NO PERDER DATOS PRINCIPALES
+        with open('backtest_historico.json', 'w', encoding='utf-8') as f:
+            backtest_data = []
+            for r in resultados:
+                backtest_data.append({
+                    "mes_predicho": r['mes'],
+                    "variacion_esperada": r['prediccion'],
+                    "ipc_real": r['valor_real'],
+                    "ipc_predicted_percent": r['indice_real'],
+                    "ipc_percent": 112.32,
+                    "version": "backtest-v2.0",
+                    "error_absoluto": r['error_absoluto'],
+                    "direccion_correcta": r['direccion_correcta'],
+                    "timestamp": datetime.now().isoformat()
+                })
+            json.dump(backtest_data, f, indent=2, ensure_ascii=False)
 
         print(f"✅ Resultados guardados en: backtest_resultados.json")
-        print(f"✅ Histórico actualizado en: predicciones_historico.json")
+        print(f"✅ Histórico backtest en: backtest_historico.json (NO sobrescribe predicciones_historico.json)")
         print("=" * 80)
 
 if __name__ == "__main__":
