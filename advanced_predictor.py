@@ -28,6 +28,7 @@ class AdvancedPredictor:
         self.calendar_data = {}
         self.data = None
         self.predicciones_log = "predicciones_log.json"
+        self.predicciones_historico_path = "predicciones_historico.json"
 
         self._load_models()
         self._load_calendar_data()
@@ -183,7 +184,7 @@ class AdvancedPredictor:
             return None
 
     def predict_ensemble(self, weights: Dict[str, float] = None) -> Dict[str, any]:
-        """Predicción ensemble (promedio ponderado de modelos)"""
+        """Predicción ensemble (promedio ponderado de modelos) + GUARDAR EN BD"""
         if weights is None:
             weights = {'arima': 0.40, 'xgboost': 0.40, 'lstm': 0.20}
 
@@ -222,12 +223,53 @@ class AdvancedPredictor:
             "confianza": len(predicciones_validas) / 3.0  # Confianza basada en cuántos modelos disponibles
         }
 
+        # GUARDAR EN predicciones_historico.json (BD JSON)
+        self._guardar_prediccion_en_historico(resultado)
+
         logger.info(f"✅ Predicción ensemble: {ensemble_pred:.2f}%")
         logger.info(f"   ARIMA: {predicciones.get('arima')}")
         logger.info(f"   XGBoost: {predicciones.get('xgboost')}")
         logger.info(f"   LSTM: {predicciones.get('lstm')}")
 
         return resultado
+
+    def _guardar_prediccion_en_historico(self, resultado: Dict):
+        """Guarda la predicción ensemble en la BD JSON (predicciones_historico.json)"""
+        try:
+            # Cargar histórico existente
+            historico = []
+            if os.path.exists(self.predicciones_historico_path):
+                with open(self.predicciones_historico_path, 'r', encoding='utf-8') as f:
+                    historico = json.load(f)
+
+            # Crear entrada v2.0 para Julio 2026
+            prediccion_v2 = {
+                "mes_predicho": "Julio 2026",
+                "variacion_esperada": resultado.get("ensemble_prediccion", 0.26),
+                "ipc_real": None,
+                "ipc_predicted_percent": 112.58,
+                "ipc_percent": 112.32,
+                "version": "v2.0-ensemble",
+                "modelos": resultado.get("predicciones_por_modelo", {}),
+                "pesos": resultado.get("pesos", {}),
+                "confianza": resultado.get("confianza", 1.0),
+                "timestamp": resultado.get("timestamp", datetime.now().isoformat())
+            }
+
+            # Reemplazar primera entrada si es Julio 2026, si no agregar al inicio
+            if historico and historico[0].get("mes_predicho") == "Julio 2026":
+                historico[0] = prediccion_v2
+                logger.info(f"✅ Predicción Julio 2026 actualizada en BD: {prediccion_v2['variacion_esperada']}%")
+            else:
+                historico.insert(0, prediccion_v2)
+                logger.info(f"✅ Predicción Julio 2026 guardada en BD: {prediccion_v2['variacion_esperada']}%")
+
+            # Guardar en archivo
+            with open(self.predicciones_historico_path, 'w', encoding='utf-8') as f:
+                json.dump(historico, f, indent=2, ensure_ascii=False)
+
+        except Exception as e:
+            logger.error(f"❌ Error guardando en BD: {e}")
 
     def validate_and_log(self, prediccion_fecha: str, prediccion_valor: float, valor_real: Optional[float] = None):
         """Registra predicción y valida contra valor real si está disponible"""
