@@ -61,7 +61,7 @@ class BacktestModelTrainer:
             return None
         try:
             model = ARIMA(series, order=(1, 1, 1))
-            results = model.fit(disp=False)
+            results = model.fit()
             return results
         except Exception as e:
             print(f"      [DEBUG ARIMA] Error: {str(e)[:50]}")
@@ -105,6 +105,8 @@ class BacktestModelTrainer:
         """Entrena LSTM simple"""
         if len(series) < 20:
             return None
+        if LSTM is None or Sequential is None:
+            return None
         try:
             from sklearn.preprocessing import MinMaxScaler
 
@@ -128,11 +130,12 @@ class BacktestModelTrainer:
                 LSTM(32, activation='relu', input_shape=(lookback, 1)),
                 Dense(1)
             ])
-            model.compile(optimizer='adam', loss='mse', verbose=0)
-            model.fit(X, y, epochs=20, batch_size=4, verbose=0)
+            model.compile(optimizer='adam', loss='mse')
+            model.fit(X, y, epochs=20, batch_size=4, verbose=False)
 
             return (model, scaler)
-        except:
+        except Exception as e:
+            print(f"      [DEBUG LSTM] Error: {str(e)[:50]}")
             return None
 
     def predict_arima(self, arima_model):
