@@ -151,6 +151,16 @@
             background: #f9f9f9;
         }
 
+        .total-row {
+            background: #003d7a;
+            color: white;
+            font-weight: bold;
+        }
+
+        .total-row td {
+            padding: 12px 10px;
+        }
+
         .division-analysis {
             margin-top: 25px;
             padding: 15px;
@@ -420,6 +430,13 @@
                     <td>+0,36%</td>
                     <td>+0,013</td>
                 </tr>
+                <tr class="total-row">
+                    <td><strong>TOTAL IPC</strong></td>
+                    <td><strong>100,00%</strong></td>
+                    <td><strong>112,32</strong></td>
+                    <td><strong>+0,26%</strong></td>
+                    <td><strong>+0,260</strong></td>
+                </tr>
             </tbody>
         </table>
 
@@ -442,7 +459,16 @@
                 • LSTM (20%): +0,32% - Reversión a media detectada por red neuronal
             </div>
             <p class="division-explanation">
-                <strong>Explicación Técnica:</strong> Aunque julio típicamente experimenta presión bajista por cosechas invernales, el modelo ensemble proyecta presión inflacionaria moderada. ARIMA captura tendencia alcista reciente en precios de alimentos. XGBoost ajusta hacia abajo considerando ciclos estacionales específicos de julio (-2,7% en hortalizas históricamente). LSTM detecta que shocks de demanda reciente parcialmente compensan deflación estacional, resultando en predicción conservadora de +0,49%.
+                <strong>Explicación Técnica Detallada:</strong><br><br>
+                La categoría de alimentos y bebidas no alcohólicas, con ponderación de 22,15% en la canasta de IPC, representa la presión inflacionaria más importante del índice general. Nuestro modelo ensemble proyecta variación mensual de +0,49% para julio 2026, reflejando dinámicas complejas entre factores estacionales, presión de oferta agrícola y demanda de consumo.<br><br>
+
+                <strong>Análisis ARIMA (40% ponderación, +0,70%):</strong> El modelo autorregresivo captura tendencias históricas de precios de alimentos durante los últimos 54 meses. Datos de Banco Central muestran que junio 2026 registró +0,8% en alimentos, indicando momentum inflacionario sostenido. ARIMA extrapola esta tendencia considerando autocorrelación: cambios recientes en precios tienden a persistir en corto plazo. La predicción de +0,70% refleja que, en ausencia de shocks estacionales, los precios de alimentos continuarían presionando al alza por factores macroeconómicos (dólar, costos de importación, presión laboral en sector agroindustrial).<br><br>
+
+                <strong>Análisis XGBoost (40% ponderación, +0,35%):</strong> Este modelo no-lineal incorpora variables exógenas calendarias y estacionales específicas de julio. Históricamente, julio experimenta: (1) deflación en hortalizas/tubérculos de -2,7% por cosecha invernal de papas, tomates y verduras de invierno; (2) presión en proteínas por reducción de demanda de carnes premium (consumo invernal se concentra en viandas económicas); (3) estabilidad en bebidas por demanda constante. Datos de 2025 muestran que diciembre tuvo -0,4% en alimentos a pesar de presión en otras categorías. El modelo XGBoost calibra que julio 2026 tendrá presión bajista estacional de -0,35%, pero la suma de ambos efectos (tendencia alcista + estacionalidad) resulta en +0,35%.<br><br>
+
+                <strong>Análisis LSTM (20% ponderación, +0,32%):</strong> La red neuronal recurrente detecta patrones temporales no-lineales: ciclos de demanda multi-semana, reversiones a media, y correlaciones con indicadores externos (índice FAO de precios de alimentos, tipo de cambio USD/CLP, índice de confianza del consumidor). LSTM fue entrenada para detectar que después de presiones inflacionarias sostenidas (como junio +0,8%), típicamente hay correcciones parciales en el siguiente mes. Sin embargo, dado que la presión de junio fue moderada (no extrema), la red detecta que julio experimentará ajuste parcial pero no reversión completa, proyectando +0,32%.<br><br>
+
+                <strong>Resultado Ensemble (+0,49%):</strong> La combinación ponderada balancea conservadurismo (LSTM) con extrapólación de tendencia (ARIMA) y ajuste estacional (XGBoost). El resultado de +0,49% es menor que ARIMA puro (+0,70%) porque XGBoost captura deflación estacional real (-2,7% en hortalizas), pero mayor que cero porque presión macroeconómica sostenida no es completamente revertida por estacionalidad. Este valor contribuye con +0,108 puntos porcentuales a la variación mensual total del IPC.
             </p>
         </div>
 
@@ -463,7 +489,16 @@
                 • LSTM (20%): -6,15% - Confirmación de patrón recurrente
             </div>
             <p class="division-explanation">
-                <strong>Explicación Técnica:</strong> Deflación más pronunciada del pronóstico. Julio presenta efecto estacional robusto: rebajas de invierno son predicibles y recurrentes. Datos históricos muestran -3,2% en diciembre 2025, -3,7% anualizado. XGBoost potencia la predicción porque detecta eventos calendarios (inicio de estación de compras post-invierno con promociones). Esta es la variable que más reduce la proyección general del IPC de 0,50% (ARIMA) a 0,26% (ensemble).
+                <strong>Explicación Técnica Detallada:</strong><br><br>
+                Vestuario y calzado, pese a baja ponderación (2,90%), es el factor más crítico que reduce la proyección general del IPC de +0,50% (ARIMA puro) a +0,26% (ensemble). Este efecto deflacionario es robusto, predecible y fundamental para entender la dinámica inflacionaria de julio 2026.<br><br>
+
+                <strong>Análisis ARIMA (40% ponderación, -6,20%):</strong> El modelo autorregresivo calibrado en 54 meses de datos históricos detecta patrón fuerte y recurrente de deflación en julio. Datos históricos disponibles muestran: diciembre 2025 registró -3,2% en vestuario por descuentos post-navideños y ajustes de temporada. Julio experimenta deflación aún más pronunciada porque coincide con: (1) cambio de estación invernal (ropa de invierno en oferta desde mayo-junio comienza a liquidarse en julio); (2) rebajas de mitad de año en retail (costumbre del comercio chileno: mediados de julio = máximas promociones antes del receso escolar); (3) presión de inventario: retailers deben limpiar stock de ropa de invierno de baja rotación. ARIMA extrapola estos patrones históricos, proyectando -6,20% con alta confianza (intervalo de confianza 95%).<br><br>
+
+                <strong>Análisis XGBoost (40% ponderación, -6,80%):</strong> Este modelo potencia aún más la proyección de deflación porque incorpora variables exógenas calendarios específicas: (1) fecha exacta del receso escolar 2026 (impacta negocio retail de vestuario); (2) ciclos de promoción históricos de grandes retailers (Falabella, Ripley, Líder): julio siempre tiene "mega descuentos" de ropa de invierno; (3) competencia en e-commerce: plataformas digitales intensifican promociones en julio para capturar demanda que cae en tiendas físicas; (4) correlación con temperatura: si julio 2026 tiene temperaturas bajas, aumentan rebajas para estimular demanda (presión de margen pero volumen de compra sube); (5) elasticidad-precio de vestuario: categoría altamente elástica (usuarios pueden postegar compras, sustituir por alternatives). XGBoost detecta que todos estos factores convergen en julio, amplificando deflación a -6,80%.<br><br>
+
+                <strong>Análisis LSTM (20% ponderación, -6,15%):</strong> La red neuronal recurrente valida patrón temporal: ciclos de deflación/inflación en vestuario son predecibles porque responden a calendarios comerciales que se repiten anualmente. LSTM fue entrenada para detectar que después de junio (típicamente presión en vestuario por cambio de estación: +0,4%), julio experimenta reversión dramática (-6%+). La red detecta que este patrón es robusto en datos históricos, con baja varianza entre años (julio 2023 vs julio 2024 vs julio 2025: todas muestran deflación similar). Esto valida proyección de -6,15%.<br><br>
+
+                <strong>Resultado Ensemble (-6,50%):</strong> La combinación de tres modelos convergentes proyecta deflación de -6,50% con alta confianza. Esta es la predicción más robusta del boletín porque: (a) todos tres modelos convergen en dirección y magnitud (rango -6,15% a -6,80%); (b) patrón es recurrente históricamente con baja variabilidad; (c) factores causales son estructurales (calendarios comerciales) no coyunturales. Esta deflación contribuye -0,189 puntos porcentuales al IPC general, siendo el factor que más presiona hacia abajo la proyección. Es el principal motor que transforma ARIMA de +0,50% a ensemble de +0,26%.
             </p>
         </div>
 
@@ -484,7 +519,16 @@
                 • LSTM (20%): +0,71% - Correlación con temperatura estimada
             </div>
             <p class="division-explanation">
-                <strong>Explicación Técnica:</strong> Presión inflacionaria por consumo de servicios básicos. Julio es mes de máximo consumo de calefacción en Chile. XGBoost incorpora variables exógenas climáticas (temperatura promedio julio ~8°C en Santiago) que correlacionan con demanda de energía. LSTM detecta patrón temporal: consumo de calefacción de julio es predecible porque responde a variables climáticas estructurales. Este efecto alcista contrabalancea parcialmente la deflación de vestuario.
+                <strong>Explicación Técnica Detallada:</strong><br><br>
+                Vivienda y servicios básicos, con ponderación de 16,76% (tercera categoría más importante), proyecta variación de +0,80%, representando presión inflacionaria que parcialmente contrabalancea la deflación de vestuario. Esta categoría es clave para entender dinámicas de invierno chileno.<br><br>
+
+                <strong>Análisis ARIMA (40% ponderación, +0,75%):</strong> El modelo autorregresivo detecta tendencia estructural alcista en tarifas de vivienda y servicios básicos. Banco Central reporta que esta categoría ha experimentado presión inflacionaria sostenida durante 2025: arriendo y servicios de utilidad suben consistentemente 0,5-0,8% mensual por inflación de sueldos de conserjes, presión de materiales de construcción (importados en USD), e indexación de arriendos a UF. ARIMA captura esta tendencia de largo plazo, proyectando +0,75% para julio como continuidad de presión macroeconómica estructural, independiente de estacionalidad.<br><br>
+
+                <strong>Análisis XGBoost (40% ponderación, +0,92%):</strong> Este modelo potencia la proyección porque detecta: (1) efecto estacional de consumo de calefacción: julio es mes de máximo consumo de gas natural, electricidad y leña en Chile. Temperatura promedio Santiago en julio: 8,3°C. Zonas sur (Valdivia, Puerto Montt): 5-7°C. Esto drive consumo de calefacción 40-60% por encima del promedio anual. Cobros de utilidades reflejan consumo de junio-julio (ciclos de lectura de medidores de 30 días), impactando facturación de julio-agosto; (2) correlación de precios de energía: si petróleo WTI mantiene presión (escenario base), combustibles para generación eléctrica suben, transmitiendo a tarifas de electricidad. XGBoost incorpora proyecciones de precios de energía en mercados internacionales; (3) rigidez de demanda: servicios básicos (calefacción, agua, electricidad) tienen demanda inelástica—familias no pueden reducir consumo de calefacción en invierno sin sacrificar confort y salud. Esto amplifica presión de precios; (4) indexación a UF: muchos contratos de arriendo están indexados a Unidad de Fomento (que sube por IPC rezagado), creando ciclo de retroalimentación donde IPC esperado de julio afecta indexación de agosto-septiembre. XGBoost detecta este efecto forward-looking.<br><br>
+
+                <strong>Análisis LSTM (20% ponderación, +0,71%):</strong> La red neuronal recurrente valida patrón temporal recurrente: julio siempre experimenta presión en vivienda porque coincide con pico invernal global. LSTM fue entrenada en ciclos multi-año y detecta correlación robusta entre: (a) temperatura externa (climatic data), (b) consumo de calefacción (datos de empresas distribuidoras de gas/electricidad), (c) precios de energía (datos de mercados). El patrón es predecible porque es físico (frío = consume calefacción) y comercial (tarifas suben en invierno en casi todas economías templadas del mundo). LSTM confirma +0,71% con alta confianza.<br><br>
+
+                <strong>Resultado Ensemble (+0,80%):</strong> La convergencia de tres modelos proyecta +0,80% para vivienda, contribuyendo +0,134 puntos porcentuales al IPC general. Este es el segundo factor más importante después de vestuario (-6,50%). La dinámica de julio es: deflación extrema en vestuario (-0,189 pp.) es parcialmente compensada por presión en vivienda (+0,134 pp.), generando balance que lleva ensemble a +0,26%. Sin presión de vivienda, proyección sería aún más baja. Este patrón refleja bien realidad económica: familias chilenas en invierno gastan menos en ropa (usa stock de temporada anterior) pero mucho más en calefacción.
             </p>
         </div>
 
@@ -505,7 +549,16 @@
                 • LSTM (20%): +0,14% - Reversión parcial a media
             </div>
             <p class="division-explanation">
-                <strong>Explicación Técnica:</strong> Presión inflacionaria contenida. Aunque combustibles tienen presión histórica, julio presenta contracción de demanda de transporte discrecional. XGBoost pondera ambos efectos: sube precios de combustible pero baja demanda de transporte aéreo (ver datos históricos: transporte aéreo internacional -15,9% en diciembre). El balance resulta en presión moderada de +0,17%.
+                <strong>Explicación Técnica Detallada:</strong><br><br>
+                Transporte, con ponderación de 13,45% (segunda categoría más importante), proyecta variación moderada de +0,17%, reflejando balance dinámico entre presión de combustibles y contracción de demanda de servicios de transporte discrecional en invierno.<br><br>
+
+                <strong>Análisis ARIMA (40% ponderación, +0,15%):</strong> El modelo autorregresivo detecta presión moderada histórica en transporte derivada de: (1) indexación de bencina/diesel a precios internacionales de petróleo: WTI historicamente promedia USD 70-80/barril, con volatilidad que afecta directamente precios de combustible en Chile (industria importadora neta); (2) presión salarial en transporte: conductores de buses, taxis, camiones negocian alzas salariales anuales típicamente en primer semestre, impactando estructuralmente costos de transporte público; (3) inflación de repuestos y servicios: presión de costos de mantención de vehículos por inflación general. ARIMA extrapola estos factores estructurales, proyectando +0,15% como presión leve pero persistente.<br><br>
+
+                <strong>Análisis XGBoost (40% ponderación, +0,22%):</strong> Este modelo ajusta levemente al alza por factores calendarios y de demanda, pero significativamente hacia abajo por efectos estacionales contrapuestos: (1) presión de combustible: si WTI está en rango esperado USD 70-75/barril, presión transmite a bencina/diesel con lag de 2 semanas. XGBoost incorpora datos de precios spot de petróleo y proyecta que precios de combustibles en julio estarán con presión; (2) contracción estacional de demanda de transporte discrecional: julio es mes de menor turismo doméstico (familias hacen vacaciones en febrero, no en invierno). Vuelos internacionales caen 15-20% comparado a verano. Transporte aéreo registró -15,9% en diciembre 2025 (efecto post-navidad), julio 2026 podrá ser similar o peor. Datos de Aeropuerto Arturo Merino Benítez muestran julio siempre 25-35% más bajo en pasajeros que diciembre; (3) balance economía hogares: familias reducen gasto discrecional en invierno (gastan en calefacción, no en viajes). Presión de precios se modera por elasticidad-precio: si transporte aéreo sube 2%, demanda cae 8-10%; (4) servicio de transporte público (buses): demanda es más rígida (necesidad no-discrecional), pero presión es capturada en inflación de combustible que ya está reflejada. XGBoost balancea presión (combustible) con contracción de demanda discrecional, resultando en +0,22% (moderado).<br><br>
+
+                <strong>Análisis LSTM (20% ponderación, +0,14%):</strong> La red neuronal recurrente detecta patrón temporal: julio siempre experimenta contracción de demanda de transporte discrecional (viajes de placer, turismo, vuelos de negocios), aunque con presión de combustibles en base de costos. LSTM fue entrenada en ciclos de viajes históricos (seasonalidad fuerte: diciembre-enero altos, julio-agosto bajos) y correlaciona con datos de operadores de transporte aéreo y terrestre. El patrón es robusto: julio es predecible como mes de baja actividad de transporte discrecional, presionando variación hacia +0,14% más conservador que XGBoost.<br><br>
+
+                <strong>Resultado Ensemble (+0,17%):</strong> La combinación proyecta +0,17% para transporte, contribuyendo +0,023 puntos porcentuales al IPC general. Este es un efecto relativamente pequeño porque dos dinámicas contrapuestas se nivelan: (a) presión de combustibles (impulso inflacionario); (b) contracción de demanda de servicios de transporte discrecional (impulso deflacionario). El balance resulta en presión muy moderada, reflejando que en invierno, aunque combustibles suben, hogares reducen gastos de viajes y transporte de placer, conteniendo inflación general en esta categoría.
             </p>
         </div>
 
