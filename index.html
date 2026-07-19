@@ -369,61 +369,20 @@
             btn.disabled = true;
             btn.textContent = 'Procesando...';
 
-            // Mostrar timeline de progreso
-            const timelineHTML = `
-                <div id="timeline-progreso" style="background: #0f1520; padding: 20px; margin: 20px 0; border-left: 2px solid #ff9900;">
-                    <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold;">Desglose del Cálculo Ensemble</div>
-                    <div id="progreso-items"></div>
-                    <div style="color: #10b981; font-size: 11px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27;">
-                        Resultado final: (ARIMA × 0.40) + (XGBoost × 0.40) + (LSTM × 0.20)
-                    </div>
-                </div>
-            `;
-            document.getElementById('prediction-content').innerHTML = timelineHTML;
+            // Mostrar indicador de progreso simple
+            let puntos = '.';
+            const timelineEl = document.createElement('div');
+            timelineEl.id = 'timeline-progreso';
+            timelineEl.style.cssText = 'background: #0f1520; padding: 20px; margin: 20px 0; border-left: 2px solid #ff9900; color: #ff9900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;';
+            timelineEl.textContent = 'Calculando' + puntos;
+            document.getElementById('prediction-content').innerHTML = '';
+            document.getElementById('prediction-content').appendChild(timelineEl);
 
-            // Función para actualizar progreso en tiempo real
-            let pasoActual = 0;
-            const actualizarProgreso = (paso, porcentaje) => {
-                const pasos = [
-                    { texto: 'Cargando datos históricos...', porcentaje: 20 },
-                    { texto: 'Entrenando ARIMA (40%)...', porcentaje: 40 },
-                    { texto: 'Entrenando XGBoost (40%)...', porcentaje: 60 },
-                    { texto: 'Entrenando LSTM (20%)...', porcentaje: 80 },
-                    { texto: 'Calculando ensemble ponderado...', porcentaje: 100 }
-                ];
-
-                let html = '';
-                for (let i = 0; i < pasos.length; i++) {
-                    const p = pasos[i];
-                    const isActive = i === paso;
-                    const isComplete = i < paso;
-                    const color = isActive ? '#ff9900' : '#a0a0a0';
-
-                    html += `
-                        <div style="margin-bottom: 12px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span style="color: ${color}; font-size: 11px; ${isActive ? 'font-weight: bold;' : ''}">${p.texto}</span>
-                                <span style="color: #707070; font-size: 10px;">${isComplete ? p.porcentaje : (isActive ? porcentaje : '-')}%</span>
-                            </div>
-                            <div style="background: #0a0e27; height: 4px; border-radius: 2px; overflow: hidden;">
-                                <div style="background: ${isActive ? '#ff9900' : '#10b981'}; height: 100%; width: ${isComplete ? p.porcentaje : (isActive ? porcentaje : 0)}%;"></div>
-                            </div>
-                        </div>
-                    `;
-                }
-                document.getElementById('progreso-items').innerHTML = html;
-            };
-
-            // Animar progreso mientras espera respuesta
-            let animacionProgreso = 0;
+            // Animar puntos mientras calcula
             const intervalo = setInterval(() => {
-                if (animacionProgreso < 100) {
-                    const paso = Math.min(Math.floor(animacionProgreso / 25), 4);
-                    const porcentajePaso = (animacionProgreso % 25) * 4;
-                    actualizarProgreso(paso, porcentajePaso);
-                    animacionProgreso += 5;
-                }
-            }, 200);
+                puntos = puntos.length < 3 ? puntos + '.' : '.';
+                timelineEl.textContent = 'Calculando' + puntos;
+            }, 500);
 
             try {
                 // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
