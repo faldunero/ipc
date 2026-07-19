@@ -1,108 +1,145 @@
 [
   {
-    "mes_actual": "Junio 2026",
-    "mes_predicho": "Julio 2026",
-    "ipc_percent": 12.35,
-    "ipc_predicted_percent": 12.85,
-    "variacion_mensual_actual": 0.0,
+    "mes_predicho": "2025-06",
     "variacion_esperada": 0.26,
-    "variacion_12_meses": 4.38,
-    "canasta_prediccion": {
-      "Alimentos y bebidas no alcohólicas": {
-        "cambio": "+0,7%",
-        "var_junio": "+0,8%",
-        "razon": "Presión agrícola + estacionalidad invierno. Índice FAO: inflación moderada."
-      },
-      "Bebidas alcohólicas y tabaco": {
-        "cambio": "+0,5%",
-        "var_junio": "+0,9%",
-        "razon": "Demanda social baja."
-      },
-      "Vestuario y calzado": {
-        "cambio": "-6,0%",
-        "var_junio": "-6,1%",
-        "razon": "Presión invierno: descuentos invierno (-6,5% típico). ARIMA + shock estacional."
-      },
-      "Vivienda y servicios básicos": {
-        "cambio": "+1,0%",
-        "var_junio": "+0,4%",
-        "razon": "Energía + arriendo estables. Consumo alto invierno."
-      },
-      "Equipamiento y mantenimiento del hogar": {
-        "cambio": "+0,5%",
-        "var_junio": "-1,7%",
-        "razon": "Bienes electrónicos con variabilidad. Presión moderada."
-      },
-      "Salud": {
-        "cambio": "+0,8%",
-        "var_junio": "+0,6%",
-        "razon": "Servicios privados presionados. Uso estacional: gripe invierno."
-      },
-      "Transporte": {
-        "cambio": "+0,3%",
-        "var_junio": "-1,3%",
-        "razon": "Combustibles Brent volátiles. Demanda invierno: baja."
-      },
-      "Información y comunicación": {
-        "cambio": "+0,5%",
-        "var_junio": "+0,2%",
-        "razon": "Competencia intensa. Presión contenida."
-      },
-      "Recreación, deportes y cultura": {
-        "cambio": "-0,3%",
-        "var_junio": "+0,8%",
-        "razon": "Demanda invierno: baja invierno."
-      },
-      "Educación": {
-        "cambio": "+0,5%",
-        "var_junio": "+0,0%",
-        "razon": "Congelamiento anual de aranceles. Presión controlada."
-      },
-      "Restaurantes y alojamiento": {
-        "cambio": "+0,2%",
-        "var_junio": "+0,4%",
-        "razon": "Turismo bajo invierno."
-      },
-      "Seguros y servicios financieros": {
-        "cambio": "+0,5%",
-        "var_junio": "+3,4%",
-        "razon": "Primas ajustadas. Presión +3,4% esperada."
-      },
-      "Bienes y servicios diversos": {
-        "cambio": "+0,5%",
-        "var_junio": "-0,7%",
-        "razon": "Variaciones estacionales y de bienes diversos en invierno."
-      }
-    },
-    "factores_internos": [
-      "Política BC restricción activa: TPM mantenida para anclar expectativas inflacionarias",
-      "Mercado laboral: Desempleo 9.4% (INE trimestre marzo-mayo 2026), presión salarial 3.5% YoY",
-      "Expectativas de inflación: Ancladas meta 3% con rango ±1pp según encuestas BC",
-      "Tipo de cambio: 934.96 CLP/USD (18 julio 2026), debilidad del peso de -3.82% mes",
-      "Impulso fiscal: Gasto público moderado, objetivo estructural superávit"
-    ],
-    "factores_externos": [
-      "Precios petróleo Brent: 88.26 USD/barril (18 julio 2026), tensiones Ormuz (+27.15% YoY)",
-      "Inflación EEUU: 3.5-3.6% (baja desde 4,2% en mayo), deflación energética",
-      "Tasas Fed: 3.5%-3.75% sin cambios, probabilidad 46.5% alza en julio 2026",
-      "Precios cobre Comex: 6.03-6.33 USD/lb, inventarios bajos, producción chilena reducida",
-      "Precios alimentos FAO: Índice moderado con presión agrícola controlada"
-    ],
-    "prediccion_ipc": 112.85,
-    "ipc_actual": 112.35,
-    "metodologia": {
-      "modelo": "Híbrido ARIMA(1,1,1) + Groq AI",
-      "ponderacion": "80% ARIMA estadístico + 20% IA Groq",
-      "arima_valor": 112.85,
-      "arima_intervalo_95": "[112.35, 113.35]",
-      "groq_valor": 112.85,
-      "componente_real": "100% - ARIMA usa 54 meses de datos históricos reales Banco Central Chile",
-      "componente_ia": "Groq Mixtral 8x7B analiza contexto macroeconómico con restricción de especulación",
-      "datos_fuente": "Banco Central de Chile - IPC Base 2023=100",
-      "calibracion": "Backtesting últimos 12 meses: MAPE promedio 0,45%",
-      "confianza": "Intervalo de confianza 95% calculado por ARIMA"
-    },
-    "fuente": "Banco Central de Chile + Groq IA (Modelo Híbrido ARIMA-IA)",
-    "timestamp": "2026-07-18T20:32:29.664774"
+    "ipc_real": -0.4,
+    "ipc_predicted_percent": 107.64,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.66,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218166"
+  },
+  {
+    "mes_predicho": "2025-07",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.9,
+    "ipc_predicted_percent": 108.61,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.64,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218173"
+  },
+  {
+    "mes_predicho": "2025-08",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.0,
+    "ipc_predicted_percent": 108.61,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.26,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218174"
+  },
+  {
+    "mes_predicho": "2025-09",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.4,
+    "ipc_predicted_percent": 109.04,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.14,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218175"
+  },
+  {
+    "mes_predicho": "2025-10",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.0,
+    "ipc_predicted_percent": 109.04,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.26,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218177"
+  },
+  {
+    "mes_predicho": "2025-11",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.3,
+    "ipc_predicted_percent": 109.37,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.03999999999999998,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218178"
+  },
+  {
+    "mes_predicho": "2025-12",
+    "variacion_esperada": 0.26,
+    "ipc_real": -0.2,
+    "ipc_predicted_percent": 109.15,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.46,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218179"
+  },
+  {
+    "mes_predicho": "2026-01",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.4,
+    "ipc_predicted_percent": 109.59,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.14,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218180"
+  },
+  {
+    "mes_predicho": "2026-02",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.0,
+    "ipc_predicted_percent": 109.59,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.26,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218181"
+  },
+  {
+    "mes_predicho": "2026-03",
+    "variacion_esperada": 0.26,
+    "ipc_real": 1.0,
+    "ipc_predicted_percent": 110.69,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.74,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218182"
+  },
+  {
+    "mes_predicho": "2026-04",
+    "variacion_esperada": 0.26,
+    "ipc_real": 1.3,
+    "ipc_predicted_percent": 112.13,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 1.04,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218183"
+  },
+  {
+    "mes_predicho": "2026-05",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.2,
+    "ipc_predicted_percent": 112.35,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.06,
+    "direccion_correcta": true,
+    "timestamp": "2026-07-18T21:54:57.218184"
+  },
+  {
+    "mes_predicho": "2026-06",
+    "variacion_esperada": 0.26,
+    "ipc_real": 0.0,
+    "ipc_predicted_percent": 112.35,
+    "ipc_percent": 112.32,
+    "version": "backtest-v2.0",
+    "error_absoluto": 0.26,
+    "direccion_correcta": false,
+    "timestamp": "2026-07-18T21:54:57.218185"
   }
 ]

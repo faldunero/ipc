@@ -1,0 +1,129 @@
+{
+  "fecha_backtest": "2026-07-18T21:54:57.218015",
+  "resultados_por_mes": [
+    {
+      "mes": "2025-06",
+      "prediccion": 0.26,
+      "valor_real": -0.4,
+      "indice_real": 107.64,
+      "error_absoluto": 0.66,
+      "error_porcentual": 165.0,
+      "direccion_correcta": false
+    },
+    {
+      "mes": "2025-07",
+      "prediccion": 0.26,
+      "valor_real": 0.9,
+      "indice_real": 108.61,
+      "error_absoluto": 0.64,
+      "error_porcentual": 71.11111111111111,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2025-08",
+      "prediccion": 0.26,
+      "valor_real": 0.0,
+      "indice_real": 108.61,
+      "error_absoluto": 0.26,
+      "error_porcentual": 0,
+      "direccion_correcta": false
+    },
+    {
+      "mes": "2025-09",
+      "prediccion": 0.26,
+      "valor_real": 0.4,
+      "indice_real": 109.04,
+      "error_absoluto": 0.14,
+      "error_porcentual": 35.0,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2025-10",
+      "prediccion": 0.26,
+      "valor_real": 0.0,
+      "indice_real": 109.04,
+      "error_absoluto": 0.26,
+      "error_porcentual": 0,
+      "direccion_correcta": false
+    },
+    {
+      "mes": "2025-11",
+      "prediccion": 0.26,
+      "valor_real": 0.3,
+      "indice_real": 109.37,
+      "error_absoluto": 0.03999999999999998,
+      "error_porcentual": 13.333333333333327,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2025-12",
+      "prediccion": 0.26,
+      "valor_real": -0.2,
+      "indice_real": 109.15,
+      "error_absoluto": 0.46,
+      "error_porcentual": 229.99999999999997,
+      "direccion_correcta": false
+    },
+    {
+      "mes": "2026-01",
+      "prediccion": 0.26,
+      "valor_real": 0.4,
+      "indice_real": 109.59,
+      "error_absoluto": 0.14,
+      "error_porcentual": 35.0,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2026-02",
+      "prediccion": 0.26,
+      "valor_real": 0.0,
+      "indice_real": 109.59,
+      "error_absoluto": 0.26,
+      "error_porcentual": 0,
+      "direccion_correcta": false
+    },
+    {
+      "mes": "2026-03",
+      "prediccion": 0.26,
+      "valor_real": 1.0,
+      "indice_real": 110.69,
+      "error_absoluto": 0.74,
+      "error_porcentual": 74.0,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2026-04",
+      "prediccion": 0.26,
+      "valor_real": 1.3,
+      "indice_real": 112.13,
+      "error_absoluto": 1.04,
+      "error_porcentual": 80.0,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2026-05",
+      "prediccion": 0.26,
+      "valor_real": 0.2,
+      "indice_real": 112.35,
+      "error_absoluto": 0.06,
+      "error_porcentual": 30.0,
+      "direccion_correcta": true
+    },
+    {
+      "mes": "2026-06",
+      "prediccion": 0.26,
+      "valor_real": 0.0,
+      "indice_real": 112.35,
+      "error_absoluto": 0.26,
+      "error_porcentual": 0,
+      "direccion_correcta": false
+    }
+  ],
+  "estadisticas": {
+    "total_predicciones": 13,
+    "mae": 0.38153846153846155,
+    "rmse": 0.4804485084072686,
+    "aciertos_direccion": 7,
+    "porcentaje_acierto": 53.84615384615385
+  }
+}
