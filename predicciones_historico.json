@@ -5,7 +5,7 @@
     "ipc_percent": 12.35,
     "ipc_predicted_percent": 12.85,
     "variacion_mensual_actual": 0.0,
-    "variacion_esperada": 0.5,
+    "variacion_esperada": 0.26,
     "variacion_12_meses": 4.38,
     "canasta_prediccion": {
       "Alimentos y bebidas no alcohólicas": {
@@ -103,6 +103,6 @@
       "confianza": "Intervalo de confianza 95% calculado por ARIMA"
     },
     "fuente": "Banco Central de Chile + Groq IA (Modelo Híbrido ARIMA-IA)",
-    "timestamp": "2026-07-18T16:27:52.997084"
+    "timestamp": "2026-07-18T20:32:29.664774"
   }
 ]
