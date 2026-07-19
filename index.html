@@ -532,7 +532,9 @@
             btn.disabled = true;
             btn.textContent = 'Analizando...';
             try {
-                const r = await fetch(`${API_URL}/analisis`);
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+                const r = await fetch(`${currentAPI}/analisis`);
                 const d = await r.json();
                 if (!r.ok) throw new Error(d.detail);
 
@@ -575,7 +577,9 @@
 
         async function cargarHistorico() {
             try {
-                const r = await fetch(`${API_URL}/datos`);
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+                const r = await fetch(`${currentAPI}/datos`);
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const d = await r.json();
                 datosHistoricos = d.datos;
@@ -709,9 +713,11 @@
             let mes = document.getElementById('mesSelect').value || '2026-06';
             document.getElementById('mesSelect').value = mes;
             const mesDisplay = document.getElementById('mesDisplay').textContent || 'Junio 2026';
+            const useProduction = window.location.host.includes('onrender.com');
+            const currentAPI = useProduction ? API_URL_PROD : API_URL;
 
             try {
-                const r = await fetch(`${API_URL}/canasta/${mes}`);
+                const r = await fetch(`${currentAPI}/canasta/${mes}`);
                 if (!r.ok) throw new Error(`HTTP ${r.status}`);
                 const d = await r.json();
 
@@ -758,9 +764,11 @@
             const mesBase = document.getElementById('mesAcumulado').value;
             const btn = event.target && event.target.tagName === 'BUTTON' ? event.target : null;
             if (btn) btn.disabled = true;
+            const useProduction = window.location.host.includes('onrender.com');
+            const currentAPI = useProduction ? API_URL_PROD : API_URL;
 
             try {
-                const r = await fetch(`${API_URL}/canasta-acumulada?mes=${mesBase}`);
+                const r = await fetch(`${currentAPI}/canasta-acumulada?mes=${mesBase}`);
                 const d = await r.json();
 
                 const meses = {
@@ -860,7 +868,9 @@
             try {
                 // FORZAR REQUEST FRESCO
                 const ts = new Date().getTime();
-                const r = await fetch(`${API_URL}/desempen-modelo?t=${ts}`, {
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+                const r = await fetch(`${currentAPI}/desempen-modelo?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const metricas = await r.json();
@@ -876,7 +886,10 @@
             try {
                 // FORZAR REQUEST FRESCO
                 const ts = new Date().getTime();
-                const r = await fetch(`${API_URL}/historico-predicciones?t=${ts}`, {
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+
+                const r = await fetch(`${currentAPI}/historico-predicciones?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const d = await r.json();
@@ -978,7 +991,9 @@
 
             try {
                 // Enviar a API - el mes viene en formato "Mes Año" (ej: "Julio 2026")
-                const response = await fetch(`${API_URL}/actualizar-prediccion/${mesPred}?ipc_real=${valor}`, {
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+                const response = await fetch(`${currentAPI}/actualizar-prediccion/${mesPred}?ipc_real=${valor}`, {
                     method: 'POST'
                 });
 
