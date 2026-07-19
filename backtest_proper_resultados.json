@@ -1,142 +1,142 @@
 {
-  "fecha": "2026-07-19T13:02:07.410204",
+  "fecha": "2026-07-19T13:05:42.170920",
   "resultados": [
     {
       "mes": "2025-06",
-      "prediccion": -0.20898741483688354,
+      "prediccion": 0.13642519508096612,
       "real": -0.4,
-      "error": 0.19101258516311648,
-      "direccion_correcta": true,
-      "arima": null,
+      "error": 0.5364251950809662,
+      "direccion_correcta": false,
+      "arima": 0.3858447679453352,
       "xgboost": -0.20898741483688354,
-      "lstm": null
+      "lstm": 0.32841126918792723
     },
     {
       "mes": "2025-07",
-      "prediccion": 0.5470411777496338,
+      "prediccion": 0.400500033869658,
       "real": 0.9,
-      "error": 0.35295882225036623,
+      "error": 0.49949996613034203,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.30307457092979073,
       "xgboost": 0.5470411777496338,
-      "lstm": null
+      "lstm": 0.3022686719894409
     },
     {
       "mes": "2025-08",
-      "prediccion": 0.4868534803390503,
+      "prediccion": 0.2863398272681034,
       "real": 0.0,
-      "error": 0.4868534803390503,
+      "error": 0.2863398272681034,
       "direccion_correcta": false,
-      "arima": null,
+      "arima": 0.06612082890863125,
       "xgboost": 0.4868534803390503,
-      "lstm": null
+      "lstm": 0.3257505178451538
     },
     {
       "mes": "2025-09",
-      "prediccion": 0.6254719495773315,
+      "prediccion": 0.4631970176249136,
       "real": 0.4,
-      "error": 0.22547194957733152,
+      "error": 0.06319701762491359,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.3659234308077369,
       "xgboost": 0.6254719495773315,
-      "lstm": null
+      "lstm": 0.3331943273544311
     },
     {
       "mes": "2025-10",
-      "prediccion": 0.46613702178001404,
+      "prediccion": 0.33272280510512675,
       "real": 0.0,
-      "error": 0.46613702178001404,
+      "error": 0.33272280510512675,
       "direccion_correcta": false,
-      "arima": null,
+      "arima": 0.23207858940580703,
       "xgboost": 0.46613702178001404,
-      "lstm": null
+      "lstm": 0.2671828031539917
     },
     {
       "mes": "2025-11",
-      "prediccion": 0.4111129641532898,
+      "prediccion": 0.3361219817205451,
       "real": 0.3,
-      "error": 0.1111129641532898,
+      "error": 0.03612198172054509,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.3018224194159561,
       "xgboost": 0.4111129641532898,
-      "lstm": null
+      "lstm": 0.2547391414642334
     },
     {
       "mes": "2025-12",
-      "prediccion": -0.13883492350578308,
+      "prediccion": 0.0862402240025536,
       "real": -0.2,
-      "error": 0.06116507649421693,
-      "direccion_correcta": true,
-      "arima": null,
+      "error": 0.2862402240025536,
+      "direccion_correcta": false,
+      "arima": 0.19048319250035678,
       "xgboost": -0.13883492350578308,
-      "lstm": null
+      "lstm": 0.32790458202362055
     },
     {
       "mes": "2026-01",
-      "prediccion": 0.628768801689148,
+      "prediccion": 0.39754541202636173,
       "real": 0.4,
-      "error": 0.22876880168914793,
+      "error": 0.002454587973638289,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.2455725144409044,
       "xgboost": 0.628768801689148,
-      "lstm": null
+      "lstm": 0.23904442787170407
     },
     {
       "mes": "2026-02",
-      "prediccion": 0.14891672134399414,
+      "prediccion": 0.13869761302093536,
       "real": 0.0,
-      "error": 0.14891672134399414,
+      "error": 0.13869761302093536,
       "direccion_correcta": false,
-      "arima": null,
+      "arima": 0.07030435388336259,
       "xgboost": 0.14891672134399414,
-      "lstm": null
+      "lstm": 0.25504591464996335
     },
     {
       "mes": "2026-03",
-      "prediccion": 0.4128241240978241,
+      "prediccion": 0.29709003557037883,
       "real": 1.0,
-      "error": 0.5871758759021759,
+      "error": 0.7029099644296212,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.1999400940853251,
       "xgboost": 0.4128241240978241,
-      "lstm": null
+      "lstm": 0.25992174148559566
     },
     {
       "mes": "2026-04",
-      "prediccion": -0.18348543345928192,
+      "prediccion": 0.015569132101247645,
       "real": 1.3,
-      "error": 1.483485433459282,
-      "direccion_correcta": false,
-      "arima": null,
+      "error": 1.2844308678987524,
+      "direccion_correcta": true,
+      "arima": 0.07291343691873042,
       "xgboost": -0.18348543345928192,
-      "lstm": null
+      "lstm": 0.29898965358734125
     },
     {
       "mes": "2026-05",
-      "prediccion": 0.4538101553916931,
+      "prediccion": 0.4393296535998242,
       "real": 0.2,
-      "error": 0.2538101553916931,
+      "error": 0.23932965359982417,
       "direccion_correcta": true,
-      "arima": null,
+      "arima": 0.4578904410674314,
       "xgboost": 0.4538101553916931,
-      "lstm": null
+      "lstm": 0.37324707508087157
     },
     {
       "mes": "2026-06",
-      "prediccion": -0.3600333333015442,
+      "prediccion": 0.2095575068709723,
       "real": 0.0,
-      "error": 0.3600333333015442,
-      "direccion_correcta": true,
-      "arima": null,
+      "error": 0.2095575068709723,
+      "direccion_correcta": false,
+      "arima": 0.6967474516027848,
       "xgboost": -0.3600333333015442,
-      "lstm": null
+      "lstm": 0.37435929775238036
     }
   ],
   "stats": {
     "total": 13,
-    "mae": 0.3813001708342479,
-    "rmse": 0.5186046456848339,
-    "aciertos_direccion": 9,
-    "pct_acierto": 69.23076923076923
+    "mae": 0.35522517005586884,
+    "rmse": 0.4868628342119465,
+    "aciertos_direccion": 7,
+    "pct_acierto": 53.84615384615385
   }
 }
