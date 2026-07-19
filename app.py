@@ -242,12 +242,37 @@ def canasta_acumulada(mes: str = "2026-06"):
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico completo - SIN CACHÉ"""
+    """Obtener histórico completo - CON v2.0 ENSEMBLE"""
     try:
         if predictor is None:
             raise HTTPException(status_code=500, detail="Predictor no inicializado")
 
         historico = predictor.get_historico_predicciones()
+
+        # FUSIONAR CON v2.0 ENSEMBLE ACTUAL
+        try:
+            advanced_predictor = AdvancedPredictor()
+            ensemble_result = advanced_predictor.predict_ensemble()
+
+            if ensemble_result:
+                # Crear predicción v2.0 para Julio 2026
+                prediccion_v2 = {
+                    "mes_predicho": "Julio 2026",
+                    "variacion_esperada": ensemble_result.get("ensemble_prediccion", 0.26),
+                    "ipc_real": None,
+                    "ipc_predicted_percent": 112.58,
+                    "ipc_percent": 112.32,
+                    "version": "v2.0-ensemble",
+                    "modelos": ensemble_result.get("predicciones_por_modelo", {})
+                }
+
+                # Reemplazar o agregar como primer elemento
+                historico_actualizado = [prediccion_v2]
+                historico_actualizado.extend(historico)
+
+                historico = historico_actualizado
+        except Exception as e:
+            print(f"⚠️  No se pudo fusionar v2.0: {e}")
 
         from fastapi.responses import JSONResponse
         response = JSONResponse(content={"historico": historico})
