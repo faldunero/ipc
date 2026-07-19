@@ -368,6 +368,56 @@
             const btn = event.target;
             btn.disabled = true;
             btn.textContent = 'Procesando...';
+
+            // Mostrar timeline de progreso
+            const timelineHTML = `
+                <div id="timeline-progreso" style="background: #0f1520; padding: 20px; margin: 20px 0; border-left: 2px solid #ff9900;">
+                    <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold;">Desglose del Cálculo Ensemble</div>
+                    <div id="progreso-items"></div>
+                    <div style="color: #10b981; font-size: 11px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27;">
+                        Resultado final: (ARIMA × 0.40) + (XGBoost × 0.40) + (LSTM × 0.20)
+                    </div>
+                </div>
+            `;
+            document.getElementById('prediction-content').innerHTML = timelineHTML;
+
+            // Función para actualizar progreso
+            const pasos = [
+                { texto: 'Cargando datos históricos...', porcentaje: 20 },
+                { texto: 'Entrenando ARIMA (40%)...', porcentaje: 40 },
+                { texto: 'Entrenando XGBoost (40%)...', porcentaje: 60 },
+                { texto: 'Entrenando LSTM (20%)...', porcentaje: 80 },
+                { texto: 'Calculando ensemble ponderado...', porcentaje: 100 }
+            ];
+
+            let pasoActual = 0;
+            const intervalo = setInterval(() => {
+                if (pasoActual < pasos.length) {
+                    const paso = pasos[pasoActual];
+                    let html = '';
+                    for (let i = 0; i < pasos.length; i++) {
+                        if (i <= pasoActual) {
+                            const p = pasos[i];
+                            html += `
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                        <span style="color: #a0a0a0; font-size: 11px;">${p.texto}</span>
+                                        <span style="color: #707070; font-size: 10px;">${p.porcentaje}%</span>
+                                    </div>
+                                    <div style="background: #0a0e27; height: 4px; border-radius: 2px; overflow: hidden;">
+                                        <div style="background: #10b981; height: 100%; width: ${p.porcentaje}%;"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    document.getElementById('progreso-items').innerHTML = html;
+                    pasoActual++;
+                } else {
+                    clearInterval(intervalo);
+                }
+            }, 400);
+
             try {
                 // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
                 const ts = new Date().getTime();
@@ -396,6 +446,11 @@
                 } catch (e) {
                     console.error('❌ v2.0 error:', e.message);
                 }
+
+                // Limpiar timeline cuando termine
+                clearInterval(intervalo);
+                const timelineEl = document.getElementById('timeline-progreso');
+                if (timelineEl) timelineEl.remove();
 
                 let html = `
                     <div style="background: #0a0e27; border: 2px solid #ff9900; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
