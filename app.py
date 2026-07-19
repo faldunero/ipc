@@ -240,6 +240,24 @@ def canasta_acumulada(mes: str = "2026-06"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/debug-historico")
+def debug_historico():
+    """DEBUG: Muestra exactamente qué hay en predicciones_historico.json"""
+    try:
+        import json
+        with open("predicciones_historico.json", 'r', encoding='utf-8') as f:
+            contenido = json.load(f)
+
+        return {
+            "archivo": "predicciones_historico.json",
+            "primer_valor_variacion": contenido[0].get("variacion_esperada") if contenido else None,
+            "total_entradas": len(contenido),
+            "primeros_3_meses": [e.get("mes_predicho", e.get("mes_actual")) for e in contenido[:3]],
+            "contenido_completo": contenido
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
     """Obtener histórico directo del archivo JSON (sin transformaciones)"""
