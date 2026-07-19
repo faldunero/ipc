@@ -368,9 +368,10 @@
             try {
                 // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
                 const ts = new Date().getTime();
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
 
                 // v1.0
-                const r = await fetch(`${API_URL}/predecir?t=${ts}`, {
+                const r = await fetch(`${currentAPI}/predecir?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const d = await r.json();
@@ -379,7 +380,6 @@
 
                 // v2.0 (ensemble) - PRIORITARIO
                 try {
-                    const currentAPI = useProduction ? API_URL_PROD : API_URL;
                     console.log('Cargando v2.0 ensemble desde:', currentAPI + '/predecir-v2');
                     const r2 = await fetch(`${currentAPI}/predecir-v2?t=${ts}`, {
                         cache: 'no-store'
