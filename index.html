@@ -1122,9 +1122,9 @@
                     filterInput.addEventListener('input', filterTable);
                     columnSelect.addEventListener('change', filterTable);
 
-                    // Ordenar por mes (columna 0) ascendente al cargar
+                    // Ordenar por mes (columna 0) descendente al cargar (más reciente primero)
                     sortTable(0);
-                    sortTable(0); // Clickear dos veces para que quede ascendente
+                    // Ya está en descendente (más reciente primero)
 
                     console.log('✅ Filtros y ordenamiento inicializados');
                 }, 100);
