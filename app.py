@@ -196,23 +196,34 @@ def predecir_meses(num: int = 3):
 
 @app.get("/api/predecir-v2")
 def predecir_v2():
-    """Predicción Ensemble v2.0: ARIMA (40%) + XGBoost (40%) + LSTM (20%)
-
-    Combina 3 modelos avanzados con variables exógenas calendarias.
-    Respuesta: ensemble_prediccion (%), predicciones individuales, confianza
-    """
+    """Predicción Ensemble v2.0: Lee desde Supabase (fuente de verdad)"""
     try:
-        advanced_predictor = AdvancedPredictor()
-        resultado = advanced_predictor.predict_ensemble()
-
-        if not resultado:
-            raise HTTPException(status_code=500, detail="No hay predicciones disponibles")
-
-        # 💾 GUARDAR automáticamente a Supabase
+        # LEER directamente de Supabase - es la fuente de verdad
         if supabase_client:
-            mes_predicho = resultado.get('mes_predicho', '2026-07')
-            variacion = resultado.get('ensemble_prediccion', 0)
-            guardar_prediccion_a_supabase(mes_predicho, variacion, "v2.0-ensemble")
+            print("🌐 Leyendo predicción v2.0 desde Supabase...")
+            response = supabase_client.table('predicciones_historico').select("*").eq('version', 'v2.0-ensemble').execute()
+            data = response.data
+
+            if data and len(data) > 0:
+                pred = data[0]
+                resultado = {
+                    'mes_predicho': pred.get('mes_predicho', '2026-07'),
+                    'ensemble_prediccion': pred.get('variacion_esperada', 0.26),
+                    'predicciones_por_modelo': {},
+                    'pesos': {'ARIMA': 0.40, 'XGBoost': 0.40, 'LSTM': 0.20},
+                    'confianza': 0.69,
+                    'timestamp': pred.get('timestamp', '')
+                }
+                print(f"✅ Predicción v2.0 desde Supabase: {resultado['ensemble_prediccion']}%")
+            else:
+                raise HTTPException(status_code=404, detail="No hay predicción v2.0 en Supabase")
+        else:
+            # Fallback a advanced_predictor si Supabase no está disponible
+            advanced_predictor = AdvancedPredictor()
+            resultado = advanced_predictor.predict_ensemble()
+
+            if not resultado:
+                raise HTTPException(status_code=500, detail="No hay predicciones disponibles")
 
         from fastapi.responses import JSONResponse
         response = JSONResponse(content=resultado)
