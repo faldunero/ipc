@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPC Predictor</title>
-    <!-- jQuery para DataTables -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <!-- Chart.js y XLSX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -63,16 +57,17 @@
         .modal-close:hover { color: #ffb333; }
         .clickable { cursor: pointer; text-decoration: underline; }
         .clickable:hover { color: #ffb333; }
-        /* DataTables Styling para tema oscuro */
-        .dataTables_wrapper { color: #d0d0d0; }
-        .dataTables_wrapper .dataTables_filter input { background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; padding: 6px 12px; }
-        .dataTables_wrapper .dataTables_length select { background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; padding: 6px 12px; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button { background: #0f1520; color: #ff9900; border: 1px solid #0a0e27; margin: 2px; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #ff9900; color: #000; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #ff9900; color: #000; }
-        table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; }
+        /* Tabla de histórico con filtro */
+        #table-filter-container { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        #table-filter-container input { flex: 1; min-width: 200px; padding: 8px 12px; background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; font-family: inherit; font-size: 12px; }
+        #table-filter-container select { padding: 8px 12px; background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; font-family: inherit; font-size: 12px; }
+        table#historico-predictions-table { width: 100%; border-collapse: collapse; }
+        table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
+        table#historico-predictions-table thead th:hover { background: #141829; }
         table#historico-predictions-table tbody td { border-bottom: 1px solid #0a0e27; padding: 12px 8px; color: #d0d0d0; }
         table#historico-predictions-table tbody tr:hover { background: #141829; }
+        .sort-asc::after { content: " ▲"; }
+        .sort-desc::after { content: " ▼"; }
         @media (max-width: 768px) { .menu-toggle { display: block; } .sidebar { position: absolute; left: 0; top: 0; height: calc(100vh - 60px); } .main-content { padding: 20px; } }
     </style>
 </head>
@@ -382,20 +377,61 @@
             btn.disabled = true;
             btn.textContent = 'Procesando...';
 
-            // Mostrar indicador de progreso simple
-            let puntos = '.';
-            const timelineEl = document.createElement('div');
-            timelineEl.id = 'timeline-progreso';
-            timelineEl.style.cssText = 'background: #0f1520; padding: 20px; margin: 20px 0; border-left: 2px solid #ff9900; color: #ff9900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;';
-            timelineEl.textContent = 'Calculando' + puntos;
-            document.getElementById('prediction-content').innerHTML = '';
-            document.getElementById('prediction-content').appendChild(timelineEl);
+            // Mostrar timeline de progreso con pasos
+            const timelineHTML = `
+                <div id="timeline-progreso" style="background: #0f1520; padding: 20px; margin: 20px 0; border-left: 2px solid #ff9900;">
+                    <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold;">Desglose del Cálculo Ensemble</div>
+                    <div id="progreso-items"></div>
+                    <div style="color: #10b981; font-size: 11px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27;">
+                        Resultado final: (ARIMA × 0.40) + (XGBoost × 0.40) + (LSTM × 0.20)
+                    </div>
+                </div>
+            `;
+            document.getElementById('prediction-content').innerHTML = timelineHTML;
 
-            // Animar puntos mientras calcula
+            // Función para actualizar progreso en tiempo real
+            let pasoActual = 0;
+            const actualizarProgreso = (paso, porcentaje) => {
+                const pasos = [
+                    { texto: 'Cargando datos históricos...', porcentaje: 20 },
+                    { texto: 'Entrenando ARIMA (40%)...', porcentaje: 40 },
+                    { texto: 'Entrenando XGBoost (40%)...', porcentaje: 60 },
+                    { texto: 'Entrenando LSTM (20%)...', porcentaje: 80 },
+                    { texto: 'Calculando ensemble ponderado...', porcentaje: 100 }
+                ];
+
+                let html = '';
+                for (let i = 0; i < pasos.length; i++) {
+                    const p = pasos[i];
+                    const isActive = i === paso;
+                    const isComplete = i < paso;
+                    const color = isActive ? '#ff9900' : '#a0a0a0';
+
+                    html += `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="color: ${color}; font-size: 11px; ${isActive ? 'font-weight: bold;' : ''}">${p.texto}</span>
+                                <span style="color: #707070; font-size: 10px;">${isComplete ? p.porcentaje : (isActive ? porcentaje : '-')}%</span>
+                            </div>
+                            <div style="background: #0a0e27; height: 4px; border-radius: 2px; overflow: hidden;">
+                                <div style="background: ${isActive ? '#ff9900' : '#10b981'}; height: 100%; width: ${isComplete ? p.porcentaje : (isActive ? porcentaje : 0)}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById('progreso-items').innerHTML = html;
+            };
+
+            // Animar progreso mientras espera respuesta
+            let animacionProgreso = 0;
             const intervalo = setInterval(() => {
-                puntos = puntos.length < 3 ? puntos + '.' : '.';
-                timelineEl.textContent = 'Calculando' + puntos;
-            }, 500);
+                if (animacionProgreso < 100) {
+                    const paso = Math.min(Math.floor(animacionProgreso / 25), 4);
+                    const porcentajeEnPaso = (animacionProgreso % 25) * 4;
+                    actualizarProgreso(paso, Math.round(porcentajeEnPaso));
+                    animacionProgreso += 0.5;
+                }
+            }, 50);
 
             try {
                 // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
@@ -949,17 +985,27 @@
                         <strong>Total de predicciones:</strong> ${historico.length}<br>
                         <strong>Con dato real publicado:</strong> ${historico.filter(p => p.ipc_real).length}
                     </div>
-                    <table id="historico-predictions-table" class="display">
+                    <div id="table-filter-container">
+                        <input type="text" id="table-filter-search" placeholder="Buscar mes o valor..." style="flex: 1;">
+                        <select id="table-filter-column">
+                            <option value="">Buscar en: Todas</option>
+                            <option value="0">Predicción Para</option>
+                            <option value="1">Predicción %</option>
+                            <option value="2">Dato Real %</option>
+                            <option value="3">Error</option>
+                        </select>
+                    </div>
+                    <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th>PREDICCIÓN PARA</th>
-                                <th>PREDICCIÓN %</th>
-                                <th>DATO REAL %</th>
-                                <th>ERROR</th>
+                                <th onclick="sortTable(0)">PREDICCIÓN PARA</th>
+                                <th onclick="sortTable(1)">PREDICCIÓN %</th>
+                                <th onclick="sortTable(2)">DATO REAL %</th>
+                                <th onclick="sortTable(3)">ERROR</th>
                                 <th>INGRESO DATO REAL</th>
                             </tr>
                         </thead>
-                        <tbody>`;
+                        <tbody id="historico-table-body">`;
 
                 historico.forEach((pred, idx) => {
                     // Calcular error vs dato real si existe
@@ -1006,39 +1052,82 @@
 
                 document.getElementById('historico-pred-content').innerHTML = html;
 
-                // Inicializar DataTables para sort/filtro - esperar a que el DOM se renderice
+                // Inicializar filtros y ordenamiento con JavaScript vanilla
                 setTimeout(() => {
-                    try {
-                        const table = $('#historico-predictions-table');
-                        if (table.length && $.fn.dataTable) {
-                            // Destruir si ya existe (para reinicializaciones)
-                            if ($.fn.DataTable.isDataTable('#historico-predictions-table')) {
-                                table.DataTable().destroy();
-                            }
+                    const filterInput = document.getElementById('table-filter-search');
+                    const columnSelect = document.getElementById('table-filter-column');
+                    const table = document.getElementById('historico-predictions-table');
+                    const tbody = document.getElementById('historico-table-body');
 
-                            // Crear DataTable
-                            table.DataTable({
-                                paging: true,
-                                searching: true,
-                                ordering: true,
-                                order: [[0, 'asc']], // Ordenar por mes ascendente
-                                pageLength: 14,
-                                dom: '<"top"lf>rt<"bottom"ip><"clear">',
-                                language: {
-                                    search: "Buscar:",
-                                    lengthMenu: "Mostrar _MENU_ registros",
-                                    info: "Mostrando _START_ a _END_ de _TOTAL_ predicciones",
-                                    paginate: { first: "Primera", last: "Última", next: "Siguiente", previous: "Anterior" }
+                    if (!filterInput || !columnSelect || !table) return;
+
+                    // Función para filtrar
+                    window.filterTable = () => {
+                        const searchTerm = filterInput.value.toLowerCase();
+                        const selectedColumn = columnSelect.value;
+                        const rows = tbody.querySelectorAll('tr');
+
+                        rows.forEach(row => {
+                            let match = true;
+                            if (searchTerm) {
+                                if (selectedColumn === '') {
+                                    // Buscar en todas las columnas
+                                    const cells = row.querySelectorAll('td');
+                                    match = Array.from(cells).some(cell =>
+                                        cell.textContent.toLowerCase().includes(searchTerm)
+                                    );
+                                } else {
+                                    // Buscar en columna específica
+                                    const cell = row.querySelector(`td:nth-child(${parseInt(selectedColumn) + 1})`);
+                                    match = cell && cell.textContent.toLowerCase().includes(searchTerm);
                                 }
-                            });
-                            console.log('✅ DataTables inicializado correctamente');
-                        } else {
-                            console.warn('⚠️  DataTables o jQuery no disponible');
-                        }
-                    } catch (e) {
-                        console.warn('⚠️  Error inicializando DataTables:', e.message);
-                    }
-                }, 200);
+                            }
+                            row.style.display = match ? '' : 'none';
+                        });
+                    };
+
+                    // Función para ordenar
+                    window.sortTable = (columnIndex) => {
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        const isAsc = rows[0]?.style.backgroundColor === 'rgb(20, 24, 41)';
+
+                        rows.sort((a, b) => {
+                            const aVal = a.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim();
+                            const bVal = b.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim();
+
+                            // Intenta parse como número si es posible
+                            const aNum = parseFloat(aVal);
+                            const bNum = parseFloat(bVal);
+
+                            if (!isNaN(aNum) && !isNaN(bNum)) {
+                                return isAsc ? bNum - aNum : aNum - bNum;
+                            }
+                            return isAsc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+                        });
+
+                        rows.forEach(row => tbody.appendChild(row));
+
+                        // Marcar columna ordenada
+                        document.querySelectorAll('#historico-predictions-table thead th').forEach((th, i) => {
+                            if (i === columnIndex) {
+                                th.classList.toggle('sort-asc');
+                                th.classList.toggle('sort-desc');
+                            } else {
+                                th.classList.remove('sort-asc', 'sort-desc');
+                            }
+                        });
+                    };
+
+                    // Event listeners
+                    filterInput.addEventListener('input', filterTable);
+                    columnSelect.addEventListener('change', filterTable);
+
+                    // Ordenar por mes (columna 0) ascendente al cargar
+                    sortTable(0);
+                    sortTable(0); // Clickear dos veces para que quede ascendente
+
+                    console.log('✅ Filtros y ordenamiento inicializados');
+                }, 100);
             } catch (e) {
                 console.error('Error:', e);
                 document.getElementById('historico-pred-content').innerHTML = `<div class="alert alert-error">Error cargando histórico: ${e.message}</div>`;
