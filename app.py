@@ -281,21 +281,28 @@ def analisis():
 
 @app.get("/api/datos")
 def datos():
-    """Obtener últimos 12 datos históricos"""
+    """Obtener datos 2025-01 a 2026-06 desde Banco Central"""
     try:
-        if predictor is None:
-            raise HTTPException(status_code=500, detail="Predictor no inicializado")
+        # Leer datos_bcch.json (fuente única)
+        with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+            bcch = json.load(f)
 
-        df = predictor.ipc_data.tail(12)
+        # Filtrar SOLO 2025-01 a 2026-06
         datos_list = []
-        for idx, row in df.iterrows():
-            datos_list.append({
-                "mes": row.get('mes', ''),
-                "ipc_percent": float(row.get('ipc_index', 0) - 100),
-                "ipc_index": float(row.get('ipc_index', 0)),
-                "variacion_mensual": float(row.get('variacion_mensual', 0)),
-                "variacion_12_meses": float(row.get('variacion_12_meses', 0))
-            })
+        for d in bcch.get('datos_historicos', []):
+            mes = d.get('mes', '')
+            if '2025-01' <= mes <= '2026-06':
+                datos_list.append({
+                    "mes": mes,
+                    "ipc_percent": float(d.get('indice', 0) - 100),
+                    "ipc_index": float(d.get('indice', 0)),
+                    "variacion_mensual": float(d.get('var_mensual', 0)),
+                    "variacion_12_meses": float(d.get('var_12_meses', 0)) if d.get('var_12_meses') else None
+                })
+
+        # Ordenar ASC (antiguos primero)
+        datos_list = sorted(datos_list, key=lambda x: x['mes'])
+
         return {"datos": datos_list}
 
     except Exception as e:
@@ -316,18 +323,23 @@ def canasta_mes(mes: str):
 
 @app.get("/api/canasta-acumulada")
 def canasta_acumulada(mes: str = "2026-06"):
-    """Obtener canasta acumulada de últimos 12 meses para un mes específico"""
+    """Obtener canasta para mes específico (solo 2025-01 a 2026-06)"""
     try:
-        if predictor is None:
-            raise HTTPException(status_code=500, detail="Predictor no inicializado")
+        # Validar que mes está en rango
+        if not ('2025-01' <= mes <= '2026-06'):
+            raise HTTPException(status_code=400, detail=f"Mes {mes} fuera de rango (2025-01 a 2026-06)")
 
-        # Usar el mes específico para obtener la canasta
-        acumulado = predictor.get_canasta_composition(mes)
+        # Leer datos_bcch.json
+        with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+            bcch = json.load(f)
 
-        # Renombrar 'indice' a 'indice_promedio' para consistencia
-        for item in acumulado:
-            if 'indice' in item and 'indice_promedio' not in item:
-                item['indice_promedio'] = item['indice']
+        # Obtener canasta para ese mes
+        canasta_historica = bcch.get('canasta_historica', {})
+        acumulado = canasta_historica.get(mes, [])
+
+        if not acumulado:
+            # Si no hay canasta específica, usar la canasta actual
+            acumulado = bcch.get('divisiones_canasta', [])
 
         return {"acumulado": acumulado if isinstance(acumulado, list) else []}
 
@@ -354,41 +366,36 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico desde Supabase SOLO (fuente de verdad absoluta)"""
+    """Obtener histórico SOLO desde Banco Central (2025-01 a 2026-06)"""
     try:
         from fastapi.responses import JSONResponse
 
-        # SOLO SUPABASE - sin fallback a JSON
-        if not supabase_client:
-            raise HTTPException(status_code=500, detail="Supabase no configurado")
+        # Leer datos_bcch.json (fuente única)
+        print("📊 Leyendo datos de Banco Central (datos_bcch.json)...")
+        with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+            bcch = json.load(f)
 
-        print("🌐 Leyendo histórico desde Supabase (fuente única)...")
-        response = supabase_client.table('predicciones_historico').select("*").order('mes_predicho', desc=True).execute()
-        historico = response.data if response.data else []
-        print(f"✅ {len(historico)} predicciones leídas de Supabase")
+        # Filtrar SOLO 2025-01 a 2026-06
+        historico = []
+        for d in bcch.get('datos_historicos', []):
+            mes = d.get('mes', '')
+            if '2025-01' <= mes <= '2026-06':
+                historico.append({
+                    "mes": mes,
+                    "variacion_mensual": d.get('var_mensual'),
+                    "indice": d.get('indice'),
+                    "variacion_12_meses": d.get('var_12_meses'),
+                    "fuente": "Banco Central",
+                    "tipo": "dato-real"
+                })
+
+        # Ordenar DESC (más reciente primero)
+        historico = sorted(historico, key=lambda x: x['mes'], reverse=True)
+
+        print(f"✅ {len(historico)} meses de datos BC (2025-01 a 2026-06)")
 
         if not historico:
-            raise HTTPException(status_code=404, detail="Histórico vacío en Supabase")
-
-        # Normalizar formato de mes: asegurar que está en "YYYY-MM"
-        for pred in historico:
-            mes = pred.get('mes_predicho', '')
-            # Si NO está en formato YYYY-MM, intentar convertir
-            if not (len(mes) == 7 and mes[4] == '-'):
-                # Conversión de "Mes Año" a "YYYY-MM"
-                meses_nombres = {
-                    'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
-                    'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
-                    'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
-                }
-                mes_lower = mes.lower()
-                for nombre_mes, num_mes in meses_nombres.items():
-                    if nombre_mes in mes_lower:
-                        parts = mes.split()
-                        if len(parts) >= 2:
-                            ano = parts[-1]
-                            pred['mes_predicho'] = f"{ano}-{num_mes}"
-                        break
+            raise HTTPException(status_code=404, detail="No hay datos para 2025-01 a 2026-06")
 
         resp = JSONResponse(content={"historico": historico})
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"

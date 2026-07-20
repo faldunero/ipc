@@ -1,152 +1,146 @@
 [
   {
-    "mes_actual": "2026-06",
-    "mes_predicho": "2026-07",
-    "ipc_percent": 112.32,
-    "ipc_predicted_percent": 112.58,
-    "variacion_mensual_actual": 0.0,
-    "variacion_esperada": 0.26,
-    "variacion_12_meses": 3.1,
-    "version": "v2.0-ensemble",
-    "timestamp": "2026-07-19T00:00:00"
+    "mes": "2026-06",
+    "variacion_mensual": 0.0,
+    "indice": 112.35,
+    "variacion_12_meses": 4.38,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-06",
-    "variacion_esperada": -0.36,
-    "ipc_real": 0,
-    "error_absoluto": 0.36,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2026-05",
+    "variacion_mensual": 0.2,
+    "indice": 112.35,
+    "variacion_12_meses": 3.96,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-05",
-    "variacion_esperada": 0.45,
-    "ipc_real": 0.2,
-    "error_absoluto": 0.254,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2026-04",
+    "variacion_mensual": 1.3,
+    "indice": 112.13,
+    "variacion_12_meses": 3.97,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-04",
-    "variacion_esperada": -0.18,
-    "ipc_real": 1.3,
-    "error_absoluto": 1.483,
-    "direccion_correcta": false,
-    "version": "backtest-proper"
+    "mes": "2026-03",
+    "variacion_mensual": 1.0,
+    "indice": 110.69,
+    "variacion_12_meses": 2.84,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-03",
-    "variacion_esperada": 0.41,
-    "ipc_real": 1,
-    "error_absoluto": 0.587,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2026-02",
+    "variacion_mensual": 0.0,
+    "indice": 109.59,
+    "variacion_12_meses": 2.33,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-02",
-    "variacion_esperada": 0.15,
-    "ipc_real": 0,
-    "error_absoluto": 0.149,
-    "direccion_correcta": false,
-    "version": "backtest-proper"
+    "mes": "2026-01",
+    "variacion_mensual": 0.4,
+    "indice": 109.59,
+    "variacion_12_meses": 2.75,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2026-01",
-    "variacion_esperada": 0.63,
-    "ipc_real": 0.4,
-    "error_absoluto": 0.229,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-12",
+    "variacion_mensual": -0.2,
+    "indice": 109.15,
+    "variacion_12_meses": 3.46,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-12",
-    "variacion_esperada": -0.14,
-    "ipc_real": -0.2,
-    "error_absoluto": 0.061,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-11",
+    "variacion_mensual": 0.3,
+    "indice": 109.37,
+    "variacion_12_meses": 3.46,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-11",
-    "variacion_esperada": 0.41,
-    "ipc_real": 0.3,
-    "error_absoluto": 0.111,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-10",
+    "variacion_mensual": 0.0,
+    "indice": 109.04,
+    "variacion_12_meses": 3.36,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-10",
-    "variacion_esperada": 0.47,
-    "ipc_real": 0,
-    "error_absoluto": 0.466,
-    "direccion_correcta": false,
-    "version": "backtest-proper"
+    "mes": "2025-09",
+    "variacion_mensual": 0.4,
+    "indice": 109.04,
+    "variacion_12_meses": 4.38,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-09",
-    "variacion_esperada": 0.63,
-    "ipc_real": 0.4,
-    "error_absoluto": 0.225,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-08",
+    "variacion_mensual": 0.0,
+    "indice": 108.61,
+    "variacion_12_meses": 4.07,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-08",
-    "variacion_esperada": 0.49,
-    "ipc_real": 0,
-    "error_absoluto": 0.487,
-    "direccion_correcta": false,
-    "version": "backtest-proper"
+    "mes": "2025-07",
+    "variacion_mensual": 0.9,
+    "indice": 108.61,
+    "variacion_12_meses": 4.38,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-07",
-    "variacion_esperada": 0.55,
-    "ipc_real": 0.9,
-    "error_absoluto": 0.353,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-06",
+    "variacion_mensual": -0.4,
+    "indice": 107.64,
+    "variacion_12_meses": 4.17,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-06",
-    "variacion_esperada": -0.21,
-    "ipc_real": -0.4,
-    "error_absoluto": 0.191,
-    "direccion_correcta": true,
-    "version": "backtest-proper"
+    "mes": "2025-05",
+    "variacion_mensual": 0.2,
+    "indice": 108.07,
+    "variacion_12_meses": 4.49,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-05",
-    "variacion_esperada": 0.43,
-    "ipc_real": 0.2,
-    "error_absoluto": 0.23234755717311573,
-    "version": "backtest-retroactivo"
+    "mes": "2025-04",
+    "variacion_mensual": 0.2,
+    "indice": 107.85,
+    "variacion_12_meses": 4.59,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-04",
-    "variacion_esperada": 0.26,
-    "ipc_real": 0.2,
-    "error_absoluto": 0.057499818283023474,
-    "version": "backtest-retroactivo"
+    "mes": "2025-03",
+    "variacion_mensual": 0.5,
+    "indice": 107.63,
+    "variacion_12_meses": 4.89,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-03",
-    "variacion_esperada": 0.4,
-    "ipc_real": 0.5,
-    "error_absoluto": 0.10478069535779538,
-    "version": "backtest-retroactivo"
+    "mes": "2025-02",
+    "variacion_mensual": 0.4,
+    "indice": 107.09,
+    "variacion_12_meses": 4.78,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   },
   {
-    "mes_predicho": "2025-02",
-    "variacion_esperada": 0.15,
-    "ipc_real": 0.4,
-    "error_absoluto": 0.2541208535326709,
-    "version": "backtest-retroactivo"
-  },
-  {
-    "mes_predicho": "2025-01",
-    "variacion_esperada": 0.28,
-    "ipc_real": 1.1,
-    "error_absoluto": 0.8175673551076972,
-    "version": "backtest-retroactivo"
+    "mes": "2025-01",
+    "variacion_mensual": 1.1,
+    "indice": 106.66,
+    "variacion_12_meses": 4.99,
+    "tipo": "dato-real",
+    "fuente": "Banco Central"
   }
 ]
