@@ -64,8 +64,8 @@
         table#historico-predictions-table { width: 100%; border-collapse: collapse; }
         table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
         table#historico-predictions-table thead th:hover { background: #141829; }
-        .info-icon-btn { background: transparent; border: 1px solid #ff9900; color: #ff9900; cursor: pointer; font-size: 12px; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-left: 5px; width: auto; margin-top: 0; font-weight: 400; }
-        .info-icon-btn:hover { background: #ff9900; color: #000; }
+        .info-icon-btn { background: #ff9900; border: none; color: #000; cursor: pointer; font-size: 14px; padding: 3px 7px; border-radius: 50%; display: inline-block; margin-left: 8px; width: 24px; height: 24px; text-align: center; line-height: 18px; font-weight: bold; vertical-align: middle; }
+        .info-icon-btn:hover { background: #ffb333; transform: scale(1.1); }
         table#historico-predictions-table tbody td { border-bottom: 1px solid #0a0e27; padding: 12px 8px; color: #d0d0d0; }
         table#historico-predictions-table tbody tr:hover { background: #141829; }
         .sort-asc::after { content: " ▲"; }
@@ -999,10 +999,10 @@
                     <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">MES <button class="info-icon-btn" onclick="openModal('modal-mes', event)" title="Ver información">❓</button></th>
-                                <th onclick="sortTable(1)">VAR MENSUAL % <button class="info-icon-btn" onclick="openModal('modal-var-mensual', event)" title="Ver información">❓</button></th>
-                                <th onclick="sortTable(2)">ÍNDICE <button class="info-icon-btn" onclick="openModal('modal-indice', event)" title="Ver información">❓</button></th>
-                                <th onclick="sortTable(3)">VAR 12 MESES % <button class="info-icon-btn" onclick="openModal('modal-var-12', event)" title="Ver información">❓</button></th>
+                                <th onclick="sortTable(0)">MES <span class="info-icon-btn" onclick="window.openModal('modal-mes', event); return false;" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(1)">VAR MENSUAL % <span class="info-icon-btn" onclick="window.openModal('modal-var-mensual', event); return false;" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(2)">ÍNDICE <span class="info-icon-btn" onclick="window.openModal('modal-indice', event); return false;" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(3)">VAR 12 MESES % <span class="info-icon-btn" onclick="window.openModal('modal-var-12', event); return false;" title="Ver información">❓</span></th>
                             </tr>
                         </thead>
                         <tbody id="historico-table-body">`;
@@ -1421,11 +1421,11 @@
 
         // Modales informativos para columnas
         window.openModal = function(modalId, event) {
-            console.log('🔵 openModal called:', modalId);
-            event.stopPropagation();
-            event.preventDefault();
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
             const modal = document.getElementById(modalId);
-            console.log('🔍 Modal encontrado:', !!modal);
             if (modal) {
                 modal.classList.add('active');
                 console.log('✅ Modal abierto:', modalId);
@@ -1439,9 +1439,9 @@
             }
         };
 
-        // Cerrar modal al hacer click fuera
+        // Cerrar modal al hacer click en fondo
         document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList && e.target.classList.contains('modal')) {
+            if (e.target && e.target.id && e.target.id.startsWith('modal-')) {
                 e.target.classList.remove('active');
             }
         });
