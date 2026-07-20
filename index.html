@@ -64,6 +64,8 @@
         table#historico-predictions-table { width: 100%; border-collapse: collapse; }
         table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
         table#historico-predictions-table thead th:hover { background: #141829; }
+        .info-icon { color: #ffd699; cursor: pointer; font-size: 14px; margin-left: 5px; vertical-align: super; }
+        .info-icon:hover { color: #ffb333; }
         table#historico-predictions-table tbody td { border-bottom: 1px solid #0a0e27; padding: 12px 8px; color: #d0d0d0; }
         table#historico-predictions-table tbody tr:hover { background: #141829; }
         .sort-asc::after { content: " ▲"; }
@@ -997,10 +999,10 @@
                     <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">MES</th>
-                                <th onclick="sortTable(1)">VAR MENSUAL %</th>
-                                <th onclick="sortTable(2)">ÍNDICE</th>
-                                <th onclick="sortTable(3)">VAR 12 MESES %</th>
+                                <th onclick="sortTable(0)">MES <span class="info-icon" onclick="openModal('modal-mes', event)">ℹ</span></th>
+                                <th onclick="sortTable(1)">VAR MENSUAL % <span class="info-icon" onclick="openModal('modal-var-mensual', event)">ℹ</span></th>
+                                <th onclick="sortTable(2)">ÍNDICE <span class="info-icon" onclick="openModal('modal-indice', event)">ℹ</span></th>
+                                <th onclick="sortTable(3)">VAR 12 MESES % <span class="info-icon" onclick="openModal('modal-var-12', event)">ℹ</span></th>
                             </tr>
                         </thead>
                         <tbody id="historico-table-body">`;
@@ -1416,6 +1418,85 @@
                 cerrarModal();
             }
         });
+
+        // Modales informativos para columnas
+        function openModal(modalId, event) {
+            event.stopPropagation();
+            document.getElementById(modalId)?.classList.add('active');
+        }
+
+        function closeColumnModal(modalId) {
+            document.getElementById(modalId)?.classList.remove('active');
+        }
+
+        // Cerrar modal al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
     </script>
+
+    <!-- Modales informativos para columnas -->
+    <div id="modal-mes" class="modal">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="modal-close" onclick="closeColumnModal('modal-mes')">×</span>
+            <h3>MES</h3>
+            <p><strong>Fuente:</strong> Banco Central de Chile</p>
+            <p><strong>Descripción:</strong> Período del dato, expresado en formato YYYY-MM (año-mes).</p>
+            <p><strong>Ejemplo:</strong> 2026-06 significa junio de 2026.</p>
+            <p><strong>Rango:</strong> Se muestran los datos de enero 2025 a junio 2026.</p>
+        </div>
+    </div>
+
+    <div id="modal-var-mensual" class="modal">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="modal-close" onclick="closeColumnModal('modal-var-mensual')">×</span>
+            <h3>VARIACIÓN MENSUAL %</h3>
+            <p><strong>Fuente:</strong> Banco Central de Chile</p>
+            <p><strong>Descripción:</strong> Cambio porcentual del Índice de Precios al Consumidor (IPC) respecto al mes anterior.</p>
+            <p><strong>Fórmula:</strong> ((IPC_mes_actual - IPC_mes_anterior) / IPC_mes_anterior) × 100</p>
+            <p><strong>Interpretación:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li>Valores positivos (+): inflación mensual</li>
+                <li>Valores negativivos (-): deflación mensual</li>
+                <li>0%: sin cambio de precios</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="modal-indice" class="modal">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="modal-close" onclick="closeColumnModal('modal-indice')">×</span>
+            <h3>ÍNDICE</h3>
+            <p><strong>Fuente:</strong> Banco Central de Chile</p>
+            <p><strong>Descripción:</strong> Valor del Índice de Precios al Consumidor con base 2023=100.</p>
+            <p><strong>Base:</strong> El índice toma el valor 100 en 2023.</p>
+            <p><strong>Interpretación:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li>Índice > 100: precios han aumentado desde 2023</li>
+                <li>Índice = 100: precios iguales a 2023</li>
+                <li>Índice < 100: precios han disminuido desde 2023</li>
+            </ul>
+            <p><strong>Ejemplo:</strong> Índice 112.35 significa que los precios son 12.35% más altos que en 2023.</p>
+        </div>
+    </div>
+
+    <div id="modal-var-12" class="modal">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="modal-close" onclick="closeColumnModal('modal-var-12')">×</span>
+            <h3>VARIACIÓN 12 MESES %</h3>
+            <p><strong>Fuente:</strong> Banco Central de Chile</p>
+            <p><strong>Descripción:</strong> Cambio porcentual del IPC respecto al mismo mes del año anterior (variación interanual).</p>
+            <p><strong>Fórmula:</strong> ((IPC_mes_actual - IPC_hace_12_meses) / IPC_hace_12_meses) × 100</p>
+            <p><strong>Importancia:</strong> Mide la inflación acumulada en los últimos 12 meses, eliminando efectos estacionales.</p>
+            <p><strong>Interpretación:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 8px;">
+                <li>Valor más relevante para análisis económico</li>
+                <li>Menos volatilidad que variación mensual</li>
+                <li>Mejor indicador de tendencia inflacionaria</li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
