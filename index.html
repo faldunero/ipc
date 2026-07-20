@@ -999,10 +999,10 @@
                     <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">MES <span class="info-icon-btn" onclick="window.openModal('modal-mes', event); return false;" title="Ver información">❓</span></th>
-                                <th onclick="sortTable(1)">VAR MENSUAL % <span class="info-icon-btn" onclick="window.openModal('modal-var-mensual', event); return false;" title="Ver información">❓</span></th>
-                                <th onclick="sortTable(2)">ÍNDICE <span class="info-icon-btn" onclick="window.openModal('modal-indice', event); return false;" title="Ver información">❓</span></th>
-                                <th onclick="sortTable(3)">VAR 12 MESES % <span class="info-icon-btn" onclick="window.openModal('modal-var-12', event); return false;" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(0)">MES <span class="info-icon-btn" data-modal="modal-mes" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(1)">VAR MENSUAL % <span class="info-icon-btn" data-modal="modal-var-mensual" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(2)">ÍNDICE <span class="info-icon-btn" data-modal="modal-indice" title="Ver información">❓</span></th>
+                                <th onclick="sortTable(3)">VAR 12 MESES % <span class="info-icon-btn" data-modal="modal-var-12" title="Ver información">❓</span></th>
                             </tr>
                         </thead>
                         <tbody id="historico-table-body">`;
@@ -1127,6 +1127,17 @@
                     // Event listeners
                     filterInput.addEventListener('input', filterTable);
                     columnSelect.addEventListener('change', filterTable);
+
+                    // Event listeners para iconos de información
+                    document.querySelectorAll('.info-icon-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const modalId = this.getAttribute('data-modal');
+                            console.log('🔵 Click en icono info:', modalId);
+                            window.openModal(modalId, e);
+                        });
+                    });
 
                     // Ordenar por mes (columna 0) descendente al cargar (más reciente primero)
                     sortTable(0);
