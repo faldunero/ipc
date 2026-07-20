@@ -389,10 +389,10 @@ def historico_predicciones():
                     "tipo": "dato-real"
                 })
 
-        # Ordenar DESC (más reciente primero)
+        # Ordenar DESC (más reciente primero: 2026-06 → 2025-01)
         historico = sorted(historico, key=lambda x: x['mes'], reverse=True)
 
-        print(f"✅ {len(historico)} meses de datos BC (2025-01 a 2026-06)")
+        print(f"✅ {len(historico)} meses de datos BC ordenados DESC (más reciente primero)")
 
         if not historico:
             raise HTTPException(status_code=404, detail="No hay datos para 2025-01 a 2026-06")

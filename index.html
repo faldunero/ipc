@@ -1071,37 +1071,56 @@
                         });
                     };
 
+                    // Estado global de ordenamiento
+                    let sortState = { column: -1, ascending: false };
+
                     // Función para ordenar
                     window.sortTable = (columnIndex) => {
                         const rows = Array.from(tbody.querySelectorAll('tr'));
-                        const isAsc = rows[0]?.style.backgroundColor === 'rgb(20, 24, 41)';
+
+                        // Determinar dirección: si es la misma columna, alternar; sino, descender
+                        if (sortState.column === columnIndex) {
+                            sortState.ascending = !sortState.ascending;
+                        } else {
+                            sortState.column = columnIndex;
+                            sortState.ascending = false; // Defecto: DESC (más reciente primero)
+                        }
 
                         rows.sort((a, b) => {
-                            const aVal = a.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim();
-                            const bVal = b.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim();
+                            const aVal = a.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim() || '';
+                            const bVal = b.querySelector(`td:nth-child(${columnIndex + 1})`)?.textContent.trim() || '';
 
                             // Intenta parse como número si es posible
-                            const aNum = parseFloat(aVal);
-                            const bNum = parseFloat(bVal);
+                            const aNum = parseFloat(aVal.replace(/[^0-9.-]/g, ''));
+                            const bNum = parseFloat(bVal.replace(/[^0-9.-]/g, ''));
 
+                            let comparison = 0;
                             if (!isNaN(aNum) && !isNaN(bNum)) {
-                                return isAsc ? bNum - aNum : aNum - bNum;
+                                comparison = aNum - bNum;
+                            } else {
+                                comparison = aVal.localeCompare(bVal);
                             }
-                            return isAsc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+
+                            return sortState.ascending ? comparison : -comparison;
                         });
 
                         rows.forEach(row => tbody.appendChild(row));
 
-                        // Marcar columna ordenada
+                        // Actualizar indicadores visuales
                         document.querySelectorAll('#historico-predictions-table thead th').forEach((th, i) => {
+                            th.textContent = th.textContent.replace(/\s*[↑↓]/g, ''); // Remover indicador anterior
                             if (i === columnIndex) {
-                                th.classList.toggle('sort-asc');
-                                th.classList.toggle('sort-desc');
+                                const indicator = sortState.ascending ? ' ↑' : ' ↓';
+                                th.textContent += indicator;
+                                th.style.color = '#ff9900';
                             } else {
-                                th.classList.remove('sort-asc', 'sort-desc');
+                                th.style.color = '';
                             }
                         });
                     };
+
+                    // Ordenar DESC por defecto (columna 0 = MES, más reciente primero)
+                    sortTable(0);
 
                     // Event listeners
                     filterInput.addEventListener('input', filterTable);
