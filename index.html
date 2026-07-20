@@ -63,9 +63,10 @@
         #table-filter-container select { padding: 8px 12px; background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; font-family: inherit; font-size: 12px; }
         table#historico-predictions-table { width: 100%; border-collapse: collapse; }
         table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
+        table#historico-predictions-table thead th { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         table#historico-predictions-table thead th:hover { background: #141829; }
-        .info-icon { color: #ffd699; cursor: pointer; font-size: 14px; margin-left: 5px; vertical-align: super; }
-        .info-icon:hover { color: #ffb333; }
+        .info-icon-btn { color: #ff9900; cursor: pointer; font-size: 16px; flex-shrink: 0; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+        .info-icon-btn:hover { background: #ff9900; color: #000; font-weight: bold; }
         table#historico-predictions-table tbody td { border-bottom: 1px solid #0a0e27; padding: 12px 8px; color: #d0d0d0; }
         table#historico-predictions-table tbody tr:hover { background: #141829; }
         .sort-asc::after { content: " ▲"; }
@@ -999,10 +1000,10 @@
                     <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">MES <span class="info-icon" onclick="openModal('modal-mes', event)">ℹ</span></th>
-                                <th onclick="sortTable(1)">VAR MENSUAL % <span class="info-icon" onclick="openModal('modal-var-mensual', event)">ℹ</span></th>
-                                <th onclick="sortTable(2)">ÍNDICE <span class="info-icon" onclick="openModal('modal-indice', event)">ℹ</span></th>
-                                <th onclick="sortTable(3)">VAR 12 MESES % <span class="info-icon" onclick="openModal('modal-var-12', event)">ℹ</span></th>
+                                <th><span onclick="sortTable(0)" style="flex: 1; cursor: pointer;">MES</span> <span class="info-icon-btn" onclick="openModal('modal-mes', event)">❓</span></th>
+                                <th><span onclick="sortTable(1)" style="flex: 1; cursor: pointer;">VAR MENSUAL %</span> <span class="info-icon-btn" onclick="openModal('modal-var-mensual', event)">❓</span></th>
+                                <th><span onclick="sortTable(2)" style="flex: 1; cursor: pointer;">ÍNDICE</span> <span class="info-icon-btn" onclick="openModal('modal-indice', event)">❓</span></th>
+                                <th><span onclick="sortTable(3)" style="flex: 1; cursor: pointer;">VAR 12 MESES %</span> <span class="info-icon-btn" onclick="openModal('modal-var-12', event)">❓</span></th>
                             </tr>
                         </thead>
                         <tbody id="historico-table-body">`;
@@ -1421,17 +1422,29 @@
 
         // Modales informativos para columnas
         function openModal(modalId, event) {
-            event.stopPropagation();
-            document.getElementById(modalId)?.classList.add('active');
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                console.log('✅ Modal abierto:', modalId);
+            } else {
+                console.error('❌ Modal no encontrado:', modalId);
+            }
         }
 
         function closeColumnModal(modalId) {
-            document.getElementById(modalId)?.classList.remove('active');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
         }
 
         // Cerrar modal al hacer click fuera
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList && e.target.classList.contains('modal')) {
                 e.target.classList.remove('active');
             }
         });
