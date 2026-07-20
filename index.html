@@ -982,56 +982,41 @@
 
                 let html = `
                     <div class="info-box" style="margin-bottom: 20px; background: #0f1520;">
-                        <strong>Total de predicciones:</strong> ${historico.length}<br>
-                        <strong>Con dato real publicado:</strong> ${historico.filter(p => p.ipc_real).length}
+                        <strong>Datos del Banco Central:</strong> ${historico.length} meses (2025-01 a 2026-06)
                     </div>
                     <div id="table-filter-container">
                         <input type="text" id="table-filter-search" placeholder="Buscar mes o valor..." style="flex: 1;">
                         <select id="table-filter-column">
                             <option value="">Buscar en: Todas</option>
-                            <option value="0">Predicción Para</option>
-                            <option value="1">Predicción %</option>
-                            <option value="2">Dato Real %</option>
-                            <option value="3">Error</option>
+                            <option value="0">Mes</option>
+                            <option value="1">Var Mensual</option>
+                            <option value="2">Índice</option>
+                            <option value="3">Var 12 Meses</option>
                         </select>
                     </div>
                     <table id="historico-predictions-table">
                         <thead>
                             <tr>
-                                <th onclick="sortTable(0)">PREDICCIÓN PARA</th>
-                                <th onclick="sortTable(1)">PREDICCIÓN %</th>
-                                <th onclick="sortTable(2)">DATO REAL %</th>
-                                <th onclick="sortTable(3)">ERROR</th>
-                                <th>INGRESO DATO REAL</th>
+                                <th onclick="sortTable(0)">MES</th>
+                                <th onclick="sortTable(1)">VAR MENSUAL %</th>
+                                <th onclick="sortTable(2)">ÍNDICE</th>
+                                <th onclick="sortTable(3)">VAR 12 MESES %</th>
                             </tr>
                         </thead>
                         <tbody id="historico-table-body">`;
 
                 historico.forEach((pred, idx) => {
-                    // Calcular error vs dato real si existe
-                    let errorDisplay = '—';
-                    if (pred.ipc_real !== undefined && pred.ipc_real !== null) {
-                        const error = Math.abs(pred.variacion_esperada - pred.ipc_real);
-                        errorDisplay = `<span style="color: ${error < 0.3 ? '#10b981' : error < 0.5 ? '#ff9900' : '#ff6b6b'}">${error.toFixed(2)}pp</span>`;
-                    }
-
-                    let ingreso = '';
-                    if (pred.ipc_real) {
-                        ingreso = `<span style="color: #10b981; font-size: 10px;">✓ Actualizado</span>`;
-                    } else {
-                        ingreso = `
-                            <div style="display: flex; gap: 5px;">
-                                <input type="number" id="input-real-${idx}" placeholder="ej: 0,50" step="0.01" style="width: 60px; padding: 5px; background: #0f1520; color: #ff9900; font-size: 11px; border: 1px solid #ff9900; font-family: inherit;">
-                                <button onclick="guardarDatoReal('${pred.mes_predicho}', ${idx})" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 10px;">Guardar</button>
-                            </div>`;
-                    }
+                    // Datos del Banco Central (variacion_mensual)
+                    const mes = pred.mes || pred.mes_predicho;
+                    const variacion = pred.variacion_mensual !== undefined ? pred.variacion_mensual : pred.variacion_esperada;
+                    const indice = pred.indice;
+                    const var12 = pred.variacion_12_meses;
 
                     html += `<tr>
-                        <td><strong>${pred.mes_predicho}</strong></td>
-                        <td>${pred.variacion_esperada > 0 ? '+' : ''}${formatearChile(pred.variacion_esperada)}%</td>
-                        <td>${pred.ipc_real !== undefined && pred.ipc_real !== null ? (pred.ipc_real > 0 ? '+' : '') + formatearChile(pred.ipc_real, 2) + '%' : '—'}</td>
-                        <td>${errorDisplay}</td>
-                        <td>${ingreso}</td>
+                        <td><strong>${mes}</strong></td>
+                        <td>${variacion > 0 ? '+' : ''}${formatearChile(variacion)}%</td>
+                        <td>${formatearChile(indice)}</td>
+                        <td>${var12 !== null && var12 !== undefined ? (var12 > 0 ? '+' : '') + formatearChile(var12) + '%' : '—'}</td>
                     </tr>`;
                 });
 
