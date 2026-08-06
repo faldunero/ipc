@@ -373,11 +373,57 @@
 
         async function cargarResumenHoy() {
             try {
-                // Por ahora, mostrar mensaje
-                document.getElementById('stat-eventos').textContent = '...';
-                console.log('Resumen: Sistema recolecta logs diariamente en /logs/');
+                const resp = await fetch(`${currentAPI}/api/logs/hoy`);
+                const datos = await resp.json();
+
+                if (datos.resumen) {
+                    const r = datos.resumen;
+                    document.getElementById('stat-eventos').textContent = r.total_eventos;
+                    document.getElementById('stat-datos').textContent = r.datos_recolectados;
+                    document.getElementById('stat-modelos').textContent = r.modelos_entrenados;
+                    document.getElementById('stat-predicciones').textContent = r.predicciones;
+                    document.getElementById('stat-errores').textContent = r.errores;
+
+                    // Calcular duración
+                    const inicio = new Date(datos.timestamp_inicio);
+                    const fin = new Date(datos.timestamp_actualizacion);
+                    const duracion = ((fin - inicio) / 1000 / 60).toFixed(1);
+                    document.getElementById('stat-duracion').textContent = duracion;
+
+                    // Mostrar datos recolectados
+                    if (r.fuentes && r.fuentes.length > 0) {
+                        let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+                        r.fuentes.forEach(fuente => {
+                            html += `<div style="background: #0a0e27; padding: 12px; border-radius: 3px; border-left: 3px solid #ff9900;">
+                                <div style="color: #ff9900; font-weight: bold;">${fuente}</div>
+                                <div style="color: #a0a0a0; font-size: 11px;">Datos recolectados</div>
+                            </div>`;
+                        });
+                        html += '</div>';
+                        document.getElementById('datos-recolectados').innerHTML = html;
+                    }
+
+                    // Mostrar modelos
+                    if (r.modelos && r.modelos.length > 0) {
+                        let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
+                        r.modelos.forEach(modelo => {
+                            html += `<div style="background: #0a0e27; padding: 12px; border-radius: 3px; border-left: 3px solid #4ecdc4;">
+                                <div style="color: #4ecdc4; font-weight: bold;">${modelo}</div>
+                                <div style="color: #a0a0a0; font-size: 11px;">Modelo entrenado</div>
+                            </div>`;
+                        });
+                        html += '</div>';
+                        document.getElementById('modelos-entrenados').innerHTML = html;
+                    }
+
+                    console.log('✅ Resumen cargado:', r);
+                } else if (datos.error) {
+                    document.getElementById('stat-eventos').textContent = '-';
+                    console.log('ℹ️ ' + datos.nota);
+                }
             } catch (e) {
                 console.error('Error:', e);
+                document.getElementById('stat-eventos').textContent = 'Error';
             }
         }
 

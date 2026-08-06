@@ -477,7 +477,7 @@ def historico_predicciones():
 
 @app.get("/api/logs/hoy")
 def obtener_logs_hoy():
-    """Obtiene logs de ejecución de hoy"""
+    """Obtiene logs de ejecución de hoy con resumen"""
     try:
         from pathlib import Path
         from datetime import datetime
@@ -489,11 +489,30 @@ def obtener_logs_hoy():
         if archivo.exists():
             with open(archivo, 'r', encoding='utf-8') as f:
                 datos = json.load(f)
-                resp = JSONResponse(content=datos)
-                resp.headers["Cache-Control"] = "no-cache"
-                return resp
+
+            # Agregar resumen
+            resumen = {
+                'fecha': fecha_hoy,
+                'total_eventos': len(datos.get('eventos', [])),
+                'datos_recolectados': len(datos.get('datos_recolectados', {})),
+                'modelos_entrenados': len(datos.get('modelos_entrenados', {})),
+                'predicciones': len(datos.get('predicciones', {})),
+                'errores': len(datos.get('errores', [])),
+                'fuentes': list(datos.get('datos_recolectados', {}).keys()),
+                'modelos': list(datos.get('modelos_entrenados', {}).keys()),
+            }
+
+            datos['resumen'] = resumen
+            resp = JSONResponse(content=datos)
+            resp.headers["Cache-Control"] = "no-cache"
+            return resp
         else:
-            return {"error": "No hay logs para hoy", "fecha": fecha_hoy}
+            # Retornar datos ejemplo si no existe el archivo
+            return {
+                "error": "No hay logs para hoy",
+                "fecha": fecha_hoy,
+                "nota": "El primer log se genera después de la primera ejecución del pipeline"
+            }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
