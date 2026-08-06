@@ -156,6 +156,16 @@ def boletin():
     """Servir boletín oficial de proyección IPC"""
     return FileResponse("boletin_proyeccion.html", media_type="text/html")
 
+@app.get("/dashboard-entrenamiento")
+def dashboard_entrenamiento():
+    """Servir dashboard de entrenamiento en tiempo real"""
+    return FileResponse("dashboard-entrenamiento.html", media_type="text/html")
+
+@app.get("/dashboard-entrenamiento.html")
+def dashboard_entrenamiento_html():
+    """Servir dashboard (ruta alternativa con .html)"""
+    return FileResponse("dashboard-entrenamiento.html", media_type="text/html")
+
 @app.get("/api/predecir")
 def predecir(mes: str = None):
     """Endpoint de predicción FRESCA sin cachés - genera datos nuevos cada vez"""
