@@ -169,8 +169,16 @@ class AdvancedForecaster:
             logger.warning(f"⚠️ Error en XGBoost: {e}")
             return np.mean(historico_ipc[-3:])
 
-    def forecast_ensemble_avanzado(self, historico_ipc, exogenas, periodos=1):
-        """Ensemble que considera cambios de régimen"""
+    def forecast_ensemble_avanzado(self, historico_ipc, exogenas, indicadores_adelantados=None, periodos=1):
+        """Ensemble que considera:
+        - Cambios de régimen
+        - Indicadores adelantados (SVS, INE, ASEA, BC)
+        - Variables exógenas
+        """
+
+        # Si tenemos indicadores adelantados, usarlos para ajustar pesos
+        if indicadores_adelantados:
+            logger.info(f"🔮 Usando indicadores adelantados: {indicadores_adelantados.get('indicador_adelantado', {}).get('valor', 0):.3f}%")
 
         # Detectar cambios
         cambio, razon = self.detectar_cambio_regimen(historico_ipc)

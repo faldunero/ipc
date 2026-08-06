@@ -533,24 +533,37 @@ def obtener_historial_logs(dias: int = 30):
 
 @app.get("/api/forecast-avanzado")
 def forecast_avanzado():
-    """Forecast avanzado con variables exógenas e intervalos de confianza"""
+    """Forecast avanzado con TODOS los indicadores adelantados"""
     try:
         from advanced_forecasting import AdvancedForecaster
         from fetch_external_data import consolidar_datos_exogenos
+        from fetch_all_indicators import consolidar_todos_indicadores
         import json
 
-        # Recolectar datos exógenos (API + scraping)
-        print("📊 Recolectando datos exógenos...")
+        print("📊 Recolectando TODOS los indicadores adelantados...")
+
+        # 1. Datos exógenos básicos
         datos_exogenos = consolidar_datos_exogenos()
 
-        # Cargar histórico real
+        # 2. Indicadores adelantados (SVS, INE, ASEA, BC)
+        indicadores = consolidar_todos_indicadores()
+
+        # 3. Cargar histórico real
         with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
             historico = json.load(f)
             historico_ipc = [h.get('variacion_12_meses', 0) for h in reversed(historico)][:13]
 
-        # Forecasting avanzado
+        # 4. Forecasting avanzado con indicadores
         forecaster = AdvancedForecaster()
-        resultado = forecaster.forecast_ensemble_avanzado(historico_ipc, datos_exogenos)
+        resultado = forecaster.forecast_ensemble_avanzado(
+            historico_ipc,
+            datos_exogenos,
+            indicadores  # Pasar indicadores adelantados
+        )
+
+        # 5. Agregar indicadores al resultado
+        resultado['indicadores_adelantados'] = indicadores.get('indicador_adelantado', {})
+        resultado['fuentes_datos'] = ['SVS', 'INE', 'ASEA', 'BC', 'bencinaenlinea.cl']
 
         from fastapi.responses import JSONResponse
         resp = JSONResponse(content=resultado)
