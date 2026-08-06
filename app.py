@@ -216,9 +216,34 @@ def predecir_meses(num: int = 3):
 
 @app.get("/api/predecir-v2")
 def predecir_v2():
-    """Predicción Ensemble v2.0: Lee desde Supabase (fuente de verdad)"""
+    """Predicción Ensemble v2.0: Lee desde cache persistente (24 horas)"""
     try:
-        # LEER directamente de Supabase - es la fuente de verdad
+        from pathlib import Path
+        from datetime import datetime, timedelta
+        import os
+
+        cache_file = Path("prediccion_cache_v2.json")
+
+        # 1. INTENTAR LEER DE CACHE LOCAL (si existe y es reciente)
+        if cache_file.exists():
+            age_seconds = datetime.now().timestamp() - os.path.getmtime(cache_file)
+            age_hours = age_seconds / 3600
+
+            if age_hours < 24:  # Cache válido por 24 horas
+                print(f"✅ Cache válido (edad: {age_hours:.1f} horas)")
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    resultado = json.load(f)
+                    resultado['fuente'] = 'cache-local'
+                    resultado['edad_cache_horas'] = round(age_hours, 1)
+
+                    from fastapi.responses import JSONResponse
+                    resp = JSONResponse(content=resultado)
+                    resp.headers["Cache-Control"] = "public, max-age=86400"  # 24 horas
+                    return resp
+            else:
+                print(f"⏰ Cache expirado (edad: {age_hours:.1f} horas)")
+
+        # 2. SI NO HAY CACHE O EXPIRÓ - LEER DE SUPABASE
         if supabase_client:
             print("🌐 Leyendo predicción v2.0 desde Supabase...")
             response = supabase_client.table('predicciones_historico').select("*").eq('version', 'v2.0-ensemble').execute()
@@ -232,9 +257,19 @@ def predecir_v2():
                     'predicciones_por_modelo': {},
                     'pesos': {'ARIMA': 0.40, 'XGBoost': 0.40, 'LSTM': 0.20},
                     'confianza': 0.69,
-                    'timestamp': pred.get('timestamp', '')
+                    'timestamp': pred.get('timestamp', ''),
+                    'fuente': 'supabase'
                 }
                 print(f"✅ Predicción v2.0 desde Supabase: {resultado['ensemble_prediccion']}%")
+
+                # Guardar en cache local
+                try:
+                    with open(cache_file, 'w', encoding='utf-8') as f:
+                        json.dump(resultado, f, ensure_ascii=False, indent=2)
+                    print(f"💾 Predicción guardada en cache local")
+                except Exception as e:
+                    print(f"⚠️ Error guardando cache: {e}")
+
             else:
                 raise HTTPException(status_code=404, detail="No hay predicción v2.0 en Supabase")
         else:
@@ -245,12 +280,19 @@ def predecir_v2():
             if not resultado:
                 raise HTTPException(status_code=500, detail="No hay predicciones disponibles")
 
+            resultado['fuente'] = 'advanced-predictor'
+
+            # Guardar en cache
+            try:
+                with open(cache_file, 'w', encoding='utf-8') as f:
+                    json.dump(resultado, f, ensure_ascii=False, indent=2)
+            except:
+                pass
+
         from fastapi.responses import JSONResponse
-        response = JSONResponse(content=resultado)
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
-        return response
+        resp = JSONResponse(content=resultado)
+        resp.headers["Cache-Control"] = "public, max-age=86400"  # 24 horas
+        return resp
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

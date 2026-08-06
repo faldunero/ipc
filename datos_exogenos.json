@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-08-06T18:44:36.804270",
+  "banco_central": {},
+  "precios_petroleo": {},
+  "combustibles_chile": {
+    "bencina_95": {
+      "valor": 1150,
+      "fuente": "estimado",
+      "fecha": "2026-08-06T18:44:36.872378"
+    },
+    "diesel": {
+      "valor": 1080,
+      "fuente": "estimado",
+      "fecha": "2026-08-06T18:44:36.872383"
+    }
+  },
+  "indices_internacionales": {
+    "sp500": 5200,
+    "eurostoxx": 4800,
+    "vix": 15
+  }
+}

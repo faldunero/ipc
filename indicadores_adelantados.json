@@ -1,0 +1,126 @@
+{
+  "timestamp": "2026-08-06T18:44:36.796597",
+  "svs": {
+    "seguros_auto": {
+      "prima_promedio": 450000,
+      "variacion_mensual": 2.5,
+      "variacion_anual": 12.3
+    },
+    "seguros_vida": {
+      "prima_promedio": 120000,
+      "variacion_mensual": 0.8,
+      "variacion_anual": 5.2
+    },
+    "seguros_salud": {
+      "prima_promedio": 280000,
+      "variacion_mensual": 1.5,
+      "variacion_anual": 8.1
+    },
+    "seguros_vivienda": {
+      "prima_promedio": 180000,
+      "variacion_mensual": 1.2,
+      "variacion_anual": 6.5
+    },
+    "timestamp": "2026-08-06T18:44:36.796818",
+    "prima_ponderada": 301000.0
+  },
+  "ine": {
+    "alimentos": {
+      "valor": 118.5,
+      "variacion_mensual": 0.8,
+      "variacion_anual": 4.2,
+      "ponderacion": 22.15
+    },
+    "transporte": {
+      "valor": 115.2,
+      "variacion_mensual": -0.3,
+      "variacion_anual": 3.1,
+      "ponderacion": 13.45
+    },
+    "vivienda": {
+      "valor": 112.8,
+      "variacion_mensual": 0.1,
+      "variacion_anual": 2.8,
+      "ponderacion": 16.76
+    },
+    "educacion": {
+      "valor": 121.0,
+      "variacion_mensual": 0.4,
+      "variacion_anual": 4.9,
+      "ponderacion": 12.84
+    },
+    "salud": {
+      "valor": 119.5,
+      "variacion_mensual": 0.6,
+      "variacion_anual": 5.1,
+      "ponderacion": 10.22
+    },
+    "esparcimiento": {
+      "valor": 110.3,
+      "variacion_mensual": 0.2,
+      "variacion_anual": 1.9,
+      "ponderacion": 7.2
+    },
+    "timestamp": "2026-08-06T18:44:36.797259"
+  },
+  "asea": {
+    "prima_total_mercado": 12500000000,
+    "numero_pólizas": 8500000,
+    "variacion_mensual": 2.1,
+    "variacion_anual": 11.5,
+    "concentracion_hhi": 0.18,
+    "timestamp": "2026-08-06T18:44:36.798157"
+  },
+  "bc_tasas": {
+    "tpm": {
+      "valor": 6.5,
+      "cambio": 0.0,
+      "perspectiva": "neutral"
+    },
+    "tasa_colocacion_promedio": {
+      "valor": 7.2,
+      "cambio": 0.05
+    },
+    "spread_colocacion_depositos": {
+      "valor": 0.7,
+      "cambio": 0.05,
+      "interpretacion": "mayor riesgo percibido"
+    },
+    "expectativa_inflacion_12m": {
+      "valor": 3.2,
+      "rango_min": 2.8,
+      "rango_max": 3.6,
+      "fuente": "encuesta BC"
+    },
+    "tc_usd": {
+      "valor": 820,
+      "cambio": -5,
+      "volatilidad": 1.2
+    },
+    "tc_eur": {
+      "valor": 900,
+      "cambio": 10
+    },
+    "timestamp": "2026-08-06T18:44:36.798704"
+  },
+  "indicador_adelantado": {
+    "valor": 1.8599999999999999,
+    "componentes": {
+      "expectativa_inflacion_bc": 3.2,
+      "tasa_colocacion": 1.2000000000000002,
+      "variacion_prima_seguros": 2.5,
+      "variacion_alimentos": 0.8,
+      "variacion_transporte": -0.3,
+      "spread_colocacion": 0.7
+    },
+    "pesos": {
+      "expectativa_inflacion_bc": 0.35,
+      "tasa_colocacion": 0.2,
+      "variacion_prima_seguros": 0.15,
+      "variacion_alimentos": 0.15,
+      "variacion_transporte": 0.1,
+      "spread_colocacion": 0.05
+    },
+    "interpretacion": "Predictor de inflación futura (>0 = inflación esperada)"
+  }
+}
