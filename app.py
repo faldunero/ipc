@@ -407,6 +407,101 @@ def historico_predicciones():
         print(f"❌ Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/ultima-actualizacion")
+def ultima_actualizacion():
+    """Obtener info de la última actualización y entrenamiento"""
+    try:
+        import os
+        from datetime import datetime
+
+        resultado = {
+            "ultima_actualizacion": None,
+            "entrenamiento": {
+                "total_predicciones": 0,
+                "mae": None,
+                "rmse": None,
+                "aciertos_direccion": "0/0",
+                "pct_acierto": 0
+            },
+            "datos_bc": {
+                "meses": 0,
+                "rango": "2025-01 a 2026-06"
+            }
+        }
+
+        # Leer timestamp de datos_bcch.json
+        if os.path.exists('datos_bcch.json'):
+            with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+                bcch = json.load(f)
+                resultado["ultima_actualizacion"] = bcch.get('fecha_actualizacion', 'Desconocida')
+                resultado["datos_bc"]["meses"] = len([d for d in bcch.get('datos_historicos', []) if '2025-01' <= d.get('mes', '') <= '2026-06'])
+
+        # Leer resultados del entrenamiento
+        if os.path.exists('backtest_proper_resultados.json'):
+            with open('backtest_proper_resultados.json', 'r', encoding='utf-8') as f:
+                resultados = json.load(f)
+                stats = resultados.get('stats', {})
+                resultado["entrenamiento"]["total_predicciones"] = stats.get('total', 0)
+                resultado["entrenamiento"]["mae"] = stats.get('mae')
+                resultado["entrenamiento"]["rmse"] = stats.get('rmse')
+                resultado["entrenamiento"]["aciertos_direccion"] = f"{stats.get('aciertos_direccion', 0)}/{stats.get('total', 0)}"
+                resultado["entrenamiento"]["pct_acierto"] = stats.get('pct_acierto', 0)
+
+        return resultado
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"error": str(e)}
+
+@app.post("/api/forzar-entrenamiento")
+def forzar_entrenamiento():
+    """Forzar reentrenamiento de modelos (ejecuta backtest_proper.py)"""
+    try:
+        import subprocess
+
+        print("🔄 Iniciando reentrenamiento forzado de modelos...")
+
+        # Ejecutar backtest_proper.py
+        resultado = subprocess.run(
+            ["python3", "backtest_proper.py"],
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+
+        if resultado.returncode == 0:
+            print("✅ Reentrenamiento exitoso")
+
+            # Ejecutar integrate_real_ipc_data.py para sincronizar
+            subprocess.run(
+                ["python3", "integrate_real_ipc_data.py"],
+                capture_output=True,
+                timeout=60
+            )
+
+            return {
+                "status": "success",
+                "mensaje": "✅ Reentrenamiento completado exitosamente",
+                "detalles": resultado.stdout
+            }
+        else:
+            print(f"❌ Error en reentrenamiento: {resultado.stderr}")
+            return {
+                "status": "error",
+                "mensaje": "❌ Error durante el reentrenamiento",
+                "error": resultado.stderr
+            }
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timeout",
+            "mensaje": "⏱️ Reentrenamiento tomó demasiado tiempo (>5 min)"
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        return {
+            "status": "error",
+            "mensaje": f"❌ Error: {str(e)}"
+        }
+
 @app.get("/api/desempen-modelo")
 def desempen_modelo():
     """Obtener métricas de desempeño del modelo"""

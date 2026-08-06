@@ -114,6 +114,21 @@
                         <button onclick="predecir()">Calcular Predicción</button>
                         <button onclick="exportarExcel()" id="btnExportar" disabled style="background: #404040; color: #707070;">Exportar Excel</button>
                     </div>
+                    <button onclick="forzarActualizacion()" style="margin-top: 10px; background: #4ecdc4; color: #000;">🔄 Forzar Actualización</button>
+                    <div id="actualizacion-status" style="margin-top: 15px; padding: 12px; background: #0f1520; border-radius: 5px; display: none;">
+                        <div id="actualizacion-mensaje"></div>
+                        <div id="actualizacion-progreso" style="margin-top: 10px; display: none;">
+                            <div style="width: 100%; height: 20px; background: #0a0e27; border-radius: 3px; overflow: hidden;">
+                                <div id="progreso-barra" style="height: 100%; background: #ff9900; width: 0%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ultima-actualizacion-panel" style="margin-top: 15px; padding: 15px; background: #0a0e27; border-radius: 5px; border-left: 4px solid #4ecdc4;">
+                        <p style="color: #a0a0a0; font-size: 11px; text-transform: uppercase; margin-bottom: 10px;">📊 Información del Entrenamiento</p>
+                        <div id="ultima-actualizacion-contenido">
+                            <p style="color: #707070; font-size: 12px;">Cargando información...</p>
+                        </div>
+                    </div>
                     <div id="prediction-content"></div>
                 </div>
             </div>
@@ -373,6 +388,110 @@
             if (section === 'canasta-mes') setTimeout(() => cargarCanastaMes(), 100);
             if (section === 'canasta-acum') setTimeout(() => cargarCanastaAcumulada(), 100);
         }
+
+        // Cargar información de última actualización
+        async function cargarInfoActualizacion() {
+            try {
+                const ts = new Date().getTime();
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+
+                const r = await fetch(`${currentAPI}/ultima-actualizacion?t=${ts}`, { cache: 'no-store' });
+                const data = await r.json();
+
+                let html = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 12px;">
+                        <div>
+                            <p style="color: #a0a0a0; margin-bottom: 5px;"><strong>Actualización de Datos:</strong></p>
+                            <p style="color: #ff9900;">${data.ultima_actualizacion || 'No disponible'}</p>
+                        </div>
+                        <div>
+                            <p style="color: #a0a0a0; margin-bottom: 5px;"><strong>Datos BC Cargados:</strong></p>
+                            <p style="color: #4ecdc4;">${data.datos_bc.meses} meses (${data.datos_bc.rango})</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #0f1520;">
+                        <p style="color: #a0a0a0; margin-bottom: 8px;"><strong>Entrenamiento del Modelo:</strong></p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px;">
+                            <div>
+                                <span style="color: #707070;">Predicciones validadas:</span>
+                                <p style="color: #10b981; font-weight: bold;">${data.entrenamiento.total_predicciones}</p>
+                            </div>
+                            <div>
+                                <span style="color: #707070;">Aciertos dirección:</span>
+                                <p style="color: #10b981; font-weight: bold;">${data.entrenamiento.aciertos_direccion} (${(data.entrenamiento.pct_acierto || 0).toFixed(0)}%)</p>
+                            </div>
+                            <div>
+                                <span style="color: #707070;">Error Medio (MAE):</span>
+                                <p style="color: #ff9900; font-weight: bold;">${data.entrenamiento.mae ? data.entrenamiento.mae.toFixed(4) + 'pp' : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <span style="color: #707070;">Error Cuadrático (RMSE):</span>
+                                <p style="color: #ff9900; font-weight: bold;">${data.entrenamiento.rmse ? data.entrenamiento.rmse.toFixed(4) + 'pp' : 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('ultima-actualizacion-contenido').innerHTML = html;
+            } catch (e) {
+                console.error('Error cargando info:', e);
+                document.getElementById('ultima-actualizacion-contenido').innerHTML = `<p style="color: #ff6b6b;">Error cargando información</p>`;
+            }
+        }
+
+        // Forzar actualización
+        async function forzarActualizacion() {
+            try {
+                const statusDiv = document.getElementById('actualizacion-status');
+                const msgDiv = document.getElementById('actualizacion-mensaje');
+                const progDiv = document.getElementById('actualizacion-progreso');
+
+                statusDiv.style.display = 'block';
+                msgDiv.innerHTML = '⏳ Iniciando reentrenamiento de modelos...';
+                progDiv.style.display = 'block';
+
+                // Simular progreso
+                let progress = 0;
+                const progInterval = setInterval(() => {
+                    progress = Math.min(progress + Math.random() * 15, 90);
+                    document.getElementById('progreso-barra').style.width = progress + '%';
+                }, 200);
+
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+
+                const r = await fetch(`${currentAPI}/forzar-entrenamiento`, {
+                    method: 'POST',
+                    cache: 'no-store'
+                });
+
+                clearInterval(progInterval);
+                document.getElementById('progreso-barra').style.width = '100%';
+
+                const resultado = await r.json();
+
+                if (resultado.status === 'success') {
+                    msgDiv.innerHTML = `✅ ${resultado.mensaje}`;
+                    setTimeout(() => cargarInfoActualizacion(), 2000);
+                } else {
+                    msgDiv.innerHTML = `❌ ${resultado.mensaje}`;
+                }
+
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+
+            } catch (e) {
+                console.error('Error:', e);
+                document.getElementById('actualizacion-mensaje').innerHTML = `❌ Error: ${e.message}`;
+            }
+        }
+
+        // Cargar info al iniciar
+        window.addEventListener('load', () => {
+            setTimeout(cargarInfoActualizacion, 1000);
+        });
 
         async function predecir() {
             const btn = event.target;
