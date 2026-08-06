@@ -162,7 +162,100 @@
             </p>
         </div>
 
-        <h2>2. Componentes del Modelo</h2>
+        <h2>2. Composición de la Canasta IPC (Ponderaciones por Item)</h2>
+        <div class="section">
+            <p>
+                El IPC está compuesto por 13 categorías de bienes y servicios. El modelo predice la variación del índice <strong>agregado</strong>, considerando todas estas ponderaciones en la estructura de precios:
+            </p>
+        </div>
+
+        <div style="background: #0a0e27; padding: 20px; margin: 15px 0; border-radius: 5px; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #ff9900;">
+                        <th style="text-align: left; padding: 10px; color: #ff9900;">Categoría</th>
+                        <th style="text-align: center; padding: 10px; color: #ff9900;">Ponderación %</th>
+                        <th style="text-align: left; padding: 10px; color: #ff9900;">Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Alimentos y bebidas no alcohólicas</td>
+                        <td style="text-align: center; padding: 10px;">22.15%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Mayor componente, baja elasticidad</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Vivienda y servicios básicos</td>
+                        <td style="text-align: center; padding: 10px;">16.76%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Segunda categoría, demanda esencial</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Transporte</td>
+                        <td style="text-align: center; padding: 10px;">13.45%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Incluye combustibles, muy sensible</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Salud</td>
+                        <td style="text-align: center; padding: 10px;">8.21%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Servicios médicos y fármacos</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Equipamiento y mantenimiento del hogar</td>
+                        <td style="text-align: center; padding: 10px;">6.19%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Bienes duraderos y servicios</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Información y comunicación</td>
+                        <td style="text-align: center; padding: 10px;">6.65%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Telecom, internet, correo</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Restaurantes y alojamiento</td>
+                        <td style="text-align: center; padding: 10px;">6.22%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Servicios de hospitalidad</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Bebidas alcohólicas y tabaco</td>
+                        <td style="text-align: center; padding: 10px;">3.68%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Bienes pecuniarios</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Bienes y servicios diversos</td>
+                        <td style="text-align: center; padding: 10px;">3.73%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Categor­ía agregada variada</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Vestuario y calzado</td>
+                        <td style="text-align: center; padding: 10px;">2.90%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Alta elasticidad, rebajas estacionales</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Recreación, deportes y cultura</td>
+                        <td style="text-align: center; padding: 10px;">4.75%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Ocio y entretenimiento</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;">Educación</td>
+                        <td style="text-align: center; padding: 10px;">4.20%</td>
+                        <td style="padding: 10px; color: #a0a0a0; font-size: 0.9em;">Servicios educacionales</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #0f1520;">
+                        <td style="padding: 10px;"><strong>Seguros y servicios financieros</strong></td>
+                        <td style="text-align: center; padding: 10px;"><strong>1.10%</strong></td>
+                        <td style="padding: 10px; color: #10b981; font-size: 0.9em;"><strong>✓ Incluido en IPC agregado</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="key-insight">
+            <strong>Nota sobre Seguros y Servicios Financieros:</strong>
+            <p style="margin-top: 10px;">
+                Los seguros (pólizas, primas) y servicios financieros tienen una ponderación de 1.10% en el IPC. Este componente está incluido en todas las predicciones del modelo como parte de la canasta agregada. Las fluctuaciones en este item afectan el índice general en proporción a su peso. El modelo captura estos movimientos a través de los patrones históricos de precios en todas las categorías.
+            </p>
+        </div>
+
+        <h2>3. Componentes del Modelo</h2>
 
         <div class="component statistical">
             <strong>Componente 1: Análisis Autorregresivo (40% de ponderación)</strong>
@@ -208,7 +301,7 @@
             </p>
         </div>
 
-        <h2>3. Agregación y Cálculo Final</h2>
+        <h2>4. Agregación y Cálculo Final</h2>
 
         <div class="equation">
             Pronóstico Ensemble = (0.50% × 0.40) + (-0.01% × 0.40) + (0.34% × 0.20)<br>
@@ -220,7 +313,7 @@
             La ponderación refleja la composición óptima basada en desempeño histórico out-of-sample. Los componentes de inteligencia artificial (80% combinados) tienen mayor peso porque la estructura actual de precios responde más a cambios no-lineales y relaciones complejas que a patrones autorregresivos simples.
         </p>
 
-        <h2>4. Interpretación Económica</h2>
+        <h2>5. Interpretación Económica</h2>
 
         <div class="key-insight">
             <strong style="font-size: 0.95em;">¿Por qué 0.26% y no 0.50%?</strong>
@@ -234,7 +327,7 @@
             </ul>
         </div>
 
-        <h2>5. Componentes de Riesgo</h2>
+        <h2>6. Componentes de Riesgo</h2>
 
         <div class="section">
             <p>
