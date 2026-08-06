@@ -104,6 +104,50 @@
             letter-spacing: 0.5px;
         }
 
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-controls input,
+        .search-controls select {
+            padding: 10px 12px;
+            background: #0a0e27;
+            color: #ff9900;
+            border: 1px solid #ff9900;
+            border-radius: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+        }
+
+        .search-controls input::placeholder {
+            color: #707070;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .pagination button {
+            background: #0f1421;
+            color: #ff9900;
+            border: 1px solid #ff9900;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .pagination button:hover { background: #ff9900; color: #000; }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination span { color: #a0a0a0; font-size: 12px; }
+
         .chart-wrapper {
             position: relative;
             height: 400px;
@@ -372,14 +416,27 @@
 
         <!-- TABLA DETALLADA -->
         <div class="section-title">📋 Detalle Mes a Mes</div>
+
+        <div class="search-controls">
+            <input type="text" id="search-mes" placeholder="🔍 Buscar por mes (ej: 2026-06)" style="flex: 1; min-width: 200px;">
+            <select id="sort-column">
+                <option value="mes-desc">Ordenar: Mes (Reciente)</option>
+                <option value="mes-asc">Ordenar: Mes (Antiguo)</option>
+                <option value="pred-asc">Ordenar: Predicción ↑</option>
+                <option value="pred-desc">Ordenar: Predicción ↓</option>
+                <option value="error-asc">Ordenar: Error ↑</option>
+                <option value="error-desc">Ordenar: Error ↓</option>
+            </select>
+        </div>
+
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Mes</th>
-                        <th>Predicción (%)</th>
-                        <th>Real (%)</th>
-                        <th>Error (pp)</th>
+                        <th onclick="cambiarOrden('mes')">Mes ↕</th>
+                        <th onclick="cambiarOrden('pred')">Predicción (%) ↕</th>
+                        <th onclick="cambiarOrden('real')">Real (%) ↕</th>
+                        <th onclick="cambiarOrden('error')">Error (pp) ↕</th>
                         <th>Calidad</th>
                     </tr>
                 </thead>
@@ -389,12 +446,22 @@
             </table>
         </div>
 
+        <div class="pagination">
+            <button onclick="paginaAnterior()" id="btn-anterior">← Anterior</button>
+            <span id="info-paginacion">Página 1</span>
+            <button onclick="paginaSiguiente()" id="btn-siguiente">Siguiente →</button>
+        </div>
+
         <div id="status-message"></div>
     </div>
 
     <script>
         const API_URL = 'http://localhost:8000';
         const API_URL_PROD = 'https://ipc-predictor.onrender.com';
+        let historicoCompleto = [];
+        let paginaActual = 1;
+        const registrosPorPagina = 10;
+        let ordenActual = 'mes-desc';
 
         async function cargarDashboard() {
             const useProduction = window.location.host.includes('onrender.com');
@@ -444,28 +511,114 @@
         }
 
         function renderizarTabla(historico) {
+            historicoCompleto = historico;
+            paginaActual = 1;
+            actualizarTabla();
+
+            // Agregar listeners
+            document.getElementById('search-mes').addEventListener('input', actualizarTabla);
+            document.getElementById('sort-column').addEventListener('change', (e) => {
+                ordenActual = e.target.value;
+                actualizarTabla();
+            });
+        }
+
+        function actualizarTabla() {
+            let datos = [...historicoCompleto];
+
+            // BUSCAR por mes
+            const searchTerm = document.getElementById('search-mes').value.toLowerCase();
+            if (searchTerm) {
+                datos = datos.filter(p => p.mes.toLowerCase().includes(searchTerm));
+            }
+
+            // ORDENAR
+            switch(ordenActual) {
+                case 'mes-asc':
+                    datos.sort((a, b) => a.mes.localeCompare(b.mes));
+                    break;
+                case 'mes-desc':
+                    datos.sort((a, b) => b.mes.localeCompare(a.mes));
+                    break;
+                case 'pred-asc':
+                    datos.sort((a, b) => (a.variacion_mensual || 0) - (b.variacion_mensual || 0));
+                    break;
+                case 'pred-desc':
+                    datos.sort((a, b) => (b.variacion_mensual || 0) - (a.variacion_mensual || 0));
+                    break;
+                case 'error-asc':
+                    datos.sort((a, b) => Math.abs(a.variacion_mensual || 0) - Math.abs(b.variacion_mensual || 0));
+                    break;
+                case 'error-desc':
+                    datos.sort((a, b) => Math.abs(b.variacion_mensual || 0) - Math.abs(a.variacion_mensual || 0));
+                    break;
+            }
+
+            // PAGINAR
+            const inicio = (paginaActual - 1) * registrosPorPagina;
+            const fin = inicio + registrosPorPagina;
+            const datosPagina = datos.slice(inicio, fin);
+
+            // RENDERIZAR
             const tbody = document.getElementById('tabla-predicciones');
             tbody.innerHTML = '';
 
-            historico.slice(0, 20).forEach(pred => {
-                const varMensual = pred.variacion_mensual || 0;
-                const error = Math.abs(varMensual);
-                let calidad = '<span class="status-bad">❌ Malo</span>';
-                if (error < 0.2) calidad = '<span class="status-good">✅ Excelente</span>';
-                else if (error < 0.3) calidad = '<span class="status-good">✅ Bueno</span>';
-                else if (error < 0.5) calidad = '<span class="status-warning">⚠️ Medio</span>';
+            if (datosPagina.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #707070;">No hay resultados</td></tr>';
+            } else {
+                datosPagina.forEach(pred => {
+                    const varMensual = pred.variacion_mensual || 0;
+                    const error = Math.abs(varMensual);
+                    let calidad = '<span class="status-bad">❌ Malo</span>';
+                    if (error < 0.2) calidad = '<span class="status-good">✅ Excelente</span>';
+                    else if (error < 0.3) calidad = '<span class="status-good">✅ Bueno</span>';
+                    else if (error < 0.5) calidad = '<span class="status-warning">⚠️ Medio</span>';
 
-                const row = `
-                    <tr>
-                        <td><strong>${pred.mes}</strong></td>
-                        <td>${(varMensual > 0 ? '+' : '')}${varMensual.toFixed(3)}%</td>
-                        <td>${(pred.indice || 0).toFixed(2)}</td>
-                        <td>${error.toFixed(4)}pp</td>
-                        <td>${calidad}</td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
+                    const row = `
+                        <tr>
+                            <td><strong>${pred.mes}</strong></td>
+                            <td>${(varMensual > 0 ? '+' : '')}${varMensual.toFixed(3)}%</td>
+                            <td>${(pred.indice || 0).toFixed(2)}</td>
+                            <td>${error.toFixed(4)}pp</td>
+                            <td>${calidad}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            // Actualizar info paginación
+            const totalPaginas = Math.ceil(datos.length / registrosPorPagina);
+            document.getElementById('info-paginacion').textContent = `Página ${paginaActual} de ${totalPaginas} (${datos.length} registros)`;
+            document.getElementById('btn-anterior').disabled = paginaActual === 1;
+            document.getElementById('btn-siguiente').disabled = paginaActual === totalPaginas;
+        }
+
+        function paginaAnterior() {
+            if (paginaActual > 1) {
+                paginaActual--;
+                actualizarTabla();
+            }
+        }
+
+        function paginaSiguiente() {
+            const datos = [...historicoCompleto];
+            const totalPaginas = Math.ceil(datos.length / registrosPorPagina);
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                actualizarTabla();
+            }
+        }
+
+        function cambiarOrden(columna) {
+            // Ciclar entre asc/desc
+            if (ordenActual === columna + '-desc') {
+                ordenActual = columna + '-asc';
+            } else {
+                ordenActual = columna + '-desc';
+            }
+            document.getElementById('sort-column').value = ordenActual;
+            actualizarTabla();
         }
 
         function renderizarGraficos(historico, train) {
@@ -486,7 +639,8 @@
                         data: [mae_arima, mae_xgb, mae_lstm, mae_ensemble],
                         backgroundColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
                         borderColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        barThickness: 30
                     }]
                 },
                 options: {
@@ -518,7 +672,8 @@
                         data: [mae_arima * 1.3, mae_xgb * 1.3, mae_lstm * 1.3, (train.rmse || 0)],
                         backgroundColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
                         borderColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        barThickness: 30
                     }]
                 },
                 options: {
@@ -547,7 +702,8 @@
                         data: [65, 70, 55, (train.pct_acierto || 0)],
                         backgroundColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
                         borderColor: ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ff9900'],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        barThickness: 30
                     }]
                 },
                 options: {
