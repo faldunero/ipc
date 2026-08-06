@@ -376,7 +376,7 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico con CACHÉ 1 hora (sin ir a BD continuamente)"""
+    """Obtener histórico COMBINADO: predicciones + realidad"""
     try:
         from fastapi.responses import JSONResponse
         import os
@@ -399,28 +399,47 @@ def historico_predicciones():
                 print(f"⏰ Caché expirado (edad: {int(age/60)} min > {cache_age_minutes})")
 
         # 2️⃣ CACHÉ EXPIRADO O NO EXISTE - CARGAR DE FUENTE
-        historico = []
+        historico_real = {}
+        predicciones_dict = {}
 
+        # Cargar datos reales
         if os.path.exists('predicciones_historico.json'):
-            print("📥 Cargando desde predicciones_historico.json...")
+            print("📥 Cargando reales desde predicciones_historico.json...")
             with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
-                historico = json.load(f)
+                reales = json.load(f)
+                for r in reales:
+                    mes = r.get('mes', '')
+                    historico_real[mes] = {
+                        "mes": mes,
+                        "variacion_mensual_real": r.get('variacion_mensual'),
+                        "indice": r.get('indice'),
+                        "variacion_12_meses_real": r.get('variacion_12_meses'),
+                        "fuente": "Banco Central",
+                        "tipo": "dato-real"
+                    }
 
-        elif os.path.exists('datos_bcch.json'):
-            print("📥 Cargando desde datos_bcch.json...")
-            with open('datos_bcch.json', 'r', encoding='utf-8') as f:
-                bcch = json.load(f)
-                for d in bcch.get('datos_historicos', []):
-                    mes = d.get('mes', '')
-                    if '2025-01' <= mes <= '2026-06':
-                        historico.append({
-                            "mes": mes,
-                            "variacion_mensual": d.get('var_mensual'),
-                            "indice": d.get('indice'),
-                            "variacion_12_meses": d.get('var_12_meses'),
-                            "fuente": "Banco Central",
-                            "tipo": "dato-real"
-                        })
+        # Cargar predicciones del modelo
+        if os.path.exists('backtest_proper_resultados.json'):
+            print("📥 Cargando predicciones desde backtest_proper_resultados.json...")
+            with open('backtest_proper_resultados.json', 'r', encoding='utf-8') as f:
+                backtest = json.load(f)
+                for res in backtest.get('resultados', []):
+                    mes = res.get('mes', '')
+                    predicciones_dict[mes] = {
+                        "prediccion_ensemble": res.get('prediccion'),
+                        "real": res.get('real'),
+                        "error": res.get('error'),
+                        "direccion_correcta": res.get('direccion_correcta'),
+                        "mae_local": res.get('error')
+                    }
+
+        # Combinar: predicciones + reales
+        historico = []
+        for mes in historico_real:
+            item = historico_real[mes].copy()
+            if mes in predicciones_dict:
+                item.update(predicciones_dict[mes])
+            historico.append(item)
 
         # Ordenar DESC (más reciente primero)
         historico = sorted(historico, key=lambda x: x.get('mes', ''), reverse=True)
@@ -432,7 +451,7 @@ def historico_predicciones():
         try:
             with open(cache_path, 'w', encoding='utf-8') as f:
                 json.dump(historico, f, ensure_ascii=False, indent=2)
-            print(f"✅ {len(historico)} meses guardados en caché (1 hora TTL)")
+            print(f"✅ {len(historico)} meses guardados en caché (7 días TTL)")
         except Exception as cache_err:
             print(f"⚠️  Error guardando caché: {cache_err}")
 

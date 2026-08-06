@@ -742,10 +742,10 @@
                 }
             });
 
-            // Gráfico Timeline
+            // Gráfico Timeline - Predicción vs Realidad (Variación Mensual)
             const meses = historico.map(h => h.mes).reverse();
-            const predicciones = historico.map(h => h.variacion_12_meses || 0).reverse();
-            const reales = historico.map(h => h.variacion_12_meses || 0).reverse();
+            const predicciones = historico.map(h => h.prediccion_ensemble || 0).reverse();
+            const reales = historico.map(h => h.real || h.variacion_mensual_real || 0).reverse();
 
             const ctxTimeline = document.getElementById('chartTimeline').getContext('2d');
             new Chart(ctxTimeline, {
@@ -754,7 +754,7 @@
                     labels: meses,
                     datasets: [
                         {
-                            label: 'Predicción Ensemble (Var 12M %)',
+                            label: 'Predicción Ensemble (Var Mensual %)',
                             data: predicciones,
                             borderColor: '#4ecdc4',
                             backgroundColor: 'rgba(78, 205, 196, 0.1)',
@@ -766,7 +766,7 @@
                             pointBackgroundColor: '#4ecdc4'
                         },
                         {
-                            label: 'Realidad (Var 12M % - BC)',
+                            label: 'Realidad (Var Mensual % - BC)',
                             data: reales,
                             borderColor: '#ff9900',
                             backgroundColor: 'rgba(255, 153, 0, 0.1)',
