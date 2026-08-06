@@ -166,6 +166,16 @@ def dashboard_entrenamiento_html():
     """Servir dashboard (ruta alternativa con .html)"""
     return FileResponse("dashboard-entrenamiento.html", media_type="text/html")
 
+@app.get("/logs")
+def logs_dashboard():
+    """Servir dashboard de logs"""
+    return FileResponse("logs_dashboard.html", media_type="text/html")
+
+@app.get("/logs_dashboard.html")
+def logs_dashboard_html():
+    """Servir dashboard de logs (ruta alternativa)"""
+    return FileResponse("logs_dashboard.html", media_type="text/html")
+
 @app.get("/api/predecir")
 def predecir(mes: str = None):
     """Endpoint de predicción FRESCA sin cachés - genera datos nuevos cada vez"""
@@ -463,6 +473,62 @@ def historico_predicciones():
 
     except Exception as e:
         print(f"❌ Error en historico_predicciones: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/logs/hoy")
+def obtener_logs_hoy():
+    """Obtiene logs de ejecución de hoy"""
+    try:
+        from pathlib import Path
+        from datetime import datetime
+
+        log_dir = Path("logs")
+        fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+        archivo = log_dir / f"ejecucion_{fecha_hoy}.json"
+
+        if archivo.exists():
+            with open(archivo, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+                resp = JSONResponse(content=datos)
+                resp.headers["Cache-Control"] = "no-cache"
+                return resp
+        else:
+            return {"error": "No hay logs para hoy", "fecha": fecha_hoy}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/logs/historial")
+def obtener_historial_logs(dias: int = 30):
+    """Obtiene historial de logs últimos N días"""
+    try:
+        from pathlib import Path
+        from datetime import datetime, timedelta
+
+        log_dir = Path("logs")
+        historial = []
+
+        for i in range(dias):
+            fecha = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+            archivo = log_dir / f"ejecucion_{fecha}.json"
+
+            if archivo.exists():
+                try:
+                    with open(archivo, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        historial.append({
+                            'fecha': fecha,
+                            'eventos': len(data.get('eventos', [])),
+                            'errores': len(data.get('errores', [])),
+                            'predicciones': len(data.get('predicciones', [])),
+                            'datos_fuentes': len(data.get('datos_recolectados', {}))
+                        })
+                except:
+                    pass
+
+        return {"historial": historial, "total_dias": len(historial)}
+
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/forecast-avanzado")

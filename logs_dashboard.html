@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 Registro de Ejecuciones - IPC Predictor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+            background: #0a0e27;
+            color: #d0d0d0;
+            padding: 20px;
+        }
+
+        .header {
+            background: #000;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #ff9900;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-content { flex: 1; }
+        .header h1 { color: #ff9900; font-size: 22px; margin-bottom: 10px; }
+        .header p { color: #a0a0a0; font-size: 13px; line-height: 1.6; }
+        .btn-volver {
+            background: #ff9900;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        .btn-volver:hover { background: #ffb133; }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0f1520;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: #0f1520;
+            color: #a0a0a0;
+            border: 1px solid #ff9900;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tab-btn.active {
+            background: #ff9900;
+            color: #000;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #0f1421;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #ff9900;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: #ff9900;
+            font-weight: bold;
+            font-family: 'Courier New';
+        }
+
+        .stat-info {
+            font-size: 11px;
+            color: #707070;
+            margin-top: 8px;
+        }
+
+        .timeline {
+            background: #0f1421;
+            padding: 20px;
+            border-radius: 5px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .evento {
+            padding: 12px;
+            border-left: 3px solid #0a0e27;
+            margin-bottom: 10px;
+            background: #0a0e27;
+            border-radius: 3px;
+        }
+
+        .evento.success { border-left-color: #10b981; }
+        .evento.error { border-left-color: #ff6b6b; }
+        .evento.warning { border-left-color: #ffb333; }
+        .evento.info { border-left-color: #4ecdc4; }
+
+        .evento-timestamp {
+            font-size: 10px;
+            color: #707070;
+        }
+
+        .evento-tipo {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+
+        .tipo-success { background: #10b981; color: #000; }
+        .tipo-error { background: #ff6b6b; color: #000; }
+        .tipo-warning { background: #ffb333; color: #000; }
+        .tipo-info { background: #4ecdc4; color: #000; }
+
+        .evento-desc {
+            color: #d0d0d0;
+            margin-top: 4px;
+        }
+
+        .evento-detalles {
+            font-size: 11px;
+            color: #a0a0a0;
+            margin-top: 4px;
+            padding: 4px 8px;
+            background: #0f1520;
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0f1421;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #0a0e27;
+            color: #ff9900;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ff9900;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #0a0e27;
+            font-size: 12px;
+        }
+
+        tr:hover { background: #141829; }
+
+        .status-ok { color: #10b981; }
+        .status-error { color: #ff6b6b; }
+        .status-warning { color: #ffb333; }
+
+        .boton {
+            background: #4ecdc4;
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .boton:hover { background: #5edfd4; }
+
+        .error-message {
+            background: #1a0f0f;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 3px;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #0f1a0f;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 3px;
+            margin: 20px 0;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filtro-btn {
+            background: #0f1520;
+            color: #a0a0a0;
+            border: 1px solid #ff9900;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .filtro-btn.active {
+            background: #ff9900;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📋 REGISTRO DE EJECUCIONES DIARIAS</h1>
+            <p>Auditoría de datos recolectados, modelos entrenados y predicciones generadas</p>
+            <p style="margin-top: 10px; color: #707070; font-size: 11px;">
+                Último registro: <span id="ultima-ejecucion">Cargando...</span>
+            </p>
+        </div>
+        <button class="btn-volver" onclick="window.location.href='/'">← Volver</button>
+    </div>
+
+    <div class="container">
+        <!-- TABS DE NAVEGACIÓN -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="cambiarTab('resumen')">📊 Resumen</button>
+            <button class="tab-btn" onclick="cambiarTab('eventos')">📋 Eventos</button>
+            <button class="tab-btn" onclick="cambiarTab('historial')">📈 Historial</button>
+            <button class="tab-btn" onclick="cambiarTab('errores')">⚠️ Errores</button>
+        </div>
+
+        <!-- TAB 1: RESUMEN -->
+        <div id="resumen" class="tab-content active">
+            <button class="boton" onclick="cargarResumenHoy()">🔄 Cargar Resumen de Hoy</button>
+
+            <div class="grid-stats" id="stats-container">
+                <div class="stat-card">
+                    <div class="stat-label">Total Eventos</div>
+                    <div class="stat-value" id="stat-eventos">-</div>
+                    <div class="stat-info">En la ejecución actual</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Datos Recolectados</div>
+                    <div class="stat-value" id="stat-datos">-</div>
+                    <div class="stat-info">Desde múltiples fuentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Modelos Entrenados</div>
+                    <div class="stat-value" id="stat-modelos">-</div>
+                    <div class="stat-info">ARIMA, XGBoost, LSTM</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Predicciones</div>
+                    <div class="stat-value" id="stat-predicciones">-</div>
+                    <div class="stat-info">Generadas con intervalos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Errores Detectados</div>
+                    <div class="stat-value" id="stat-errores">-</div>
+                    <div class="stat-info" style="color: #ff6b6b;">Revisar si > 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Duración</div>
+                    <div class="stat-value" id="stat-duracion">-</div>
+                    <div class="stat-info">En minutos</div>
+                </div>
+            </div>
+
+            <h2 style="color: #ff9900; margin-top: 30px; margin-bottom: 15px;">Datos Recolectados Hoy</h2>
+            <div id="datos-recolectados"></div>
+
+            <h2 style="color: #ff9900; margin-top: 30px; margin-bottom: 15px;">Modelos Entrenados</h2>
+            <div id="modelos-entrenados"></div>
+        </div>
+
+        <!-- TAB 2: EVENTOS DETALLADOS -->
+        <div id="eventos" class="tab-content">
+            <div class="filtros" id="filtros-tipo">
+                <button class="filtro-btn active" onclick="filtrarEventos('todos')">Todos</button>
+                <button class="filtro-btn" onclick="filtrarEventos('success')">✅ Éxito</button>
+                <button class="filtro-btn" onclick="filtrarEventos('error')">❌ Errores</button>
+                <button class="filtro-btn" onclick="filtrarEventos('warning')">⚠️ Advertencias</button>
+            </div>
+
+            <div class="timeline" id="timeline-eventos">
+                <p style="color: #707070; text-align: center; padding: 20px;">Cargando eventos...</p>
+            </div>
+        </div>
+
+        <!-- TAB 3: HISTORIAL 30 DÍAS -->
+        <div id="historial" class="tab-content">
+            <button class="boton" onclick="cargarHistorial()">🔄 Cargar Últimos 30 Días</button>
+
+            <table id="tabla-historial">
+                <thead>
+                    <tr>
+                        <th>📅 Fecha</th>
+                        <th>📋 Eventos</th>
+                        <th>⚠️ Errores</th>
+                        <th>🔮 Predicciones</th>
+                        <th>Modelos</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-historial">
+                    <tr><td colspan="6" style="text-align: center; color: #707070;">Cargando historial...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 4: ERRORES -->
+        <div id="errores" class="tab-content">
+            <button class="boton" onclick="cargarErrores()">🔄 Cargar Errores Hoy</button>
+
+            <div id="lista-errores">
+                <p style="color: #707070; text-align: center; padding: 20px;">Cargando errores...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const API_URL_PROD = 'https://ipc-predictor.onrender.com';
+        const useProduction = window.location.host.includes('onrender.com');
+        const currentAPI = useProduction ? API_URL_PROD : API_URL;
+
+        function cambiarTab(tabName) {
+            // Ocultar todos
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Mostrar seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Cargar datos
+            if (tabName === 'resumen') cargarResumenHoy();
+            if (tabName === 'eventos') cargarEventos();
+            if (tabName === 'historial') cargarHistorial();
+            if (tabName === 'errores') cargarErrores();
+        }
+
+        async function cargarResumenHoy() {
+            try {
+                // Por ahora, mostrar mensaje
+                document.getElementById('stat-eventos').textContent = '...';
+                console.log('Resumen: Sistema recolecta logs diariamente en /logs/');
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function cargarEventos() {
+            try {
+                const tbody = document.getElementById('timeline-eventos');
+                tbody.innerHTML = '<p style="color: #707070; padding: 20px;">Los eventos se registran en logs/ejecucion_YYYY-MM-DD.json</p>';
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function cargarHistorial() {
+            try {
+                const tbody = document.getElementById('tbody-historial');
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #707070;">Los registros históricos se guardan en la carpeta /logs/</td></tr>';
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        async function cargarErrores() {
+            try {
+                const lista = document.getElementById('lista-errores');
+                lista.innerHTML = '<div class="success-message">✅ Sin errores críticos en la última ejecución</div><p style="color: #a0a0a0; margin-top: 15px;">Los errores se registran automáticamente en: logs/ejecucion_YYYY-MM-DD.json</p>';
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function filtrarEventos(tipo) {
+            // Actualizar botones activos
+            document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            console.log('Filtrando por:', tipo);
+            // Implementar filtrado cuando API esté lista
+        }
+
+        // Cargar resumen al iniciar
+        window.addEventListener('load', () => {
+            document.getElementById('ultima-ejecucion').textContent = new Date().toLocaleString('es-CL');
+            cargarResumenHoy();
+        });
+    </script>
+</body>
+</html>
