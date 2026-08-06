@@ -366,40 +366,51 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico desde predicciones_historico.json o datos_bcch.json"""
+    """Obtener histórico con CACHÉ 1 hora (sin ir a BD continuamente)"""
     try:
         from fastapi.responses import JSONResponse
         import os
+        import time
 
+        cache_path = "historico_predicciones_cache.json"
+        cache_age_minutes = 10080  # Cachear por 7 días (datos sumamente estáticos)
+
+        # 1️⃣ INTENTAR LEER DESDE CACHÉ LOCAL (más rápido)
+        if os.path.exists(cache_path):
+            age = time.time() - os.path.getmtime(cache_path)
+            if age < cache_age_minutes * 60:
+                print(f"📦 Caché válido (edad: {int(age/60)} min)")
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    cached = json.load(f)
+                    resp = JSONResponse(content={"historico": cached, "source": "cache"})
+                    resp.headers["Cache-Control"] = "public, max-age=604800"  # 7 días
+                    return resp
+            else:
+                print(f"⏰ Caché expirado (edad: {int(age/60)} min > {cache_age_minutes})")
+
+        # 2️⃣ CACHÉ EXPIRADO O NO EXISTE - CARGAR DE FUENTE
         historico = []
 
-        # Intentar leer predicciones_historico.json primero (más rápido)
         if os.path.exists('predicciones_historico.json'):
-            print("📊 Leyendo predicciones_historico.json...")
+            print("📥 Cargando desde predicciones_historico.json...")
             with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
                 historico = json.load(f)
-            print(f"✅ {len(historico)} meses cargados desde predicciones_historico.json")
 
-        # Si no hay datos, intentar desde datos_bcch.json
         elif os.path.exists('datos_bcch.json'):
-            print("📊 Leyendo datos_bcch.json...")
+            print("📥 Cargando desde datos_bcch.json...")
             with open('datos_bcch.json', 'r', encoding='utf-8') as f:
                 bcch = json.load(f)
-
-            # Filtrar SOLO 2025-01 a 2026-06
-            for d in bcch.get('datos_historicos', []):
-                mes = d.get('mes', '')
-                if '2025-01' <= mes <= '2026-06':
-                    historico.append({
-                        "mes": mes,
-                        "variacion_mensual": d.get('var_mensual'),
-                        "indice": d.get('indice'),
-                        "variacion_12_meses": d.get('var_12_meses'),
-                        "fuente": "Banco Central",
-                        "tipo": "dato-real"
-                    })
-
-            print(f"✅ {len(historico)} meses cargados desde datos_bcch.json")
+                for d in bcch.get('datos_historicos', []):
+                    mes = d.get('mes', '')
+                    if '2025-01' <= mes <= '2026-06':
+                        historico.append({
+                            "mes": mes,
+                            "variacion_mensual": d.get('var_mensual'),
+                            "indice": d.get('indice'),
+                            "variacion_12_meses": d.get('var_12_meses'),
+                            "fuente": "Banco Central",
+                            "tipo": "dato-real"
+                        })
 
         # Ordenar DESC (más reciente primero)
         historico = sorted(historico, key=lambda x: x.get('mes', ''), reverse=True)
@@ -407,10 +418,18 @@ def historico_predicciones():
         if not historico:
             raise HTTPException(status_code=404, detail="No hay datos disponibles")
 
-        resp = JSONResponse(content={"historico": historico})
-        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-        resp.headers["Pragma"] = "no-cache"
-        resp.headers["Expires"] = "0"
+        # 3️⃣ GUARDAR EN CACHÉ PARA PRÓXIMAS LLAMADAS
+        try:
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                json.dump(historico, f, ensure_ascii=False, indent=2)
+            print(f"✅ {len(historico)} meses guardados en caché (1 hora TTL)")
+        except Exception as cache_err:
+            print(f"⚠️  Error guardando caché: {cache_err}")
+
+        # 4️⃣ RETORNAR CON HEADERS DE CACHÉ
+        resp = JSONResponse(content={"historico": historico, "source": "fresh"})
+        resp.headers["Cache-Control"] = "public, max-age=604800"  # 7 días browser cache
+        resp.headers["Pragma"] = ""
         return resp
 
     except Exception as e:
