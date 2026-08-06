@@ -483,6 +483,7 @@ def obtener_logs_hoy():
         from datetime import datetime
 
         log_dir = Path("logs")
+        log_dir.mkdir(exist_ok=True)
         fecha_hoy = datetime.now().strftime('%Y-%m-%d')
         archivo = log_dir / f"ejecucion_{fecha_hoy}.json"
 
@@ -508,11 +509,42 @@ def obtener_logs_hoy():
             return resp
         else:
             # Retornar datos ejemplo si no existe el archivo
-            return {
-                "error": "No hay logs para hoy",
-                "fecha": fecha_hoy,
-                "nota": "El primer log se genera después de la primera ejecución del pipeline"
+            datos_ejemplo = {
+                'fecha': fecha_hoy,
+                'timestamp_inicio': datetime.now().isoformat(),
+                'timestamp_actualizacion': datetime.now().isoformat(),
+                'resumen': {
+                    'fecha': fecha_hoy,
+                    'total_eventos': 10,
+                    'datos_recolectados': 5,
+                    'modelos_entrenados': 3,
+                    'predicciones': 1,
+                    'errores': 0,
+                    'fuentes': ['SVS', 'INE', 'ASEA', 'Banco Central', 'bencinaenlinea.cl'],
+                    'modelos': ['ARIMA', 'XGBoost', 'LSTM'],
+                },
+                'datos_recolectados': {
+                    'SVS': {'cantidad': 4, 'detalles': {'seguros_auto': 450000, 'seguros_vida': 120000}},
+                    'INE': {'cantidad': 6, 'detalles': {'alimentos': 118.5, 'transporte': 115.2}},
+                    'ASEA': {'cantidad': 3, 'detalles': {'prima_total': 12500000000}},
+                    'Banco Central': {'cantidad': 4, 'detalles': {'TPM': 6.50, 'TC': 820}},
+                    'bencinaenlinea.cl': {'cantidad': 2, 'detalles': {'bencina_95': 1150, 'diesel': 1080}}
+                },
+                'modelos_entrenados': {
+                    'ARIMA': {'mae': 0.3552, 'rmse': 0.4869},
+                    'XGBoost': {'mae': 0.32, 'rmse': 0.45},
+                    'LSTM': {'mae': 0.38, 'rmse': 0.51}
+                },
+                'predicciones': {
+                    '2026-09': {'valor': 2.90, 'intervalo': {'min': 2.30, 'max': 3.50}}
+                },
+                'errores': [],
+                'nota': 'Datos de ejemplo. Los logs reales se generan después de ejecutar el pipeline.'
             }
+
+            resp = JSONResponse(content=datos_ejemplo)
+            resp.headers["Cache-Control"] = "no-cache"
+            return resp
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
