@@ -465,6 +465,36 @@ def historico_predicciones():
         print(f"❌ Error en historico_predicciones: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/forecast-avanzado")
+def forecast_avanzado():
+    """Forecast avanzado con variables exógenas e intervalos de confianza"""
+    try:
+        from advanced_forecasting import AdvancedForecaster
+        from fetch_external_data import consolidar_datos_exogenos
+        import json
+
+        # Recolectar datos exógenos (API + scraping)
+        print("📊 Recolectando datos exógenos...")
+        datos_exogenos = consolidar_datos_exogenos()
+
+        # Cargar histórico real
+        with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
+            historico = json.load(f)
+            historico_ipc = [h.get('variacion_12_meses', 0) for h in reversed(historico)][:13]
+
+        # Forecasting avanzado
+        forecaster = AdvancedForecaster()
+        resultado = forecaster.forecast_ensemble_avanzado(historico_ipc, datos_exogenos)
+
+        from fastapi.responses import JSONResponse
+        resp = JSONResponse(content=resultado)
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return resp
+
+    except Exception as e:
+        print(f"❌ Error en forecast_avanzado: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/ultima-actualizacion")
 def ultima_actualizacion():
     """Obtener info de la última actualización y entrenamiento"""

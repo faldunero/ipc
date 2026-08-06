@@ -32,11 +32,23 @@ jobs:
         run: |
           python3 actualizar_datos_macro.py
 
+      - name: 📡 Recolectar datos exógenos (BC + Combustibles + Índices)
+        run: |
+          echo "📊 Recolectando variables exógenas..."
+          python3 fetch_external_data.py
+          echo "✅ Datos exógenos listos"
+
       - name: 🧠 Reentrenar modelos con nuevos datos
         run: |
           echo "🔄 Iniciando reentrenamiento de modelos..."
           python3 backtest_proper.py
           echo "✅ Reentrenamiento completado"
+
+      - name: 🔮 Generar forecast avanzado para próximo mes
+        run: |
+          echo "🔮 Calculando forecast con variables exógenas..."
+          python3 -c "from advanced_forecasting import AdvancedForecaster; from fetch_external_data import consolidar_datos_exogenos; import json; datos=consolidar_datos_exogenos(); f=AdvancedForecaster(); print(json.dumps(f.forecast_ensemble_avanzado([4.99,4.78,4.89,4.59,4.49,4.17,4.38,4.07,4.38,3.36,3.46,3.46,2.75], datos), indent=2))"
+          echo "✅ Forecast generado"
 
       - name: 📊 Integrar datos reales de IPC
         run: |
@@ -50,6 +62,7 @@ jobs:
           git config --local user.name "🤖 GitHub Action"
           git add \
             cache_datos_macro.json \
+            datos_exogenos.json \
             predicciones_historico.json \
             backtest_proper_resultados.json \
             logs/actualizacion.log \
