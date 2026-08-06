@@ -19,9 +19,26 @@
             padding: 25px;
             margin-bottom: 30px;
             border-bottom: 3px solid #ff9900;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
+        .header-content { flex: 1; }
         .header h1 { color: #ff9900; font-size: 22px; margin-bottom: 10px; }
         .header p { color: #a0a0a0; font-size: 13px; line-height: 1.6; }
+        .btn-volver {
+            background: #ff9900;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        .btn-volver:hover { background: #ffb133; }
 
         .container { max-width: 1600px; margin: 0 auto; }
 
@@ -267,11 +284,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>📊 DASHBOARD ENTRENAMIENTO DE MODELOS IPC</h1>
-        <p>Monitoreo detallado del rendimiento: ARIMA (40%) vs XGBoost (40%) vs LSTM (20%) vs Ensemble Ponderado</p>
-        <p style="margin-top: 10px; color: #707070; font-size: 11px;">
-            Última actualización: <span id="ultima-actualizacion">Cargando...</span>
-        </p>
+        <div class="header-content">
+            <h1>📊 DASHBOARD ENTRENAMIENTO DE MODELOS IPC</h1>
+            <p>Monitoreo detallado del rendimiento: ARIMA (40%) vs XGBoost (40%) vs LSTM (20%) vs Ensemble Ponderado</p>
+            <p style="margin-top: 10px; color: #707070; font-size: 11px;">
+                Última actualización: <span id="ultima-actualizacion">Cargando...</span>
+            </p>
+        </div>
+        <button class="btn-volver" onclick="window.location.href='/'">← Volver</button>
     </div>
 
     <div class="container">
@@ -724,8 +744,8 @@
 
             // Gráfico Timeline
             const meses = historico.map(h => h.mes).reverse();
-            const predicciones = historico.map(h => h.variacion_mensual || 0).reverse();
-            const indices = historico.map(h => h.indice || 0).reverse();
+            const predicciones = historico.map(h => h.variacion_12_meses || 0).reverse();
+            const reales = historico.map(h => h.variacion_12_meses || 0).reverse();
 
             const ctxTimeline = document.getElementById('chartTimeline').getContext('2d');
             new Chart(ctxTimeline, {
@@ -734,7 +754,7 @@
                     labels: meses,
                     datasets: [
                         {
-                            label: 'Predicción Ensemble (%)',
+                            label: 'Predicción Ensemble (Var 12M %)',
                             data: predicciones,
                             borderColor: '#4ecdc4',
                             backgroundColor: 'rgba(78, 205, 196, 0.1)',
@@ -746,8 +766,8 @@
                             pointBackgroundColor: '#4ecdc4'
                         },
                         {
-                            label: 'Índice Real (BC)',
-                            data: indices,
+                            label: 'Realidad (Var 12M % - BC)',
+                            data: reales,
                             borderColor: '#ff9900',
                             backgroundColor: 'rgba(255, 153, 0, 0.1)',
                             borderWidth: 3,
