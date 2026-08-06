@@ -261,7 +261,7 @@
                     </p>
                     <div style="margin-bottom: 15px;">
                         <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Seleccionar mes base:</label>
-                        <select id="mesAcumulado" onchange="cargarCanastaAcumulada()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer;">
+                        <select id="mesAcumulado" onchange="cargarCanastaAcumulada(event)" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer;">
                             <option value="2026-06">Junio 2026 (últimos 12 meses)</option>
                             <option value="2026-05">Mayo 2026 (últimos 12 meses)</option>
                             <option value="2026-04">Abril 2026 (últimos 12 meses)</option>
@@ -270,7 +270,7 @@
                             <option value="2026-01">Enero 2026 (últimos 12 meses)</option>
                         </select>
                     </div>
-                    <button onclick="cargarCanastaAcumulada()">Cargar Datos</button>
+                    <button onclick="cargarCanastaAcumulada(event)">Cargar Datos</button>
                     <div id="canasta-acum-content"></div>
                 </div>
             </div>
@@ -958,9 +958,9 @@
             }
         }
 
-        async function cargarCanastaAcumulada() {
+        async function cargarCanastaAcumulada(evt) {
             const mesBase = document.getElementById('mesAcumulado').value;
-            const btn = event.target && event.target.tagName === 'BUTTON' ? event.target : null;
+            const btn = evt && evt.target && evt.target.tagName === 'BUTTON' ? evt.target : null;
             if (btn) btn.disabled = true;
             const useProduction = window.location.host.includes('onrender.com');
             const currentAPI = useProduction ? API_URL_PROD : API_URL;
