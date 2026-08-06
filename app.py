@@ -276,6 +276,10 @@ def predecir_v2(regenerar: bool = False):
                     resultado['fuente'] = 'cache-local'
                     resultado['edad_cache_horas'] = round(age_hours, 1)
 
+                    # Asegurar que tiene ensemble_prediccion
+                    if 'ensemble_prediccion' not in resultado and 'prediccion_ensemble' in resultado:
+                        resultado['ensemble_prediccion'] = resultado['prediccion_ensemble']
+
                     from fastapi.responses import JSONResponse
                     resp = JSONResponse(content=resultado)
                     resp.headers["Cache-Control"] = "public, max-age=86400"  # 24 horas
@@ -291,9 +295,11 @@ def predecir_v2(regenerar: bool = False):
 
             if data and len(data) > 0:
                 pred = data[0]
+                valor_pred = float(pred.get('variacion_esperada', 0.26))
                 resultado = {
                     'mes_predicho': pred.get('mes_predicho', '2026-07'),
-                    'ensemble_prediccion': pred.get('variacion_esperada', 0.26),
+                    'ensemble_prediccion': valor_pred,
+                    'prediccion_ensemble': valor_pred,  # Ambos formatos
                     'predicciones_por_modelo': {},
                     'pesos': {'ARIMA': 0.40, 'XGBoost': 0.40, 'LSTM': 0.20},
                     'confianza': 0.69,
@@ -673,6 +679,10 @@ def obtener_logs_hoy():
                 'errores': [],
                 'nota': 'Datos de ejemplo. Los logs reales se generan después de ejecutar el pipeline.'
             }
+
+            resp = JSONResponse(content=datos_ejemplo)
+            resp.headers["Cache-Control"] = "no-cache"
+            return resp
 
             resp = JSONResponse(content=datos_ejemplo)
             resp.headers["Cache-Control"] = "no-cache"
