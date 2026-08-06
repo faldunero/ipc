@@ -366,36 +366,46 @@ def debug_historico():
 
 @app.get("/api/historico-predicciones")
 def historico_predicciones():
-    """Obtener histórico SOLO desde Banco Central (2025-01 a 2026-06)"""
+    """Obtener histórico desde predicciones_historico.json o datos_bcch.json"""
     try:
         from fastapi.responses import JSONResponse
+        import os
 
-        # Leer datos_bcch.json (fuente única)
-        print("📊 Leyendo datos de Banco Central (datos_bcch.json)...")
-        with open('datos_bcch.json', 'r', encoding='utf-8') as f:
-            bcch = json.load(f)
-
-        # Filtrar SOLO 2025-01 a 2026-06
         historico = []
-        for d in bcch.get('datos_historicos', []):
-            mes = d.get('mes', '')
-            if '2025-01' <= mes <= '2026-06':
-                historico.append({
-                    "mes": mes,
-                    "variacion_mensual": d.get('var_mensual'),
-                    "indice": d.get('indice'),
-                    "variacion_12_meses": d.get('var_12_meses'),
-                    "fuente": "Banco Central",
-                    "tipo": "dato-real"
-                })
 
-        # Ordenar DESC (más reciente primero: 2026-06 → 2025-01)
-        historico = sorted(historico, key=lambda x: x['mes'], reverse=True)
+        # Intentar leer predicciones_historico.json primero (más rápido)
+        if os.path.exists('predicciones_historico.json'):
+            print("📊 Leyendo predicciones_historico.json...")
+            with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
+                historico = json.load(f)
+            print(f"✅ {len(historico)} meses cargados desde predicciones_historico.json")
 
-        print(f"✅ {len(historico)} meses de datos BC ordenados DESC (más reciente primero)")
+        # Si no hay datos, intentar desde datos_bcch.json
+        elif os.path.exists('datos_bcch.json'):
+            print("📊 Leyendo datos_bcch.json...")
+            with open('datos_bcch.json', 'r', encoding='utf-8') as f:
+                bcch = json.load(f)
+
+            # Filtrar SOLO 2025-01 a 2026-06
+            for d in bcch.get('datos_historicos', []):
+                mes = d.get('mes', '')
+                if '2025-01' <= mes <= '2026-06':
+                    historico.append({
+                        "mes": mes,
+                        "variacion_mensual": d.get('var_mensual'),
+                        "indice": d.get('indice'),
+                        "variacion_12_meses": d.get('var_12_meses'),
+                        "fuente": "Banco Central",
+                        "tipo": "dato-real"
+                    })
+
+            print(f"✅ {len(historico)} meses cargados desde datos_bcch.json")
+
+        # Ordenar DESC (más reciente primero)
+        historico = sorted(historico, key=lambda x: x.get('mes', ''), reverse=True)
 
         if not historico:
-            raise HTTPException(status_code=404, detail="No hay datos para 2025-01 a 2026-06")
+            raise HTTPException(status_code=404, detail="No hay datos disponibles")
 
         resp = JSONResponse(content={"historico": historico})
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
@@ -404,7 +414,7 @@ def historico_predicciones():
         return resp
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"❌ Error en historico_predicciones: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/ultima-actualizacion")
