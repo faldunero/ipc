@@ -215,14 +215,54 @@ def predecir_meses(num: int = 3):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/predecir-v2")
-def predecir_v2():
-    """Predicción Ensemble v2.0: Lee desde cache persistente (24 horas)"""
+def predecir_v2(regenerar: bool = False):
+    """Predicción Ensemble v2.0: Regenera con indicadores adelantados si `regenerar=true`"""
     try:
         from pathlib import Path
         from datetime import datetime, timedelta
         import os
 
         cache_file = Path("prediccion_cache_v2.json")
+
+        # Si se solicita regenerar, hacerlo ahora
+        if regenerar:
+            print("🔄 Regenerando predicción con indicadores adelantados...")
+            from advanced_forecasting import AdvancedForecaster
+            from fetch_all_indicators import consolidar_todos_indicadores
+            from fetch_external_data import consolidar_datos_exogenos
+
+            # Recolectar datos nuevos
+            indicadores = consolidar_todos_indicadores()
+            datos_exogenos = consolidar_datos_exogenos()
+
+            # Cargar histórico
+            with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
+                historico = json.load(f)
+                historico_ipc = [h.get('variacion_12_meses', 0) for h in reversed(historico)][:13]
+
+            # Generar predicción con indicadores
+            forecaster = AdvancedForecaster()
+            resultado = forecaster.forecast_ensemble_avanzado(
+                historico_ipc,
+                datos_exogenos,
+                indicadores
+            )
+
+            # Guardar en cache
+            resultado['fuente'] = 'regenerada-con-indicadores'
+            resultado['timestamp_regeneracion'] = datetime.now().isoformat()
+
+            try:
+                with open(cache_file, 'w', encoding='utf-8') as f:
+                    json.dump(resultado, f, ensure_ascii=False, indent=2)
+                print(f"✅ Predicción regenerada: {resultado['prediccion_ensemble']}%")
+            except Exception as e:
+                print(f"⚠️ Error guardando: {e}")
+
+            from fastapi.responses import JSONResponse
+            resp = JSONResponse(content=resultado)
+            resp.headers["Cache-Control"] = "public, max-age=86400"
+            return resp
 
         # 1. INTENTAR LEER DE CACHE LOCAL (si existe y es reciente)
         if cache_file.exists():
@@ -295,6 +335,56 @@ def predecir_v2():
         return resp
 
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/regenerar-prediccion")
+def regenerar_prediccion():
+    """Regenera la predicción con indicadores adelantados AHORA"""
+    try:
+        print("🔄 POST: Regenerando predicción con indicadores adelantados...")
+        from advanced_forecasting import AdvancedForecaster
+        from fetch_all_indicators import consolidar_todos_indicadores
+        from fetch_external_data import consolidar_datos_exogenos
+        from pathlib import Path
+        from datetime import datetime
+
+        # Recolectar datos nuevos
+        indicadores = consolidar_todos_indicadores()
+        datos_exogenos = consolidar_datos_exogenos()
+
+        # Cargar histórico
+        with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
+            historico = json.load(f)
+            historico_ipc = [h.get('variacion_12_meses', 0) for h in reversed(historico)][:13]
+
+        # Generar predicción con indicadores
+        forecaster = AdvancedForecaster()
+        resultado = forecaster.forecast_ensemble_avanzado(
+            historico_ipc,
+            datos_exogenos,
+            indicadores
+        )
+
+        # Guardar en cache
+        cache_file = Path("prediccion_cache_v2.json")
+        resultado['fuente'] = 'regenerada-con-indicadores'
+        resultado['timestamp_regeneracion'] = datetime.now().isoformat()
+
+        with open(cache_file, 'w', encoding='utf-8') as f:
+            json.dump(resultado, f, ensure_ascii=False, indent=2)
+
+        print(f"✅ Predicción regenerada: {resultado['prediccion_ensemble']}%")
+
+        return {
+            "status": "success",
+            "mensaje": f"Predicción regenerada: {resultado['prediccion_ensemble']}%",
+            "prediccion": resultado['prediccion_ensemble'],
+            "intervalo": resultado['intervalo_confianza_95'],
+            "timestamp": resultado['timestamp_regeneracion']
+        }
+
+    except Exception as e:
+        print(f"❌ Error regenerando: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/validar-prediccion-v2")
