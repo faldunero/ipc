@@ -215,25 +215,25 @@ class AdvancedForecaster:
 
         resultado = {
             'mes_predicho': (datetime.now() + timedelta(days=30)).strftime('%Y-%m'),
-            'prediccion_ensemble': round(prediccion_ensemble, 4),
+            'prediccion_ensemble': float(round(prediccion_ensemble, 4)),
             'intervalo_confianza_95': {
-                'minimo': round(intervalo['minimo'], 4),
-                'maximo': round(intervalo['maximo'], 4),
-                'rango': round(intervalo['maximo'] - intervalo['minimo'], 4)
+                'minimo': float(round(intervalo['minimo'], 4)),
+                'maximo': float(round(intervalo['maximo'], 4)),
+                'rango': float(round(intervalo['maximo'] - intervalo['minimo'], 4))
             },
-            'cambio_regimen_detectado': cambio,
-            'razon_cambio': razon,
+            'cambio_regimen_detectado': bool(cambio),
+            'razon_cambio': str(razon),
             'modelos_individuales': {
-                'arimax': round(pred_arimax, 4),
-                'xgboost': round(pred_xgb, 4),
-                'trend': round(pred_trend, 4)
+                'arimax': float(round(pred_arimax, 4)),
+                'xgboost': float(round(pred_xgb, 4)),
+                'trend': float(round(pred_trend, 4))
             },
             'pesos_ajustados': {
-                'arimax': peso_arimax,
-                'xgboost': peso_xgb,
-                'trend': peso_trend
+                'arimax': float(peso_arimax),
+                'xgboost': float(peso_xgb),
+                'trend': float(peso_trend)
             },
-            'error_historico_mae': round(mae_historico, 4),
+            'error_historico_mae': float(round(mae_historico, 4)),
             'timestamp': datetime.now().isoformat()
         }
 
