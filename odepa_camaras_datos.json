@@ -1,0 +1,107 @@
+{
+  "timestamp": "2026-08-07T13:10:32.684358",
+  "odepa": {
+    "tomate": {
+      "precio": 850,
+      "variacion_7d": 5.2,
+      "variacion_30d": 12.3,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684482"
+    },
+    "lechuga": {
+      "precio": 600,
+      "variacion_7d": 2.1,
+      "variacion_30d": 8.5,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684502"
+    },
+    "papa": {
+      "precio": 450,
+      "variacion_7d": 1.2,
+      "variacion_30d": 5.3,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684516"
+    },
+    "zanahoria": {
+      "precio": 550,
+      "variacion_7d": 0.8,
+      "variacion_30d": 4.2,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684527"
+    },
+    "manzana": {
+      "precio": 1200,
+      "variacion_7d": 3.1,
+      "variacion_30d": 9.7,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684538"
+    },
+    "platano": {
+      "precio": 800,
+      "variacion_7d": 2.5,
+      "variacion_30d": 7.4,
+      "unidad": "kg",
+      "fuente": "ODEPA",
+      "fecha": "2026-08-07T13:10:32.684548"
+    }
+  },
+  "camaras": {
+    "ropa_calzado": {
+      "indice": 112.5,
+      "variacion_30d": 3.2,
+      "descripcion": "Índice de precios ropa y calzado",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684581"
+    },
+    "electrodomesticos": {
+      "indice": 115.8,
+      "variacion_30d": 1.8,
+      "descripcion": "Índice de electrodomésticos",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684592"
+    },
+    "muebles": {
+      "indice": 118.3,
+      "variacion_30d": 2.5,
+      "descripcion": "Índice de muebles y decoración",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684603"
+    },
+    "tecnologia": {
+      "indice": 122.1,
+      "variacion_30d": -0.5,
+      "descripcion": "Índice de tecnología e informática",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684613"
+    },
+    "alimentos_processed": {
+      "indice": 110.2,
+      "variacion_30d": 4.1,
+      "descripcion": "Índice de alimentos procesados",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684622"
+    },
+    "bebidas": {
+      "indice": 108.7,
+      "variacion_30d": 2.3,
+      "descripcion": "Índice de bebidas",
+      "fuente": "Cámaras de Comercio",
+      "fecha": "2026-08-07T13:10:32.684632"
+    }
+  },
+  "precios_promedio": {
+    "odepa_indice": 741.6666666666666,
+    "camaras_indice": 114.60000000000001
+  },
+  "impacto_ipc": {
+    "variacion_estimada": 0.5082815734989662,
+    "descripcion": "Impacto ODEPA+Cámaras en IPC (estimado)",
+    "ponderacion": "ODEPA 10%, Cámaras 25%",
+    "timestamp": "2026-08-07T13:10:32.685053"
+  }
+}

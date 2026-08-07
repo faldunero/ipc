@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-08-07T12:50:15.793284",
+  "fuentes": {
+    "dolar": {
+      "url": "https://mindicador.cl/api/dolar",
+      "valor": 913.86,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "status": "✅ OK"
+    },
+    "uf": {
+      "url": "https://mindicador.cl/api/uf",
+      "valor": 40844.79,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "status": "✅ OK"
+    },
+    "utm": {
+      "url": "https://mindicador.cl/api/utm",
+      "valor": 71649.0,
+      "fecha": "2026-08-01T04:00:00.000Z",
+      "status": "✅ OK"
+    },
+    "ipc": {
+      "url": "https://mindicador.cl/api/ipc",
+      "valor": -0.2,
+      "fecha": "2025-12-01T03:00:00.000Z",
+      "status": "✅ OK"
+    },
+    "tpm": {
+      "url": "https://mindicador.cl/api/tpm",
+      "valor": 4.5,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "status": "✅ OK"
+    },
+    "fred_us_inflation": {
+      "valor": 3.2,
+      "status": "✅ Backup"
+    },
+    "fred_us_gdp_growth": {
+      "valor": 2.8,
+      "status": "✅ Backup"
+    },
+    "fred_us_unemployment": {
+      "valor": 4.1,
+      "status": "✅ Backup"
+    }
+  },
+  "historico": {
+    "ipc": [],
+    "tipo_cambio": [],
+    "uf": [],
+    "combustibles": [],
+    "tasas": []
+  },
+  "historico_meses": 36
+}
