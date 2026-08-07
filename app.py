@@ -85,6 +85,23 @@ def startup():
 # FUNCIONES HELPER PARA SUPABASE
 # ============================================================================
 
+def cargar_canasta_real():
+    """Carga datos reales de canasta IPC"""
+    from pathlib import Path
+    try:
+        canasta_file = Path("canasta_real.json")
+        if canasta_file.exists():
+            with open(canasta_file, 'r', encoding='utf-8') as f:
+                canasta = json.load(f)
+            print(f"✅ Canasta real cargada ({canasta.get('timestamp', 'sin fecha')})")
+            return canasta
+        else:
+            print("⚠️  canasta_real.json no encontrado")
+            return None
+    except Exception as e:
+        print(f"⚠️  Error cargando canasta: {e}")
+        return None
+
 def guardar_prediccion_a_supabase(mes_predicho: str, variacion_esperada: float, version: str = "v2.0-ensemble"):
     """Guarda una predicción en Supabase"""
     if not supabase_client:
@@ -226,7 +243,7 @@ def predecir_v2(regenerar: bool = False):
 
         # Si se solicita regenerar, hacerlo ahora
         if regenerar:
-            print("🔄 Regenerando predicción con indicadores adelantados...")
+            print("🔄 Regenerando predicción con indicadores adelantados + canasta REAL...")
             from advanced_forecasting import AdvancedForecaster
             from fetch_all_indicators import consolidar_todos_indicadores
             from fetch_external_data import consolidar_datos_exogenos
@@ -234,6 +251,7 @@ def predecir_v2(regenerar: bool = False):
             # Recolectar datos nuevos
             indicadores = consolidar_todos_indicadores()
             datos_exogenos = consolidar_datos_exogenos()
+            canasta_real = cargar_canasta_real()  # CARGAR DATOS REALES DE CANASTA
 
             # Cargar histórico
             with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
@@ -248,8 +266,20 @@ def predecir_v2(regenerar: bool = False):
                 indicadores
             )
 
+            # Agregar datos de canasta a la respuesta
+            if canasta_real:
+                resultado['canasta_real'] = {
+                    'timestamp': canasta_real.get('timestamp'),
+                    'categorias': list(canasta_real.get('canasta', {}).keys()),
+                    'fuentes': list(set([
+                        d.get('fuente', 'desconocida')
+                        for cat in canasta_real.get('canasta', {}).values()
+                        for d in ([cat] if isinstance(cat, dict) else [cat.get('fuente', {})])
+                    ]))
+                }
+
             # Guardar en cache
-            resultado['fuente'] = 'regenerada-con-indicadores'
+            resultado['fuente'] = 'regenerada-con-indicadores-y-canasta-real'
             resultado['timestamp_regeneracion'] = datetime.now().isoformat()
 
             try:
@@ -345,9 +375,9 @@ def predecir_v2(regenerar: bool = False):
 
 @app.post("/api/regenerar-prediccion")
 def regenerar_prediccion():
-    """Regenera la predicción con indicadores adelantados AHORA"""
+    """Regenera la predicción con indicadores adelantados + canasta REAL AHORA"""
     try:
-        print("🔄 POST: Regenerando predicción con indicadores adelantados...")
+        print("🔄 POST: Regenerando predicción con indicadores adelantados + canasta REAL...")
         from advanced_forecasting import AdvancedForecaster
         from fetch_all_indicators import consolidar_todos_indicadores
         from fetch_external_data import consolidar_datos_exogenos
@@ -357,6 +387,7 @@ def regenerar_prediccion():
         # Recolectar datos nuevos
         indicadores = consolidar_todos_indicadores()
         datos_exogenos = consolidar_datos_exogenos()
+        canasta_real = cargar_canasta_real()  # CARGAR DATOS REALES DE CANASTA
 
         # Cargar histórico
         with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
@@ -371,9 +402,19 @@ def regenerar_prediccion():
             indicadores
         )
 
+        # Agregar datos de canasta a la respuesta
+        if canasta_real:
+            resultado['canasta_real_usada'] = {
+                'timestamp': canasta_real.get('timestamp'),
+                'alimentos_promedio': canasta_real.get('canasta', {}).get('alimentos', {}).get('promedio'),
+                'transporte_promedio': canasta_real.get('canasta', {}).get('transporte', {}).get('promedio'),
+                'combustibles': canasta_real.get('canasta', {}).get('combustibles')
+            }
+            print(f"📊 Canasta real integrada en predicción")
+
         # Guardar en cache
         cache_file = Path("prediccion_cache_v2.json")
-        resultado['fuente'] = 'regenerada-con-indicadores'
+        resultado['fuente'] = 'regenerada-con-indicadores-y-canasta-real'
         resultado['timestamp_regeneracion'] = datetime.now().isoformat()
 
         with open(cache_file, 'w', encoding='utf-8') as f:
