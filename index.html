@@ -663,6 +663,39 @@
                     });
                 }
 
+                // Mostrar datos de canasta real si están disponibles
+                if (ensembleData && ensembleData.canasta_real) {
+                    html += `
+                    <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 15px;">Datos Reales Utilizados</h3>
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px; border-left: 2px solid #10b981; font-size: 11px;">
+                        <div style="color: #10b981; font-weight: bold; margin-bottom: 8px;">✓ Canasta IPC Cargada</div>
+                        <div style="color: #a0a0a0; line-height: 1.6;">
+                            Timestamp: <span style="color: #d0d0d0; font-family: monospace;">${ensembleData.canasta_real.timestamp}</span><br>
+                            Categorías: <span style="color: #d0d0d0;">${ensembleData.canasta_real.categorias.join(', ')}</span><br>
+                            Fuentes: <span style="color: #d0d0d0;">${ensembleData.canasta_real.fuentes.join(', ')}</span>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                if (ensembleData && ensembleData.canasta_real_usada) {
+                    html += `
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px; border-left: 2px solid #10b981; font-size: 11px;">
+                        <div style="color: #10b981; font-weight: bold; margin-bottom: 8px;">✓ Variables de Canasta en Modelo</div>
+                        <div style="color: #a0a0a0; line-height: 1.6;">
+                    `;
+                    if (ensembleData.canasta_real_usada.alimentos_promedio) {
+                        html += `Alimentos (promedio): <span style="color: #d0d0d0;">$${ensembleData.canasta_real_usada.alimentos_promedio.toLocaleString()}</span><br>`;
+                    }
+                    if (ensembleData.canasta_real_usada.transporte_promedio) {
+                        html += `Transporte (promedio): <span style="color: #d0d0d0;">$${ensembleData.canasta_real_usada.transporte_promedio.toLocaleString()}</span><br>`;
+                    }
+                    if (ensembleData.canasta_real_usada.combustibles) {
+                        html += `Combustibles: <span style="color: #d0d0d0;">Bencina $${ensembleData.canasta_real_usada.combustibles.bencina_95.precio}, Diesel $${ensembleData.canasta_real_usada.combustibles.diesel.precio}</span><br>`;
+                    }
+                    html += `</div></div>`;
+                }
+
                 html += '<div class="alert alert-success">Predicción completada</div>';
 
                 document.getElementById('prediction-content').innerHTML = html;
