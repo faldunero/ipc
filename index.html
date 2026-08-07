@@ -508,8 +508,8 @@
                 const useProduction = window.location.host.includes('onrender.com');
                 const currentAPI = useProduction ? API_URL_PROD : API_URL;
 
-                console.log('POST /api/actualizar-prediccion-arimax');
-                const r = await fetch(`${currentAPI}/api/actualizar-prediccion-arimax`, {
+                console.log('POST /actualizar-prediccion-arimax');
+                const r = await fetch(`${currentAPI}/actualizar-prediccion-arimax`, {
                     method: 'POST',
                     cache: 'no-store'
                 });
