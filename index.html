@@ -615,7 +615,7 @@
                 // ARIMAX - PRINCIPAL (datos REALES diarios)
                 let prediccionArimax = null;
                 try {
-                    const r_arimax = await fetch(`${currentAPI}/api/predecir-arimax?t=${ts}`, {
+                    const r_arimax = await fetch(`${currentAPI}/predecir-arimax?t=${ts}`, {
                         cache: 'no-store'
                     });
                     if (r_arimax.ok) {
@@ -626,13 +626,27 @@
                     console.warn('⚠️ ARIMAX no disponible:', e);
                 }
 
+                // Cargar predicción_actual.json (generado por arimax_predictor_dinamico.py)
+                let prediccionActual = null;
+                try {
+                    const r_actual = await fetch(`${currentAPI.replace('/api', '')}/prediccion_actual.json?t=${ts}`, {
+                        cache: 'no-store'
+                    });
+                    if (r_actual.ok) {
+                        prediccionActual = await r_actual.json();
+                        console.log('✅ Predicción actual cargada:', prediccionActual);
+                    }
+                } catch(e) {
+                    console.warn('⚠️ prediccion_actual.json no disponible:', e);
+                }
+
                 // Fallback: v1.0
                 const r = await fetch(`${currentAPI}/predecir?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const d = await r.json();
                 if (!r.ok) throw new Error(d.detail);
-                prediccionData = prediccionArimax || d;  // Usar ARIMAX si está disponible
+                prediccionData = prediccionActual || prediccionArimax || d;  // Usar predicción actual si existe
 
                 // v2.0 (ensemble) - PRIORITARIO
                 try {
@@ -655,14 +669,37 @@
                 const timelineEl = document.getElementById('timeline-progreso');
                 if (timelineEl) timelineEl.remove();
 
-                let html = `
-                    <div style="background: #0a0e27; border: 2px solid #ff9900; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
-                        <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">PREDICCIÓN JULIO 2026</div>
-                        <div style="font-size: 56px; font-weight: bold; color: #ff9900; letter-spacing: 3px; margin-bottom: 12px; cursor: pointer;" onclick="abrirModalEnsemble()">${ensembleData ? (ensembleData.ensemble_prediccion > 0 ? '+' : '') + ensembleData.ensemble_prediccion + '%' : (d.variacion_esperada > 0 ? '+' : '') + formatearChile(d.variacion_esperada) + '%'}</div>
+                // Calcular mes dinámico
+                let mesTexto = "PRÓXIMO MES";
+                let mesComparacion = "mes anterior vs próximo mes";
+                let prediccion_valor = d.variacion_esperada || 0;
+                let confianza = "Normal";
 
-                        <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0; border-top: 1px solid #0f1520; border-bottom: 1px solid #0f1520;">
-                            Variación Actual (Junio): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.variacion_mensual_actual)}%</span><br>
-                            Índice Actual (Base 2023): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.ipc_percent, 2)}%</span>
+                if (prediccionActual) {
+                    const fecha = new Date(prediccionActual.timestamp_prediccion);
+                    const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+                    mesTexto = `PREDICCIÓN ${meses[fecha.getMonth()].toUpperCase()} ${fecha.getFullYear()}`;
+                    prediccion_valor = prediccionActual.prediccion;
+                    confianza = prediccionActual.nivel_confianza || "Normal";
+                    mesComparacion = `Día ${prediccionActual.dia}/21 - Completitud: ${prediccionActual.completitud} - Confianza: ${confianza}`;
+                }
+
+                let html = `
+                    <div style="background: #0a0e27; padding: 25px; margin: 20px 0; text-align: center; border-radius: 3px;">
+                        <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; font-weight: bold;">${mesTexto}</div>
+                        <div style="font-size: 56px; font-weight: bold; color: #ff9900; letter-spacing: 3px; margin-bottom: 12px; cursor: pointer;" onclick="abrirModalEnsemble()">${(prediccion_valor > 0 ? '+' : '') + prediccion_valor.toFixed(4)}%</div>
+
+                        <div style="color: #a0a0a0; font-size: 11px; padding: 12px 0;">
+                            ${prediccionActual ?
+                                `IC 95%: [${prediccionActual.intervalo_confianza.min.toFixed(4)}%, ${prediccionActual.intervalo_confianza.max.toFixed(4)}%]<br>` +
+                                `Variables: Dólar $${prediccionActual.variables_exogenas.dolar}, TPM ${prediccionActual.variables_exogenas.tpm}%`
+                                :
+                                `Variación Actual (Junio): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.variacion_mensual_actual)}%</span><br>` +
+                                `Índice Actual (Base 2023): <span style="color: #d0d0d0; font-weight: bold;">${formatearChile(d.ipc_percent, 2)}%</span>`
+                            }
+                        </div>
+                        <div style="color: #707070; font-size: 10px; margin-top: 10px;">
+                            ${mesComparacion}
                         </div>
                     </div>
 
@@ -670,9 +707,10 @@
                         Variación Esperada por Categoría
                         <span style="font-size: 11px; color: #707070; cursor: help; margin-left: 10px;" onclick="abrirModal('proyec_categoria')" title="¿Qué es esto?">ⓘ</span>
                     </h3>
-                    <div style="background: #0f1520; padding: 10px; margin-bottom: 15px; border-left: 2px solid #ff9900;">
+                    <div style="background: #0f1520; padding: 10px; margin-bottom: 15px;">
                         <span style="color: #a0a0a0; font-size: 11px;">
-                            <span style="color: #ff9900; font-weight: bold;">Comparación Junio vs Julio 2026:</span> Variación mes actual (Junio) vs variación esperada (Julio)
+                            <span style="color: #ff9900; font-weight: bold;">${prediccionActual ? 'Datos de entrada' : 'Comparación'}: </span>
+                            ${prediccionActual ? 'basado en variables reales del día' : 'proyección por categoría'}
                         </span>
                     </div>
                 `;
