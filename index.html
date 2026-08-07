@@ -1172,16 +1172,24 @@
 
                 historico.forEach((pred, idx) => {
                     // Datos del Banco Central (variacion_mensual)
-                    const mes = pred.mes || pred.mes_predicho;
-                    const variacion = pred.variacion_mensual !== undefined ? pred.variacion_mensual : pred.variacion_esperada;
-                    const indice = pred.indice;
-                    const var12 = pred.variacion_12_meses;
+                    const mes = pred.mes || pred.mes_predicho || '—';
+                    const variacion = pred.variacion_mensual !== undefined ? pred.variacion_mensual : (pred.variacion_esperada || null);
+                    const indice = pred.indice !== undefined ? pred.indice : null;
+                    const var12 = pred.variacion_12_meses !== undefined ? pred.variacion_12_meses : null;
+
+                    // Formatear cada valor de forma segura
+                    const varStr = variacion !== null && variacion !== undefined && !isNaN(variacion) ?
+                        `${variacion > 0 ? '+' : ''}${formatearChile(variacion)}%` : '—';
+                    const indiceStr = indice !== null && indice !== undefined && !isNaN(indice) ?
+                        formatearChile(indice) : '—';
+                    const var12Str = var12 !== null && var12 !== undefined && !isNaN(var12) ?
+                        `${var12 > 0 ? '+' : ''}${formatearChile(var12)}%` : '—';
 
                     html += `<tr>
                         <td><strong>${mes}</strong></td>
-                        <td>${variacion > 0 ? '+' : ''}${formatearChile(variacion)}%</td>
-                        <td>${formatearChile(indice)}</td>
-                        <td>${var12 !== null && var12 !== undefined ? (var12 > 0 ? '+' : '') + formatearChile(var12) + '%' : '—'}</td>
+                        <td>${varStr}</td>
+                        <td>${indiceStr}</td>
+                        <td>${var12Str}</td>
                     </tr>`;
                 });
 
