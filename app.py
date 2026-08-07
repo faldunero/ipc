@@ -1163,6 +1163,63 @@ def datos_ipc_supabase():
         print(f"❌ Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/historico-validaciones")
+def historico_validaciones():
+    """Obtener histórico de validaciones: predicciones vs realidad"""
+    try:
+        if os.path.exists('historico_validaciones.json'):
+            with open('historico_validaciones.json', 'r', encoding='utf-8') as f:
+                validaciones = json.load(f)
+            print(f"✅ Histórico de validaciones cargado ({len(validaciones)} meses)")
+        else:
+            validaciones = []
+            print("⚠️  historico_validaciones.json no existe")
+
+        resp = JSONResponse(content=validaciones)
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+    except Exception as e:
+        print(f"❌ Error cargando validaciones: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/predicciones-por-categoria")
+def predicciones_por_categoria():
+    """Obtener predicciones por categoría del mes actual"""
+    try:
+        if os.path.exists('predicciones_por_categoria.json'):
+            with open('predicciones_por_categoria.json', 'r', encoding='utf-8') as f:
+                predicciones = json.load(f)
+            print(f"✅ Predicciones por categoría cargadas")
+        else:
+            predicciones = {}
+            print("⚠️  predicciones_por_categoria.json no existe")
+
+        resp = JSONResponse(content=predicciones)
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+    except Exception as e:
+        print(f"❌ Error cargando predicciones por categoría: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/prediccion-actual")
+def prediccion_actual():
+    """Obtener predicción actual del mes en curso"""
+    try:
+        if os.path.exists('prediccion_actual.json'):
+            with open('prediccion_actual.json', 'r', encoding='utf-8') as f:
+                prediccion = json.load(f)
+            print(f"✅ Predicción actual cargada: {prediccion.get('mes')} ({prediccion.get('prediccion'):.4f}%)")
+        else:
+            prediccion = {"error": "prediccion_actual.json no existe"}
+            print("⚠️  prediccion_actual.json no existe")
+
+        resp = JSONResponse(content=prediccion)
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
+    except Exception as e:
+        print(f"❌ Error cargando predicción actual: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

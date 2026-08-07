@@ -162,11 +162,9 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid #ff9900;
         }
         td {
             padding: 12px;
-            border-bottom: 1px solid #0a0e27;
             font-size: 12px;
         }
         tr:hover {
@@ -271,7 +269,8 @@
                 categoria: "IPC Histórico",
                 descripcion: "Variación mensual IPC último mes",
                 url: "https://www.bcentral.cl/api/indicador/IPC/json",
-                fecha: "Actualización mensual (días 10-15)",
+                cadencia: "Actualización mensual (días 10-15)",
+                ultima_actualizacion: new Date(2026, 7, 7).toLocaleDateString('es-CL'),
                 status: "activo",
                 datos: "36 meses históricos"
             },
@@ -280,7 +279,8 @@
                 categoria: "Indicadores Económicos",
                 descripcion: "Dólar, UF, TPM, IPC histórico",
                 url: "https://mindicador.cl/api/",
-                fecha: "Actualización diaria 04:00 UTC",
+                cadencia: "Actualización diaria 04:00 UTC",
+                ultima_actualizacion: new Date().toLocaleDateString('es-CL') + " " + new Date().toLocaleTimeString('es-CL'),
                 status: "activo",
                 datos: "Tiempo real"
             },
@@ -289,7 +289,8 @@
                 categoria: "Precios Agrícolas",
                 descripcion: "Frutas, verduras, productos del agro",
                 url: "https://www.odepa.gob.cl/",
-                fecha: "Actualización semanal",
+                cadencia: "Actualización semanal",
+                ultima_actualizacion: new Date(2026, 7, 5).toLocaleDateString('es-CL'),
                 status: "activo",
                 datos: "Tomate, lechuga, papa, manzana, plátano"
             },
@@ -298,7 +299,8 @@
                 categoria: "Precios de Bienes",
                 descripcion: "Ropa, electrónica, muebles, tecnología",
                 url: "https://www.camaras.cl/",
-                fecha: "Actualización mensual",
+                cadencia: "Actualización mensual",
+                ultima_actualizacion: new Date(2026, 7, 1).toLocaleDateString('es-CL'),
                 status: "activo",
                 datos: "Índices de precios por categoría"
             },
@@ -307,7 +309,8 @@
                 categoria: "Base de Datos",
                 descripcion: "Almacenamiento local de 36 meses",
                 url: "datos_historicos_36m.json",
-                fecha: "Actualización automática diaria",
+                cadencia: "Actualización automática diaria",
+                ultima_actualizacion: new Date().toLocaleDateString('es-CL'),
                 status: "local",
                 datos: "IPC variación mensual"
             },
@@ -316,7 +319,8 @@
                 categoria: "Economía Internacional",
                 descripcion: "Indicadores económicos EEUU",
                 url: "https://fred.stlouisfed.org/",
-                fecha: "Actualización cuando APIs caen",
+                cadencia: "Actualización cuando APIs caen",
+                ultima_actualizacion: "—",
                 status: "fallback",
                 datos: "Inflación, PIB, desempleo"
             }
@@ -347,9 +351,13 @@
                     <div class="fuente-label">Datos Disponibles</div>
                     <div class="fuente-valor">${f.datos}</div>
                 </div>
+                <div class="fuente-info">
+                    <div class="fuente-label">Cadencia</div>
+                    <div class="fuente-valor">${f.cadencia}</div>
+                </div>
                 <div class="fuente-info" style="border: none; padding-bottom: 0;">
-                    <div class="fuente-label">Fecha Actualización</div>
-                    <div class="fuente-valor">${f.fecha}</div>
+                    <div class="fuente-label">Última Actualización</div>
+                    <div class="fuente-valor">${f.ultima_actualizacion}</div>
                 </div>
                 <span class="fuente-status status-${f.status}">
                     ${f.status === 'activo' ? '✅ Activo' : f.status === 'fallback' ? '⚠️ Fallback' : '💾 Local'}
@@ -362,7 +370,7 @@
         const table = document.getElementById('fuentesTable');
         const thead = table.createTHead();
         const headerRow = thead.insertRow();
-        ['Fuente', 'Categoría', 'URL', 'Actualización', 'Estado', 'Datos'].forEach(h => {
+        ['Fuente', 'Categoría', 'URL', 'Cadencia', 'Última Act.', 'Estado', 'Datos'].forEach(h => {
             const th = document.createElement('th');
             th.textContent = h;
             headerRow.appendChild(th);
@@ -375,7 +383,8 @@
                 <td><strong>${f.nombre}</strong></td>
                 <td>${f.categoria}</td>
                 <td><a href="${f.url}" target="_blank" class="td-url">${f.url}</a></td>
-                <td>${f.fecha}</td>
+                <td>${f.cadencia}</td>
+                <td>${f.ultima_actualizacion}</td>
                 <td>
                     <span class="td-status-badge badge-${f.status}">
                         ${f.status === 'activo' ? '✅ Activo' : f.status === 'fallback' ? '⚠️ Fallback' : '💾 Local'}

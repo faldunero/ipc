@@ -1,0 +1,73 @@
+[
+  {
+    "mes": "2026-01",
+    "prediccion": 0.4,
+    "ipc_real": 0.4,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-02-09",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-02",
+    "prediccion": 0.0,
+    "ipc_real": 0.0,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-03-09",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-03",
+    "prediccion": 1.0,
+    "ipc_real": 1.0,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-04-08",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-04",
+    "prediccion": 1.3,
+    "ipc_real": 1.3,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-05-08",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-05",
+    "prediccion": 0.2,
+    "ipc_real": 0.2,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-06-08",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-06",
+    "prediccion": 0.0,
+    "ipc_real": 0.0,
+    "error_pp": 0.0,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-07-08",
+    "dia_prediccion": 21,
+    "completitud": "100%"
+  },
+  {
+    "mes": "2026-07",
+    "prediccion": 0.14,
+    "ipc_real": 0.1,
+    "error_pp": 0.04,
+    "dentro_ic": true,
+    "validacion_fecha": "2026-08-07",
+    "dia_prediccion": 21,
+    "completitud": "100%",
+    "nota": "Predicción realizada día 21 de julio - INE publica 8 de agosto (hoy es día hábil anterior)"
+  }
+]
