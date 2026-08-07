@@ -165,6 +165,11 @@ def root():
     """Servir index.html"""
     return FileResponse("index.html", media_type="text/html")
 
+@app.get("/fuentes-datos")
+def fuentes_datos():
+    """Servir página de fuentes de datos"""
+    return FileResponse("fuentes-datos.html", media_type="text/html")
+
 @app.get("/metodologia-prediccion")
 def metodologia():
     """Servir página de metodología técnica"""
