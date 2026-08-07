@@ -85,13 +85,21 @@
     1,
     1
   ],
-  "timestamp": "2026-08-07T13:07:20.152045",
+  "variables_exogenas": [
+    "dolar",
+    "tpm"
+  ],
+  "timestamp": "2026-08-07T14:23:48.455334",
   "proxima_prediccion": {
-    "prediccion": 0.30837593477976133,
+    "prediccion": 0.46182175323784946,
     "intervalo_confianza": {
-      "min": -0.4299341805150577,
-      "max": 1.0466860500745803
+      "min": -0.29169639542346215,
+      "max": 1.215339901899161
     },
-    "timestamp": "2026-08-07T13:07:20.167695"
+    "variables_exogenas_usadas": {
+      "dolar": 913.3000000000001,
+      "tpm": 4.5
+    },
+    "timestamp": "2026-08-07T14:23:48.476844"
   }
 }

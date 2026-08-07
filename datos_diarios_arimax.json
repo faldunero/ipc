@@ -1,0 +1,38 @@
+[
+  {
+    "fecha": "2026-08-07T14:23:37.715137",
+    "dia_semana": "Friday",
+    "indicadores": {
+      "dolar": {
+        "valor": 913.86,
+        "fecha": "2026-08-07T04:00:00.000Z",
+        "url": "https://mindicador.cl/api/dolar",
+        "status": "OK"
+      },
+      "uf": {
+        "valor": 40844.79,
+        "fecha": "2026-08-07T04:00:00.000Z",
+        "url": "https://mindicador.cl/api/uf",
+        "status": "OK"
+      },
+      "utm": {
+        "valor": 71649.0,
+        "fecha": "2026-08-01T04:00:00.000Z",
+        "url": "https://mindicador.cl/api/utm",
+        "status": "OK"
+      },
+      "ipc": {
+        "valor": -0.2,
+        "fecha": "2025-12-01T03:00:00.000Z",
+        "url": "https://mindicador.cl/api/ipc",
+        "status": "OK"
+      },
+      "tpm": {
+        "valor": 4.5,
+        "fecha": "2026-08-07T04:00:00.000Z",
+        "url": "https://mindicador.cl/api/tpm",
+        "status": "OK"
+      }
+    }
+  }
+]

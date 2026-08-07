@@ -570,17 +570,31 @@
             }, 50);
 
             try {
-                // Cargar AMBAS predicciones: v1 (original) + v2 (ensemble)
+                // Cargar predicciones: ARIMAX (principal) + v2 (ensemble fallback)
                 const ts = new Date().getTime();
                 const currentAPI = useProduction ? API_URL_PROD : API_URL;
 
-                // v1.0
+                // ARIMAX - PRINCIPAL (datos REALES diarios)
+                let prediccionArimax = null;
+                try {
+                    const r_arimax = await fetch(`${currentAPI}/api/predecir-arimax?t=${ts}`, {
+                        cache: 'no-store'
+                    });
+                    if (r_arimax.ok) {
+                        prediccionArimax = await r_arimax.json();
+                        console.log('✅ Predicción ARIMAX cargada:', prediccionArimax);
+                    }
+                } catch(e) {
+                    console.warn('⚠️ ARIMAX no disponible:', e);
+                }
+
+                // Fallback: v1.0
                 const r = await fetch(`${currentAPI}/predecir?t=${ts}`, {
                     cache: 'no-store'
                 });
                 const d = await r.json();
                 if (!r.ok) throw new Error(d.detail);
-                prediccionData = d;
+                prediccionData = prediccionArimax || d;  // Usar ARIMAX si está disponible
 
                 // v2.0 (ensemble) - PRIORITARIO
                 try {

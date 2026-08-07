@@ -2,15 +2,17 @@
 """API Backend para Predictor IPC - FastAPI"""
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from ipc_predictor import IPCPredictor
 from advanced_predictor import AdvancedPredictor
+from arimax_predictor import ARIMAXPredictor
 import os
 import json
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Intentar importar Supabase
 try:
@@ -229,6 +231,67 @@ def predecir_meses(num: int = 3):
         return {"predicciones": resultado, "total": len(resultado)}
 
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/predecir-arimax")
+def predecir_arimax():
+    """Predicción ARIMAX: usa datos REALES diarios como variables exógenas"""
+    try:
+        print("🔮 Prediciendo con ARIMAX + variables exógenas REALES...")
+
+        # Cargar variables exógenas REALES de hoy
+        try:
+            with open('exogenas_actuales.json', 'r', encoding='utf-8') as f:
+                exogenas_reales = json.load(f)
+        except:
+            exogenas_reales = {
+                'dolar': 913.86,
+                'tpm': 4.5,
+                'uf': 40844.79,
+                'timestamp': datetime.now().isoformat()
+            }
+
+        # Ejecutar ARIMAX
+        predictor_arimax = ARIMAXPredictor()
+
+        if not predictor_arimax.fetch_datos_historicos():
+            raise HTTPException(status_code=500, detail="No hay datos históricos")
+
+        # Usar datos exógenos REALES
+        predictor_arimax.exogenas = {
+            'dolar': exogenas_reales.get('dolar', 913),
+            'tpm': exogenas_reales.get('tpm', 4.5)
+        }
+
+        if not predictor_arimax.construir_matriz_exogenas():
+            raise HTTPException(status_code=500, detail="Error construyendo matriz")
+
+        # Entrenar y predecir
+        resultado_pred = predictor_arimax.predecir_mes_actual(order=(1, 1, 1))
+
+        if not resultado_pred:
+            raise HTTPException(status_code=500, detail="Error en predicción ARIMAX")
+
+        # Formatear respuesta
+        respuesta = {
+            'modelo': 'ARIMAX',
+            'prediccion': resultado_pred['prediccion'],
+            'intervalo_confianza': resultado_pred['intervalo_confianza'],
+            'variables_exogenas_usadas': predictor_arimax.exogenas,
+            'timestamp_datos': exogenas_reales.get('timestamp'),
+            'timestamp_prediccion': datetime.now().isoformat(),
+            'fuente': 'arimax-datos-reales'
+        }
+
+        print(f"✅ Predicción ARIMAX: {resultado_pred['prediccion']:.4f}% (IC: [{resultado_pred['intervalo_confianza']['min']:.4f}%, {resultado_pred['intervalo_confianza']['max']:.4f}%])")
+        print(f"   Con dólar: ${predictor_arimax.exogenas['dolar']:.2f}, TPM: {predictor_arimax.exogenas['tpm']:.2f}%")
+
+        resp = JSONResponse(content=respuesta)
+        resp.headers["Cache-Control"] = "no-cache"
+        return resp
+
+    except Exception as e:
+        print(f"❌ Error en predecir_arimax: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/predecir-v2")
