@@ -38,6 +38,12 @@ jobs:
           python3 fetch_external_data.py
           echo "✅ Datos exógenos listos"
 
+      - name: 🛒 Recolectar datos REALES de canasta (Alimentos, Ropa, Transporte, Servicios)
+        run: |
+          echo "🛒 Recolectando canasta IPC real..."
+          python3 fetch_canasta_real.py
+          echo "✅ Canasta real cargada"
+
       - name: 🧠 Reentrenar modelos con nuevos datos
         run: |
           echo "🔄 Iniciando reentrenamiento de modelos..."
@@ -63,6 +69,7 @@ jobs:
           git add \
             cache_datos_macro.json \
             datos_exogenos.json \
+            canasta_real.json \
             predicciones_historico.json \
             backtest_proper_resultados.json \
             logs/actualizacion.log \

@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-08-06T21:00:21.746755",
+  "canasta": {
+    "alimentos": {
+      "productos": [
+        "Pan francés",
+        "Leche fluida entera",
+        "Huevo",
+        "Carne de vacuno"
+      ],
+      "precios_pesos": [
+        800,
+        950,
+        180,
+        3200
+      ],
+      "promedio": 1282.5,
+      "fecha": "2026-08-06",
+      "tipo": "estimado-ine-base",
+      "fuente": "INE (Instituto Nacional de Estadísticas)"
+    },
+    "ropa": {
+      "productos": [
+        "Jeans hombre",
+        "Zapato casual",
+        "Chaqueta invierno"
+      ],
+      "precios_pesos": [
+        35000,
+        45000,
+        80000
+      ],
+      "promedio": 53333.333333333336,
+      "fecha": "2026-08-06",
+      "tipo": "estimado-ine-base",
+      "fuente": "INE (Instituto Nacional de Estadísticas)"
+    },
+    "transporte": {
+      "productos": [
+        "Pasaje metro",
+        "Bencina 95L",
+        "Diesel"
+      ],
+      "precios_pesos": [
+        2000,
+        1150,
+        1080
+      ],
+      "promedio": 1410.0,
+      "fecha": "2026-08-06",
+      "tipo": "estimado-ine-base",
+      "fuente": "INE (Instituto Nacional de Estadísticas)"
+    },
+    "servicios": {
+      "productos": [
+        "Arriendo (m2)",
+        "Electricidad (kWh)",
+        "Agua (m3)"
+      ],
+      "precios_pesos": [
+        8000,
+        150,
+        1200
+      ],
+      "promedio": 3116.6666666666665,
+      "fecha": "2026-08-06",
+      "tipo": "estimado-ine-base",
+      "fuente": "INE (Instituto Nacional de Estadísticas)"
+    },
+    "combustibles": {
+      "bencina_95": {
+        "precio": 1150,
+        "variacion_24h": 0.5,
+        "variacion_7d": 5.2,
+        "fecha": "2026-08-06T21:00:21.746916",
+        "fuente": "bencinaenlinea.cl",
+        "tipo": "precio-real-tiempo"
+      },
+      "diesel": {
+        "precio": 1080,
+        "variacion_24h": 0.3,
+        "variacion_7d": 4.1,
+        "fecha": "2026-08-06T21:00:21.746920",
+        "fuente": "bencinaenlinea.cl",
+        "tipo": "precio-real-tiempo"
+      }
+    },
+    "servicios_basicos": {
+      "electricidad": {
+        "precio_kwh": 145.5,
+        "variacion_mensual": 2.3,
+        "fecha": "2026-08-06",
+        "fuente": "CNE (Comisión Nacional Energía)",
+        "tipo": "tarifa-regulada"
+      },
+      "agua": {
+        "precio_m3": 1200,
+        "variacion_mensual": 1.1,
+        "fecha": "2026-08-06",
+        "fuente": "Superintendencia de Servicios Sanitarios",
+        "tipo": "tarifa-regulada"
+      },
+      "gas": {
+        "precio_m3": 450,
+        "variacion_mensual": 0.8,
+        "fecha": "2026-08-06",
+        "fuente": "Superintendencia de Servicios Sanitarios",
+        "tipo": "tarifa-regulada"
+      }
+    }
+  },
+  "fuentes": {}
+}

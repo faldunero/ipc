@@ -1,0 +1,19 @@
+{
+  "user_id": "felipe",
+  "visual": {
+    "show_borders": false,
+    "theme": "dark",
+    "hide_emojis": false
+  },
+  "dashboard": {
+    "records_per_page": 10,
+    "auto_refresh_minutes": 5
+  },
+  "data": {
+    "show_sources": true,
+    "show_timestamps": true,
+    "show_data_types": true
+  },
+  "created_at": "2026-08-06T20:56:09.880660",
+  "updated_at": "2026-08-06T20:56:09.880722"
+}

@@ -9,7 +9,6 @@ Traer datos REALES de la canasta IPC:
 """
 
 import json
-import requests
 from datetime import datetime
 import logging
 
