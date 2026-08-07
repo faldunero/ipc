@@ -338,7 +338,8 @@ if __name__ == '__main__':
     resultados_backtest = predictor.entrenar_arimax_walkforward(order=(1, 1, 1))
 
     # Predecir mes actual
-    resultado_pred = predictor.predecir_mes_actual(completitud, confianza_dinamica, order=(1, 1, 1))
+    # confianza_dinamica es tupla: (nivel, valor_confianza, ic_mult)
+    resultado_pred = predictor.predecir_mes_actual(completitud, confianza_dinamica, confianza_dinamica[2], order=(1, 1, 1))
 
     if resultado_pred:
         predictor.guardar_prediccion(resultado_pred, completitud, confianza_dinamica[0])

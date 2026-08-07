@@ -1,0 +1,30 @@
+{
+  "fecha": "2026-08-07T14:40:47.174817",
+  "dia_mes": 7,
+  "mes": "2026-08",
+  "datos_diarios": {
+    "dolar": {
+      "valor": 913.86,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "fuente": "mindicador.cl"
+    },
+    "uf": {
+      "valor": 40844.79,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "fuente": "mindicador.cl"
+    },
+    "utm": {
+      "valor": 71649.0,
+      "fecha": "2026-08-01T04:00:00.000Z",
+      "fuente": "mindicador.cl"
+    },
+    "tpm": {
+      "valor": 4.5,
+      "fecha": "2026-08-07T04:00:00.000Z",
+      "fuente": "mindicador.cl"
+    }
+  },
+  "datos_semanales": {},
+  "datos_centralizados": {},
+  "resumen": {}
+}

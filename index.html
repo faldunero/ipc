@@ -124,6 +124,7 @@
                         <button onclick="exportarExcel()" id="btnExportar" disabled style="background: #404040; color: #707070;">Exportar Excel</button>
                     </div>
                     <button onclick="forzarActualizacion()" style="margin-top: 10px; background: #4ecdc4; color: #000;">🔄 Forzar Actualización</button>
+                    <button onclick="actualizarPredictionArimax()" style="margin-top: 10px; background: #10b981; color: #000;">📊 Actualizar ARIMAX (Recolectar + Predecir)</button>
                     <div id="actualizacion-status" style="margin-top: 15px; padding: 12px; background: #0f1520; border-radius: 5px; display: none;">
                         <div id="actualizacion-mensaje"></div>
                         <div id="actualizacion-progreso" style="margin-top: 10px; display: none;">
@@ -494,6 +495,43 @@
             } catch (e) {
                 console.error('Error:', e);
                 document.getElementById('actualizacion-mensaje').innerHTML = `❌ Error: ${e.message}`;
+            }
+        }
+
+        // Actualizar predicción ARIMAX (recolectar + predecir)
+        async function actualizarPredictionArimax() {
+            try {
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = '⏳ Actualizando ARIMAX...';
+
+                const useProduction = window.location.host.includes('onrender.com');
+                const currentAPI = useProduction ? API_URL_PROD : API_URL;
+
+                console.log('POST /api/actualizar-prediccion-arimax');
+                const r = await fetch(`${currentAPI}/api/actualizar-prediccion-arimax`, {
+                    method: 'POST',
+                    cache: 'no-store'
+                });
+
+                const resultado = await r.json();
+
+                if (r.ok && resultado.success) {
+                    alert(`✅ Predicción ARIMAX actualizada:\n${resultado.mensaje}`);
+                    // Recargar predicción
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert(`❌ Error: ${resultado.detail || 'Error desconocido'}`);
+                }
+
+                btn.disabled = false;
+                btn.textContent = '📊 Actualizar ARIMAX (Recolectar + Predecir)';
+
+            } catch (e) {
+                console.error('Error:', e);
+                alert(`❌ Error: ${e.message}`);
+                event.target.disabled = false;
+                event.target.textContent = '📊 Actualizar ARIMAX (Recolectar + Predecir)';
             }
         }
 

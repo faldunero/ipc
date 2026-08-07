@@ -233,6 +233,69 @@ def predecir_meses(num: int = 3):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/actualizar-prediccion-arimax")
+def actualizar_prediccion_arimax():
+    """Ejecuta recolección + predicción ARIMAX dinámica (llamable desde UI)"""
+    try:
+        import subprocess
+        from pathlib import Path
+        import os
+
+        logger.info("🔄 POST: Actualizando predicción ARIMAX...")
+
+        # 1. Ejecutar recolector
+        logger.info("Step 1: Recolectando datos...")
+        resultado_recolector = subprocess.run(
+            ['python3', 'recolector_diario_completo.py'],
+            cwd=os.getcwd(),
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        if resultado_recolector.returncode != 0:
+            logger.warning(f"⚠️ Recolector: {resultado_recolector.stderr[:200]}")
+
+        # 2. Ejecutar predictor dinámico
+        logger.info("Step 2: Prediciendo mes actual...")
+        resultado_predictor = subprocess.run(
+            ['python3', 'arimax_predictor_dinamico.py'],
+            cwd=os.getcwd(),
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+        if resultado_predictor.returncode != 0:
+            logger.error(f"❌ Predictor: {resultado_predictor.stderr}")
+            raise Exception(f"Error en predictor: {resultado_predictor.stderr}")
+
+        # 3. Cargar predicción generada
+        prediccion_path = Path('prediccion_actual.json')
+        if prediccion_path.exists():
+            with open(prediccion_path, 'r', encoding='utf-8') as f:
+                prediccion = json.load(f)
+
+            logger.info(f"✅ Predicción generada: {prediccion['prediccion']:.4f}%")
+
+            respuesta = {
+                'success': True,
+                'prediccion': prediccion['prediccion'],
+                'intervalo_confianza': prediccion['intervalo_confianza'],
+                'completitud': prediccion['completitud'],
+                'nivel_confianza': prediccion['nivel_confianza'],
+                'timestamp': datetime.now().isoformat(),
+                'mensaje': f"Predicción actualizada: {prediccion['prediccion']:.4f}% (Confianza: {prediccion['nivel_confianza']})"
+            }
+
+            resp = JSONResponse(content=respuesta)
+            resp.headers["Cache-Control"] = "no-cache"
+            return resp
+        else:
+            raise Exception("No se generó prediccion_actual.json")
+
+    except Exception as e:
+        logger.error(f"❌ Error actualizando predicción: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/predecir-arimax")
 def predecir_arimax():
     """Predicción ARIMAX: usa datos REALES diarios como variables exógenas"""
