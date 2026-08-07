@@ -166,6 +166,7 @@ def root():
     return FileResponse("index.html", media_type="text/html")
 
 @app.get("/fuentes-datos")
+@app.get("/fuentes-datos.html")
 def fuentes_datos():
     """Servir página de fuentes de datos"""
     return FileResponse("fuentes-datos.html", media_type="text/html")
