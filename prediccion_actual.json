@@ -1,0 +1,21 @@
+{
+  "mes": "2026-08",
+  "dia": 7,
+  "prediccion": 0.5512952014454067,
+  "intervalo_confianza": {
+    "min": -0.4505786045353173,
+    "max": 1.5531690074261306,
+    "ancho": 2.003747611961448
+  },
+  "completitud": "33.3%",
+  "nivel_confianza": "DÉBIL",
+  "variables_exogenas": {
+    "fecha": "2026-08-07T14:23:37.715137",
+    "dolar": 913.86,
+    "tpm": 4.5,
+    "uf": 40844.79,
+    "timestamp": "2026-08-07T14:23:43.874167"
+  },
+  "timestamp_prediccion": "2026-08-07T14:48:27.690067",
+  "timestamp_validacion_esperada": "2026-08-15T14:48:27.690068"
+}
