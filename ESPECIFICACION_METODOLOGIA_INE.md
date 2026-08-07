@@ -7,7 +7,10 @@
 - **Período de recuperación**: Días 22-23 (precios no disponibles)
 - **Precios volátiles**: Hasta último día del mes (combustibles, pasajes interurbanos, transporte app)
 - **Precios centralizados**: Corte al día 15 (electricidad, agua, telefonía, seguros, etc.)
-- **Publicación**: Día 8 del mes M+1 (o próximo día hábil)
+- **Publicación**: Día 8 del mes M+1, o **día hábil ANTERIOR si el 8 no es hábil**
+  - Si 8 es sábado → se publica viernes 7
+  - Si 8 es domingo → se publica viernes 6
+  - Ejemplo: Agosto 2026 → IPC publicado 7 agosto (porque 8 era fin de semana)
 
 ### 1.2 Lo que REALMENTE es el IPC publicado el 8 de septiembre
 - **NO es**: "La inflación que pasó en agosto"

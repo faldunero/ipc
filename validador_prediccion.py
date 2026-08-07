@@ -27,6 +27,33 @@ class ValidadorPrediccion:
         self.error = None
         self.metricas = {}
 
+    def calcular_fecha_publicacion_ine(self, mes_referencia):
+        """
+        Calcula fecha de publicación del IPC del mes de referencia
+        INE publica el día 8 o día hábil ANTERIOR si el 8 no es hábil
+        """
+        # Parsear mes (YYYY-MM)
+        año, mes = map(int, mes_referencia.split('-'))
+
+        # Día 8 del mes siguiente
+        if mes == 12:
+            fecha_publicacion = datetime(año + 1, 1, 8)
+        else:
+            fecha_publicacion = datetime(año, mes + 1, 8)
+
+        # Si no es día hábil (sábado=5, domingo=6), retroceder al viernes anterior
+        dias_retroceso = 0
+        while fecha_publicacion.weekday() >= 5:  # 5=sábado, 6=domingo
+            fecha_publicacion -= timedelta(days=1)
+            dias_retroceso += 1
+
+        if dias_retroceso > 0:
+            logger.info(f"   Día 8 no es hábil, publicación retrocedida: {fecha_publicacion.strftime('%Y-%m-%d (%A)')}")
+        else:
+            logger.info(f"   Publicación día 8 (hábil): {fecha_publicacion.strftime('%Y-%m-%d (%A)')}")
+
+        return fecha_publicacion
+
     def cargar_prediccion_anterior(self, mes_predicho):
         """Carga la predicción que se hizo para el mes anterior"""
         try:
@@ -58,6 +85,14 @@ class ValidadorPrediccion:
         """
         try:
             logger.info(f"📊 Cargando IPC real del INE para: {mes_predicho}...")
+
+            # Verificar si ya se publicó
+            fecha_publicacion = self.calcular_fecha_publicacion_ine(mes_predicho)
+            if self.fecha_hoy < fecha_publicacion:
+                logger.warning(f"⚠️ INE aún no publica este IPC")
+                logger.info(f"   Se publicará: {fecha_publicacion.strftime('%Y-%m-%d (%A)')}")
+                logger.info(f"   Faltan: {(fecha_publicacion - self.fecha_hoy).days} días")
+                return False
 
             # Opción 1: Si se pasa valor real como parámetro
             if valor_real is not None:
