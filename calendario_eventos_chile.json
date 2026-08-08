@@ -1,0 +1,164 @@
+{
+  "descripcion": "Calendario de eventos especiales Chile que impactan precios IPC",
+  "nota": "Estos eventos generan volatilidad en categorías específicas. El modelo ajusta predicción según proximidad al evento.",
+  "IMPORTANTE": "DÍA DEL NIÑO EN CHILE ES EN AGOSTO (primera semana). Impacta predicción agosto 2026 con +0.50pp",
+  "eventos_2026": [
+    {
+      "nombre": "Día de Reyes",
+      "fecha": "2026-01-06",
+      "mes_afectado": "2026-01",
+      "dias_antes": 6,
+      "impacto_categorias": {
+        "alimentos": +0.3,
+        "juguetes_electronicos": -2.5,
+        "vestuario": -1.0
+      },
+      "impacto_ipc_estimado": -0.15,
+      "notas": "Liquidaciones post-navidad, descuentos en juguetes y ropa"
+    },
+    {
+      "nombre": "Día de la Madre",
+      "fecha": "2026-05-10",
+      "mes_afectado": "2026-05",
+      "dias_antes": 10,
+      "impacto_categorias": {
+        "vestuario": +1.2,
+        "accesorios": +1.5,
+        "alimentos_especiales": +0.8,
+        "flores_regalos": +2.0
+      },
+      "impacto_ipc_estimado": +0.25,
+      "notas": "Demanda fuerte en ropa, joyería, alimentos premium"
+    },
+    {
+      "nombre": "Día del Padre",
+      "fecha": "2026-06-21",
+      "mes_afectado": "2026-06",
+      "dias_antes": 21,
+      "impacto_categorias": {
+        "electrodomesticos": +0.8,
+        "herramientas": +1.2,
+        "vestuario": +0.6,
+        "alimentos": +0.4
+      },
+      "impacto_ipc_estimado": +0.20,
+      "notas": "Demanda en electrónica, herramientas, ropa casual"
+    },
+    {
+      "nombre": "Día del Niño (Primera semana agosto - CHILE)",
+      "fecha": "2026-08-14",
+      "mes_afectado": "2026-08",
+      "dias_antes": 7,
+      "impacto_categorias": {
+        "juguetes": +3.5,
+        "electronica_infantil": +2.8,
+        "alimentos_infantiles": +1.5,
+        "ropa_infantil": +1.8,
+        "entretenimiento": +2.0
+      },
+      "impacto_ipc_estimado": +0.50,
+      "notas": "VOLATILIDAD ALTA EN AGOSTO. Demanda explosiva en juguetes y electrónica infantil. AFECTA PREDICCIÓN AGOSTO DIRECTAMENTE"
+    },
+    {
+      "nombre": "Fiestas Patrias",
+      "fecha": "2026-09-18",
+      "mes_afectado": "2026-09",
+      "dias_antes": 18,
+      "impacto_categorias": {
+        "alimentos": +1.5,
+        "bebidas": +2.0,
+        "vestuario": +0.8,
+        "transporte": +1.2
+      },
+      "impacto_ipc_estimado": +0.45,
+      "notas": "Fuerte demanda en carnes, bebidas, ropa folclórica. Movilidad aumenta"
+    },
+    {
+      "nombre": "Día de la Raza / Descubrimiento",
+      "fecha": "2026-10-12",
+      "mes_afectado": "2026-10",
+      "dias_antes": 12,
+      "impacto_categorias": {
+        "alimentos": +0.5,
+        "transporte": +0.3
+      },
+      "impacto_ipc_estimado": +0.05,
+      "notas": "Feriado menor, efecto moderado"
+    },
+    {
+      "nombre": "Día de Todos los Santos",
+      "fecha": "2026-11-01",
+      "mes_afectado": "2026-11",
+      "dias_antes": 1,
+      "impacto_categorias": {
+        "flores": +1.5,
+        "alimentos": +0.3
+      },
+      "impacto_ipc_estimado": +0.08,
+      "notas": "Demanda en flores para cementerios"
+    },
+    {
+      "nombre": "Navidad",
+      "fecha": "2026-12-25",
+      "mes_afectado": "2026-12",
+      "dias_antes": 25,
+      "impacto_categorias": {
+        "juguetes": +4.0,
+        "electrodomesticos": +2.5,
+        "alimentos_premium": +2.0,
+        "bebidas": +1.5,
+        "vestuario": +1.0,
+        "decoracion": +2.0
+      },
+      "impacto_ipc_estimado": +0.80,
+      "notas": "VOLATILIDAD MÁS ALTA DEL AÑO. Demanda masiva en todos los rubros"
+    },
+    {
+      "nombre": "Año Nuevo",
+      "fecha": "2026-01-01",
+      "mes_afectado": "2025-12",
+      "dias_antes": -30,
+      "impacto_categorias": {
+        "bebidas": +1.5,
+        "alimentos": +0.8,
+        "transporte": +0.5
+      },
+      "impacto_ipc_estimado": +0.20,
+      "notas": "Efecto retrasado en diciembre"
+    }
+  ],
+  "eventos_2027": [
+    {
+      "nombre": "Día de Reyes",
+      "fecha": "2027-01-06",
+      "mes_afectado": "2027-01",
+      "dias_antes": 6,
+      "impacto_categorias": {
+        "alimentos": +0.3,
+        "juguetes_electronicos": -2.5,
+        "vestuario": -1.0
+      },
+      "impacto_ipc_estimado": -0.15,
+      "notas": "Liquidaciones post-navidad"
+    },
+    {
+      "nombre": "Día de la Madre",
+      "fecha": "2027-05-09",
+      "mes_afectado": "2027-05",
+      "dias_antes": 9,
+      "impacto_categorias": {
+        "vestuario": +1.2,
+        "accesorios": +1.5,
+        "alimentos_especiales": +0.8,
+        "flores_regalos": +2.0
+      },
+      "impacto_ipc_estimado": +0.25,
+      "notas": "Demanda fuerte en ropa y accesorios"
+    }
+  ],
+  "metodologia": "Cada evento tiene un 'impacto_ipc_estimado' que se suma como variable exógena al modelo ARIMAX. La predicción se ajusta según:
+    - Distancia al evento (dias_antes)
+    - Proximidad (si está dentro del mes predicho, impacto total; si está a 2+ meses, impacto 0)
+    - Categorías afectadas (ponderadas por su peso en la canasta IPC)",
+  "formula": "prediccion_arimax + suma(impacto_evento * factor_proximidad * factor_peso_categoria)"
+}

@@ -47,9 +47,9 @@
         .chart-container { position: relative; height: 400px; margin: 20px 0; }
         .month-selector { display: flex; gap: 15px; align-items: center; margin: 15px 0; flex-wrap: wrap; }
         .month-selector label { color: #d0d0d0; font-size: 12px; white-space: nowrap; }
-        .month-selector input { padding: 8px 12px; background: #0f1520; color: #ff9900; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; }
+        .month-selector input { padding: 8px 12px; background: #0f1520; color: #ff9900; font-family: inherit; font-size: 12px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 9999; justify-content: center; align-items: center; }
-        .modal-content { background: #0f1421; padding: 30px; max-width: 600px; border: 2px solid #ff9900; border-radius: 5px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: #0f1421; padding: 30px; max-width: 600px; border-radius: 5px; max-height: 80vh; overflow-y: auto; }
         .modal-content h3 { color: #ff9900; margin-bottom: 15px; font-size: 16px; font-weight: bold; }
         .modal-content p { color: #d0d0d0; font-size: 13px; line-height: 1.8; margin-bottom: 12px; }
         .modal-content ul { color: #d0d0d0; font-size: 13px; line-height: 1.8; }
@@ -59,14 +59,14 @@
         .clickable:hover { color: #ffb333; }
         /* Tabla de histórico con filtro */
         #table-filter-container { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        #table-filter-container input { flex: 1; min-width: 200px; padding: 8px 12px; background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; font-family: inherit; font-size: 12px; }
-        #table-filter-container select { padding: 8px 12px; background: #0f1520; color: #d0d0d0; border: 1px solid #ff9900; font-family: inherit; font-size: 12px; }
+        #table-filter-container input { flex: 1; min-width: 200px; padding: 8px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; }
+        #table-filter-container select { padding: 8px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; }
         table#historico-predictions-table { width: 100%; border-collapse: collapse; }
-        table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; border-bottom: 2px solid #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
+        table#historico-predictions-table thead th { background: #0f1520; color: #ff9900; text-transform: uppercase; font-size: 11px; padding: 12px 8px; cursor: pointer; user-select: none; }
         table#historico-predictions-table thead th:hover { background: #141829; }
         .info-icon-btn { background: #ff9900; border: none; color: #000; cursor: pointer; font-size: 14px; padding: 3px 7px; border-radius: 50%; display: inline-block; margin-left: 8px; width: 24px; height: 24px; text-align: center; line-height: 18px; font-weight: bold; vertical-align: middle; }
         .info-icon-btn:hover { background: #ffb333; transform: scale(1.1); }
-        table#historico-predictions-table tbody td { border-bottom: 1px solid #0a0e27; padding: 12px 8px; color: #d0d0d0; }
+        table#historico-predictions-table tbody td { padding: 12px 8px; color: #d0d0d0; }
         table#historico-predictions-table tbody tr:hover { background: #141829; }
         .sort-asc::after { content: " ▲"; }
         .sort-desc::after { content: " ▼"; }
@@ -175,12 +175,12 @@
                     <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
                         <div style="position: relative;">
                             <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Selecciona mes:</label>
-                            <div id="mesToggleGrafico" onclick="toggleMesPickerGrafico()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer; display: flex; justify-content: space-between;">
+                            <div id="mesToggleGrafico" onclick="toggleMesPickerGrafico()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px;  cursor: pointer; display: flex; justify-content: space-between;">
                                 <span id="mesDisplayGrafico">Junio 2026</span>
                                 <span>▼</span>
                             </div>
                             <input type="hidden" id="mesCalendario" value="2026-06">
-                            <div id="mesPickerGrafico" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520; border: 1px solid #ff9900; z-index: 100; margin-top: 5px;">
+                            <div id="mesPickerGrafico" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520;  z-index: 100; margin-top: 5px;">
                             <div style="padding: 12px; border-bottom: 1px solid #0a0e27;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                     <button onclick="cambiarAnoGrafico(-1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">◀ Año</button>
@@ -218,11 +218,11 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
                         <div style="position: relative;">
                             <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Mes Seleccionado</label>
-                            <div id="mesToggle" onclick="toggleMesPicker()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer; display: flex; justify-content: space-between;">
+                            <div id="mesToggle" onclick="toggleMesPicker()" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px;  cursor: pointer; display: flex; justify-content: space-between;">
                                 <span id="mesDisplay">Selecciona mes</span>
                                 <span>▼</span>
                             </div>
-                            <div id="mesPicker" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520; border: 1px solid #ff9900; z-index: 100; margin-top: 5px;">
+                            <div id="mesPicker" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #0f1520;  z-index: 100; margin-top: 5px;">
                                 <div style="padding: 12px; border-bottom: 1px solid #0a0e27;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                         <button onclick="cambiarAno(-1)" style="width: auto; padding: 5px 10px; margin: 0; background: #ff9900; color: #000; font-size: 11px;">◀ Año</button>
@@ -248,7 +248,7 @@
                         </div>
                         <div>
                             <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Comparar con</label>
-                            <select id="mesComparar" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900;" onchange="cargarCanastaMes()">
+                            <select id="mesComparar" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; " onchange="cargarCanastaMes()">
                                 <option value="anterior">Mes Anterior</option>
                                 <option value="ano">Año Anterior</option>
                             </select>
@@ -267,7 +267,7 @@
                     </p>
                     <div style="margin-bottom: 15px;">
                         <label style="color: #ff9900; font-size: 11px; display: block; margin-bottom: 8px;">Seleccionar mes base:</label>
-                        <select id="mesAcumulado" onchange="cargarCanastaAcumulada(event)" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px; border: 1px solid #ff9900; cursor: pointer;">
+                        <select id="mesAcumulado" onchange="cargarCanastaAcumulada(event)" style="width: 100%; padding: 9px 12px; background: #0f1520; color: #d0d0d0; font-family: inherit; font-size: 12px;  cursor: pointer;">
                             <option value="2026-06">Junio 2026 (últimos 12 meses)</option>
                             <option value="2026-05">Mayo 2026 (últimos 12 meses)</option>
                             <option value="2026-04">Abril 2026 (últimos 12 meses)</option>
@@ -550,7 +550,7 @@
                 <div id="timeline-progreso" style="background: #0f1520; padding: 20px; margin: 20px 0;">
                     <div style="color: #ff9900; font-size: 12px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold;">Desglose del Cálculo Ensemble</div>
                     <div id="progreso-items"></div>
-                    <div style="color: #10b981; font-size: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27; line-height: 1.6;">
+                    <div style="color: #10b981; font-size: 10px; margin-top: 12px; padding-top: 12px;  line-height: 1.6;">
                         <strong style="color: #4ecdc4;">Fuentes de datos:</strong> SVS + INE + ASEA + BC + bencinaenlinea.cl<br>
                         <strong style="color: #4ecdc4;">Cálculo ensemble:</strong> (ARIMA × 0.40) + (XGBoost × 0.40) + (LSTM × 0.20)
                     </div>
@@ -715,6 +715,25 @@
                     </div>
                 `;
 
+                // Calcular meses dinámicamente desde prediccionActual
+                let mesAnterior = "Mes Anterior";
+                let mesMesActualTexto = "Mes Actual";
+
+                if (prediccionActual) {
+                    const fechaPrediccion = new Date(prediccionActual.timestamp_prediccion);
+                    const mesActual = fechaPrediccion.getMonth();
+                    const yearActual = fechaPrediccion.getFullYear();
+                    const mesesNombres = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+
+                    // Mes anterior (último mes completo)
+                    const mesAnteriorIndex = mesActual === 0 ? 11 : mesActual - 1;
+                    const yearAnterior = mesActual === 0 ? yearActual - 1 : yearActual;
+                    mesAnterior = `${mesesNombres[mesAnteriorIndex]} ${yearAnterior}`;
+
+                    // Mes actual
+                    mesMesActualTexto = `${mesesNombres[mesActual]} ${yearActual}`;
+                }
+
                 if (d.canasta_prediccion) {
                     for (let cat in d.canasta_prediccion) {
                         const item = d.canasta_prediccion[cat];
@@ -728,16 +747,16 @@
                                     <span style="color: #d0d0d0; font-weight: bold;">${cat}</span>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 8px;">
-                                    <div style="border-right: 1px solid #0a0e27; padding-right: 10px;">
-                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Junio 2026</div>
+                                    <div style=" padding-right: 10px;">
+                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">${mesAnterior}</div>
                                         <div style="color: #a0a0a0; font-weight: bold; font-size: 12px;">${item.var_junio || '—'}</div>
                                     </div>
                                     <div>
-                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Variación Esperada (Julio)</div>
+                                        <div style="color: #707070; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Variación Esperada (${mesMesActualTexto})</div>
                                         <div style="color: ${color}; font-weight: bold; font-size: 12px; cursor: help;" onclick="abrirModal('cambio_detalle')" title="Clic para explicación">${item.cambio}</div>
                                     </div>
                                 </div>
-                                <div style="color: #808080; font-size: 11px; line-height: 1.5; padding-top: 8px; border-top: 1px solid #0a0e27;">${item.razon}</div>
+                                <div style="color: #808080; font-size: 11px; line-height: 1.5; padding-top: 8px; ">${item.razon}</div>
                             </div>
                         `;
                     }
@@ -761,7 +780,7 @@
                 if (ensembleData && ensembleData.canasta_real) {
                     html += `
                     <h3 style="color: #ff9900; margin-top: 20px; margin-bottom: 15px;">Datos Reales Utilizados</h3>
-                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px; border-left: 2px solid #10b981; font-size: 11px;">
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px;  font-size: 11px;">
                         <div style="color: #10b981; font-weight: bold; margin-bottom: 8px;">✓ Canasta IPC Cargada</div>
                         <div style="color: #a0a0a0; line-height: 1.6;">
                             Timestamp: <span style="color: #d0d0d0; font-family: monospace;">${ensembleData.canasta_real.timestamp}</span><br>
@@ -774,7 +793,7 @@
 
                 if (ensembleData && ensembleData.canasta_real_usada) {
                     html += `
-                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px; border-left: 2px solid #10b981; font-size: 11px;">
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 15px;  font-size: 11px;">
                         <div style="color: #10b981; font-weight: bold; margin-bottom: 8px;">✓ Variables de Canasta en Modelo</div>
                         <div style="color: #a0a0a0; line-height: 1.6;">
                     `;
@@ -871,7 +890,7 @@
                 if (!r.ok) throw new Error(d.detail);
 
                 let html = `
-                    <div style="background: #0f1520; padding: 15px; margin-bottom: 20px; border-left: 3px solid #ff9900;">
+                    <div style="background: #0f1520; padding: 15px; margin-bottom: 20px; ">
                         <h3 style="color: #ff9900; margin-bottom: 12px; font-size: 13px;">ESTADÍSTICAS DE TENDENCIA</h3>
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                             <div>
@@ -887,7 +906,7 @@
                                 <div style="color: #ff9900; font-size: 18px; font-weight: bold; margin-top: 5px;">${d.estadisticas.variacion_12m}%</div>
                             </div>
                         </div>
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #0a0e27;">
+                        <div style="margin-top: 12px; padding-top: 12px; ">
                             <div style="color: #a0a0a0; font-size: 11px; line-height: 1.6;">
                                 <strong>Volatilidad 3m:</strong> ${d.estadisticas.volatilidad_3m}% |
                                 <strong>Rango:</strong> ${d.estadisticas.rango_3m}

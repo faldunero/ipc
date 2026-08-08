@@ -115,6 +115,53 @@ class ARIMAXPredictorDinamico:
         logger.info(f"🎯 Nivel de confianza: {nivel} (valor: {valor_confianza:.0%}, IC mult: {ic_multiplicador}x)")
         return nivel, valor_confianza, ic_multiplicador
 
+    def calcular_impacto_eventos(self):
+        """Calcula impacto de eventos especiales (feriados, celebraciones) en el mes"""
+        try:
+            logger.info("📅 Analizando impacto de eventos especiales...")
+
+            # Cargar calendario de eventos
+            try:
+                with open('calendario_eventos_chile.json', 'r', encoding='utf-8') as f:
+                    calendario = json.load(f)
+            except:
+                logger.warning("⚠️ calendario_eventos_chile.json no encontrado, sin ajuste por eventos")
+                return 0.0, []
+
+            # Mes actual en formato YYYY-MM
+            mes_actual = self.mes_prediciendo
+            año_actual = int(mes_actual.split('-')[0])
+
+            # Buscar eventos en el mes predicho
+            eventos_relevantes = []
+            impacto_total = 0.0
+
+            # Buscar en eventos_2026 y eventos_2027
+            eventos_lista = calendario.get(f'eventos_{año_actual}', [])
+
+            for evento in eventos_lista:
+                mes_evento = evento.get('mes_afectado', '')
+                if mes_evento == mes_actual:
+                    impacto = evento.get('impacto_ipc_estimado', 0.0)
+                    impacto_total += impacto
+                    eventos_relevantes.append({
+                        'nombre': evento.get('nombre'),
+                        'impacto': impacto,
+                        'categorias': evento.get('impacto_categorias', {})
+                    })
+                    logger.info(f"  📌 {evento.get('nombre')}: {impacto:+.2f}pp")
+
+            if eventos_relevantes:
+                logger.info(f"✅ Impacto total eventos: {impacto_total:+.2f}pp")
+            else:
+                logger.info(f"✅ Sin eventos relevantes este mes")
+
+            return impacto_total, eventos_relevantes
+
+        except Exception as e:
+            logger.warning(f"⚠️ Error calculando impacto eventos: {e}")
+            return 0.0, []
+
     def construir_matriz_exogenas(self):
         """Construye matriz de variables exógenas para histórico"""
         try:
@@ -257,20 +304,30 @@ class ARIMAXPredictorDinamico:
                 min_val = float(conf_int_arima[0, 0])
                 max_val = float(conf_int_arima[0, 1])
 
+            # Calcular impacto de eventos especiales
+            impacto_eventos, eventos_lista = self.calcular_impacto_eventos()
+            valor_pred_ajustado = valor_pred + impacto_eventos
+
             # Ajustar IC según completitud
             intervalo_original = max_val - min_val
             nuevo_intervalo = intervalo_original * ic_mult
-            centro = valor_pred
+            centro = valor_pred_ajustado  # Usar predicción ajustada como centro
             min_val_ajustado = centro - (nuevo_intervalo / 2)
             max_val_ajustado = centro + (nuevo_intervalo / 2)
 
-            logger.info(f"✅ Predicción mes actual: {valor_pred:.4f}%")
+            logger.info(f"✅ Predicción ARIMAX base: {valor_pred:.4f}%")
+            if eventos_lista:
+                logger.info(f"✅ Ajuste por eventos: {impacto_eventos:+.4f}%")
+                logger.info(f"✅ Predicción FINAL: {valor_pred_ajustado:.4f}%")
             logger.info(f"   IC 95% (dinámico): [{min_val_ajustado:.4f}%, {max_val_ajustado:.4f}%]")
             logger.info(f"   Ancho IC: {nuevo_intervalo:.4f}%")
             logger.info(f"   Variables exógenas: Dólar ${exog_actual[0, 0]:.2f}, TPM {exog_actual[0, 1]:.2f}%")
 
             return {
-                'prediccion': valor_pred,
+                'prediccion': valor_pred_ajustado,
+                'prediccion_arimax_base': valor_pred,
+                'ajuste_eventos': impacto_eventos,
+                'eventos': eventos_lista,
                 'intervalo_confianza': {
                     'min': min_val_ajustado,
                     'max': max_val_ajustado,
@@ -294,6 +351,9 @@ class ARIMAXPredictorDinamico:
                 'mes': self.mes_prediciendo,
                 'dia': self.dia_mes_actual,
                 'prediccion': prediccion['prediccion'],
+                'prediccion_arimax_base': prediccion.get('prediccion_arimax_base', prediccion['prediccion']),
+                'ajuste_eventos': prediccion.get('ajuste_eventos', 0.0),
+                'eventos': prediccion.get('eventos', []),
                 'intervalo_confianza': prediccion['intervalo_confianza'],
                 'completitud': f"{completitud:.1f}%",
                 'nivel_confianza': nivel_confianza,
