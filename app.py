@@ -734,14 +734,18 @@ def historico_predicciones():
                 for v in validaciones:
                     validaciones_dict[v.get('mes', '')] = v
 
-        # Cargar 36 meses desde datos_historicos_36m.json (fuente principal)
+        # Cargar datos desde enero 2026 en adelante (cuando empezó predicción)
         if os.path.exists('datos_historicos_36m.json'):
-            print("📥 Cargando 36 meses desde datos_historicos_36m.json...")
+            print("📥 Cargando desde enero 2026 en adelante (con predicciones)...")
             with open('datos_historicos_36m.json', 'r', encoding='utf-8') as f:
                 datos_historicos = json.load(f)
 
                 for d in datos_historicos:
                     mes = d.get('mes', '')
+                    # Filtrar: solo desde 2026-01 en adelante
+                    if mes < '2026-01':
+                        continue
+
                     # Combinar datos históricos + validaciones si existen
                     val = validaciones_dict.get(mes, {})
 
@@ -749,13 +753,13 @@ def historico_predicciones():
                         "mes": mes,
                         "prediccion": float(val.get('prediccion', 0)),
                         "prediccion_ensemble": float(val.get('prediccion', 0)),
-                        "real": float(val.get('ipc_real', d.get('ipc_var_mensual', 0))),  # Usa validación si existe, sino histórico
+                        "real": float(val.get('ipc_real', d.get('ipc_var_mensual', 0))),
                         "variacion_mensual_real": float(d.get('ipc_var_mensual', 0)),
                         "variacion_12_meses": float(d.get('ipc_var_12m', 0)),
                         "error": float(val.get('error_pp', 0)),
                         "error_absoluto": float(val.get('error_pp', 0)),
                         "dentro_intervalo_confianza": val.get('dentro_ic', False),
-                        "nivel_confianza": 'VALIDADO' if mes in validaciones_dict else 'HISTÓRICO',
+                        "nivel_confianza": 'VALIDADO' if mes in validaciones_dict else 'PREDICCIÓN',
                         "completitud": val.get('completitud', 'N/A'),
                         "validacion_fecha": val.get('validacion_fecha', '')
                     })
