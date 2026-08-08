@@ -730,24 +730,23 @@ def historico_predicciones():
             print("📥 Cargando desde historico_validaciones.json (actualizado automáticamente)...")
             with open('historico_validaciones.json', 'r', encoding='utf-8') as f:
                 validaciones = json.load(f)
-                # Convertir dict a list si es necesario
-                if isinstance(validaciones, dict):
-                    historico = [
-                        {
-                            "mes": mes,
-                            "prediccion": v.get('prediccion', 0),
-                            "prediccion_ensemble": v.get('prediccion', 0),
-                            "real": v.get('real', 0),
-                            "variacion_mensual_real": v.get('real', 0),
-                            "error": v.get('error_absoluto', 0),
-                            "dentro_intervalo_confianza": v.get('dentro_intervalo_confianza', False),
-                            "nivel_confianza": v.get('nivel_confianza', 'N/A'),
-                            "completitud": v.get('completitud_recoleccion', 'N/A')
-                        }
-                        for mes, v in validaciones.items()
-                    ]
-                else:
-                    historico = validaciones
+                # Mapear campos al formato esperado por el dashboard
+                historico = [
+                    {
+                        "mes": v.get('mes', ''),
+                        "prediccion": float(v.get('prediccion', 0)),
+                        "prediccion_ensemble": float(v.get('prediccion', 0)),
+                        "real": float(v.get('ipc_real', 0)),  # ipc_real -> real
+                        "variacion_mensual_real": float(v.get('ipc_real', 0)),
+                        "error": float(v.get('error_pp', 0)),
+                        "error_absoluto": float(v.get('error_pp', 0)),
+                        "dentro_intervalo_confianza": v.get('dentro_ic', False),
+                        "nivel_confianza": 'VALIDADO',
+                        "completitud": v.get('completitud', 'N/A'),
+                        "validacion_fecha": v.get('validacion_fecha', '')
+                    }
+                    for v in validaciones
+                ]
         else:
             print("⚠️ historico_validaciones.json no existe")
 
