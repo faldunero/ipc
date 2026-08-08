@@ -612,7 +612,7 @@ def analisis():
 
 @app.get("/api/datos")
 def datos():
-    """Obtener datos 2025-01 a 2026-06 desde Banco Central"""
+    """Obtener datos 2025-01 en adelante desde Banco Central"""
     try:
         # Leer datos_bcch.json (fuente única)
         with open('datos_bcch.json', 'r', encoding='utf-8') as f:
@@ -622,7 +622,7 @@ def datos():
         datos_list = []
         for d in bcch.get('datos_historicos', []):
             mes = d.get('mes', '')
-            if '2025-01' <= mes <= '2026-06':
+            if '2025-01' <= mes:  # Sin límite superior, trae todos los datos
                 datos_list.append({
                     "mes": mes,
                     "ipc_percent": float(d.get('indice', 0) - 100),
@@ -654,11 +654,11 @@ def canasta_mes(mes: str):
 
 @app.get("/api/canasta-acumulada")
 def canasta_acumulada(mes: str = "2026-06"):
-    """Obtener canasta para mes específico (solo 2025-01 a 2026-06)"""
+    """Obtener canasta para mes específico (2025-01 en adelante)"""
     try:
         # Validar que mes está en rango
-        if not ('2025-01' <= mes <= '2026-06'):
-            raise HTTPException(status_code=400, detail=f"Mes {mes} fuera de rango (2025-01 a 2026-06)")
+        if not ('2025-01' <= mes):  # Sin límite superior
+            raise HTTPException(status_code=400, detail=f"Mes {mes} fuera de rango (2025-01 en adelante)")
 
         # Leer datos_bcch.json
         with open('datos_bcch.json', 'r', encoding='utf-8') as f:
@@ -995,7 +995,7 @@ def ultima_actualizacion():
             },
             "datos_bc": {
                 "meses": 0,
-                "rango": "2025-01 a 2026-06"
+                "rango": "2025-01 en adelante"
             }
         }
 
