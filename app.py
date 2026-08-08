@@ -704,7 +704,7 @@ def historico_predicciones():
         import time
 
         cache_path = "historico_predicciones_cache.json"
-        cache_age_minutes = 10080  # Cachear por 7 días (datos sumamente estáticos)
+        cache_age_minutes = 5  # Cachear solo 5 minutos (datos se actualizan diariamente)
 
         # 1️⃣ INTENTAR LEER DESDE CACHÉ LOCAL (más rápido)
         if os.path.exists(cache_path):
@@ -714,7 +714,7 @@ def historico_predicciones():
                 with open(cache_path, 'r', encoding='utf-8') as f:
                     cached = json.load(f)
                     resp = JSONResponse(content={"historico": cached, "source": "cache"})
-                    resp.headers["Cache-Control"] = "public, max-age=604800"  # 7 días
+                    resp.headers["Cache-Control"] = "public, max-age=300"  # 5 minutos
                     return resp
             else:
                 print(f"⏰ Caché expirado (edad: {int(age/60)} min > {cache_age_minutes})")
@@ -778,7 +778,7 @@ def historico_predicciones():
 
         # 4️⃣ RETORNAR CON HEADERS DE CACHÉ
         resp = JSONResponse(content={"historico": historico, "source": "fresh"})
-        resp.headers["Cache-Control"] = "public, max-age=604800"  # 7 días browser cache
+        resp.headers["Cache-Control"] = "public, max-age=300"  # 5 minutos
         resp.headers["Pragma"] = ""
         return resp
 
