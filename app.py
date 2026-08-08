@@ -1163,7 +1163,7 @@ def datos_ipc_supabase():
         print(f"❌ Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/historico-validaciones")
+@app.get("/api/historico-validaciones")
 def historico_validaciones():
     """Obtener histórico de validaciones: predicciones vs realidad"""
     try:
@@ -1182,7 +1182,7 @@ def historico_validaciones():
         print(f"❌ Error cargando validaciones: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/predicciones-por-categoria")
+@app.get("/api/predicciones-por-categoria")
 def predicciones_por_categoria():
     """Obtener predicciones por categoría del mes actual"""
     try:
@@ -1201,7 +1201,7 @@ def predicciones_por_categoria():
         print(f"❌ Error cargando predicciones por categoría: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/prediccion-actual")
+@app.get("/api/prediccion-actual")
 def prediccion_actual():
     """Obtener predicción actual del mes en curso"""
     try:
