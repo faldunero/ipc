@@ -180,6 +180,68 @@ class ValidadorPrediccion:
             logger.error(f"❌ Error calculando métricas: {e}")
             return False
 
+    def actualizar_datos_historicos(self, mes_validado):
+        """Actualiza datos_historicos_36m.json con el IPC real publicado"""
+        try:
+            archivo_historico = 'datos_historicos_36m.json'
+
+            logger.info(f"📝 Actualizando histórico de datos con IPC real de {mes_validado}...")
+
+            # Cargar datos históricos
+            with open(archivo_historico, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+
+            # Buscar y actualizar el mes
+            mes_encontrado = False
+            for item in datos:
+                if item['mes'] == mes_validado:
+                    item['ipc_var_mensual'] = self.ipc_real
+                    mes_encontrado = True
+                    logger.info(f"  ✅ Actualizado {mes_validado}: {self.ipc_real}%")
+                    break
+
+            if not mes_encontrado:
+                logger.warning(f"  ⚠️ Mes {mes_validado} no encontrado en histórico")
+                return False
+
+            # Guardar cambios
+            with open(archivo_historico, 'w', encoding='utf-8') as f:
+                json.dump(datos, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"✅ Datos históricos actualizados")
+            return True
+
+        except Exception as e:
+            logger.error(f"❌ Error actualizando datos históricos: {e}")
+            return False
+
+    def hacer_commit_automatico(self, mes_validado):
+        """Hace commit y push automático a GitHub"""
+        try:
+            import subprocess
+
+            logger.info("🔄 Haciendo commit y push automático...")
+
+            # Git add
+            subprocess.run(['git', 'add', 'datos_historicos_36m.json', 'historico_validaciones.json'],
+                          check=True, capture_output=True)
+
+            # Git commit
+            commit_msg = f"🔄 Validación automática: IPC real {mes_validado} = {self.ipc_real}%"
+            subprocess.run(['git', 'commit', '-m', commit_msg],
+                          check=True, capture_output=True)
+
+            # Git push
+            subprocess.run(['git', 'push', 'origin', 'main'],
+                          check=True, capture_output=True)
+
+            logger.info(f"✅ Commit y push completados")
+            return True
+
+        except Exception as e:
+            logger.warning(f"⚠️ Error en push automático (pero datos guardados): {e}")
+            return False
+
     def guardar_validacion(self, mes_validado):
         """Guarda registro de validación en histórico"""
         try:
@@ -304,6 +366,14 @@ if __name__ == '__main__':
     # Guardar validación
     if not validador.guardar_validacion(mes_validar):
         logger.error("⚠️ Error guardando validación (pero métricas calculadas)")
+
+    # Actualizar datos históricos con el IPC real
+    if not validador.actualizar_datos_historicos(mes_validar):
+        logger.error("⚠️ Error actualizando datos históricos")
+
+    # Hacer commit y push automático
+    if not validador.hacer_commit_automatico(mes_validar):
+        logger.error("⚠️ Error en push automático (pero datos guardados localmente)")
 
     # Mostrar estadísticas acumuladas
     estadisticas = validador.calcular_estadisticas_acumuladas()
