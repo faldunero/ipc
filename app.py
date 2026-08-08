@@ -203,14 +203,14 @@ def logs_dashboard_html():
 
 @app.get("/api/predecir")
 def predecir(mes: str = None):
-    """Endpoint de predicción FRESCA sin cachés - genera datos nuevos cada vez"""
+    """Endpoint de predicción FRESCA - carga desde prediccion_actual.json"""
     try:
-        if predictor is None:
-            raise HTTPException(status_code=500, detail="Predictor no inicializado")
-
-        # GENERAR DATOS FRESCOS - sin cachés
-        print(f"\n🔄 Generando predicción FRESCA para mes: {mes or 'próximo mes'}")
-        resultado = predictor.predict_ipc_for_month(mes) if mes else predictor.predict_ipc_for_month()
+        # En lugar de generar predicción fresca (que falla), devolver prediccion_actual.json
+        if os.path.exists('prediccion_actual.json'):
+            with open('prediccion_actual.json', 'r', encoding='utf-8') as f:
+                resultado = json.load(f)
+        else:
+            resultado = {"error": "prediccion_actual.json no existe"}
 
         # Headers anti-caché
         from fastapi.responses import JSONResponse
@@ -221,6 +221,9 @@ def predecir(mes: str = None):
         return response
 
     except Exception as e:
+        import traceback
+        print(f"ERROR en /api/predecir: {e}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/predecir-meses")
