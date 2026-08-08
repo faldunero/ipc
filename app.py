@@ -11,7 +11,6 @@ from advanced_predictor import AdvancedPredictor
 from arimax_predictor import ARIMAXPredictor
 import os
 import json
-import numpy as np
 from dotenv import load_dotenv
 from datetime import datetime
 
