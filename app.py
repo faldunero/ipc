@@ -1004,7 +1004,7 @@ def ultima_actualizacion():
             with open('datos_bcch.json', 'r', encoding='utf-8') as f:
                 bcch = json.load(f)
                 resultado["ultima_actualizacion"] = bcch.get('fecha_actualizacion', 'Desconocida')
-                resultado["datos_bc"]["meses"] = len([d for d in bcch.get('datos_historicos', []) if '2025-01' <= d.get('mes', '') <= '2026-06'])
+                resultado["datos_bc"]["meses"] = len([d for d in bcch.get('datos_historicos', []) if '2025-01' <= d.get('mes', '')])  # Sin límite superior, trae todos los datos
 
         # Leer resultados del entrenamiento
         if os.path.exists('backtest_proper_resultados.json'):
