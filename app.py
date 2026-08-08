@@ -724,31 +724,43 @@ def historico_predicciones():
 
         # 2️⃣ CACHÉ EXPIRADO O NO EXISTE - CARGAR DE FUENTE
         historico = []
+        validaciones_dict = {}
 
-        # Leer desde historico_validaciones.json (archivo actualizado automáticamente)
+        # Cargar validaciones en dict para merge
         if os.path.exists('historico_validaciones.json'):
-            print("📥 Cargando desde historico_validaciones.json (actualizado automáticamente)...")
+            print("📥 Cargando validaciones desde historico_validaciones.json...")
             with open('historico_validaciones.json', 'r', encoding='utf-8') as f:
                 validaciones = json.load(f)
-                # Mapear campos al formato esperado por el dashboard
-                historico = [
-                    {
-                        "mes": v.get('mes', ''),
-                        "prediccion": float(v.get('prediccion', 0)),
-                        "prediccion_ensemble": float(v.get('prediccion', 0)),
-                        "real": float(v.get('ipc_real', 0)),  # ipc_real -> real
-                        "variacion_mensual_real": float(v.get('ipc_real', 0)),
-                        "error": float(v.get('error_pp', 0)),
-                        "error_absoluto": float(v.get('error_pp', 0)),
-                        "dentro_intervalo_confianza": v.get('dentro_ic', False),
-                        "nivel_confianza": 'VALIDADO',
-                        "completitud": v.get('completitud', 'N/A'),
-                        "validacion_fecha": v.get('validacion_fecha', '')
-                    }
-                    for v in validaciones
-                ]
+                for v in validaciones:
+                    validaciones_dict[v.get('mes', '')] = v
+
+        # Cargar 36 meses desde datos_historicos_36m.json (fuente principal)
+        if os.path.exists('datos_historicos_36m.json'):
+            print("📥 Cargando 36 meses desde datos_historicos_36m.json...")
+            with open('datos_historicos_36m.json', 'r', encoding='utf-8') as f:
+                datos_historicos = json.load(f)
+
+                for d in datos_historicos:
+                    mes = d.get('mes', '')
+                    # Combinar datos históricos + validaciones si existen
+                    val = validaciones_dict.get(mes, {})
+
+                    historico.append({
+                        "mes": mes,
+                        "prediccion": float(val.get('prediccion', 0)),
+                        "prediccion_ensemble": float(val.get('prediccion', 0)),
+                        "real": float(val.get('ipc_real', d.get('ipc_var_mensual', 0))),  # Usa validación si existe, sino histórico
+                        "variacion_mensual_real": float(d.get('ipc_var_mensual', 0)),
+                        "variacion_12_meses": float(d.get('ipc_var_12m', 0)),
+                        "error": float(val.get('error_pp', 0)),
+                        "error_absoluto": float(val.get('error_pp', 0)),
+                        "dentro_intervalo_confianza": val.get('dentro_ic', False),
+                        "nivel_confianza": 'VALIDADO' if mes in validaciones_dict else 'HISTÓRICO',
+                        "completitud": val.get('completitud', 'N/A'),
+                        "validacion_fecha": val.get('validacion_fecha', '')
+                    })
         else:
-            print("⚠️ historico_validaciones.json no existe")
+            print("⚠️ datos_historicos_36m.json no existe")
 
         # Ordenar DESC (más reciente primero)
         historico = sorted(historico, key=lambda x: x.get('mes', ''), reverse=True)
