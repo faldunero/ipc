@@ -6,7 +6,7 @@
       {
         "nombre": "Alimentos y bebidas no alcohólicas",
         "ponderacion": 22.15,
-        "variacion_esperada": 0.8,
+        "variacion_esperada": 0.9,
         "variacion_real": 0.8,
         "notas": "Presión agrícola moderada. Índice FAO: inflación moderada."
       },
@@ -34,7 +34,7 @@
       {
         "nombre": "Equipamiento y mantenimiento del hogar",
         "ponderacion": 6.19,
-        "variacion_esperada": -1.7,
+        "variacion_esperada": 1.5,
         "variacion_real": -1.7,
         "notas": "Bienes electrónicos con variabilidad. Presión moderada."
       },
@@ -62,7 +62,7 @@
       {
         "nombre": "Recreación, deportes y cultura",
         "ponderacion": 4.75,
-        "variacion_esperada": 0.8,
+        "variacion_esperada": 3.5,
         "variacion_real": 0.8,
         "notas": "Entradas + servicios moderados."
       },
@@ -97,6 +97,108 @@
     ],
     "fecha_actualizacion": "2026-08-07",
     "metodologia": "Proyección por categoría usando datos de recolección 1-21 de julio, extrapolación ARIMA para componentes incompletos",
-    "fuentes": ["mindicador.cl", "ODEPA", "Cámaras de Comercio", "Banco Central"]
+    "fuentes": [
+      "mindicador.cl",
+      "ODEPA",
+      "Cámaras de Comercio",
+      "Banco Central"
+    ]
+  },
+  "2026-08": {
+    "mes": "Agosto 2026",
+    "prediccion_total": 0.55,
+    "categorias": [
+      {
+        "nombre": "Alimentos y bebidas no alcohólicas",
+        "ponderacion": 22.15,
+        "variacion_esperada": 0.9,
+        "variacion_real": 0.8,
+        "notas": "Presión agrícola moderada. Índice FAO: inflación moderada."
+      },
+      {
+        "nombre": "Bebidas alcohólicas y tabaco",
+        "ponderacion": 3.68,
+        "variacion_esperada": 0.9,
+        "variacion_real": 0.9,
+        "notas": "Demanda social baja."
+      },
+      {
+        "nombre": "Vestuario y calzado",
+        "ponderacion": 2.9,
+        "variacion_esperada": -6.1,
+        "variacion_real": -6.1,
+        "notas": "Presión invernal: descuentos invierno (-6,5% típico). ARIMA + shock estacional."
+      },
+      {
+        "nombre": "Vivienda y servicios básicos",
+        "ponderacion": 16.76,
+        "variacion_esperada": 0.4,
+        "variacion_real": 0.4,
+        "notas": "Energía + arriendo estables. Consumo alto invierno."
+      },
+      {
+        "nombre": "Equipamiento y mantenimiento del hogar",
+        "ponderacion": 6.19,
+        "variacion_esperada": 1.5,
+        "variacion_real": -1.7,
+        "notas": "Bienes electrónicos con variabilidad. Presión moderada."
+      },
+      {
+        "nombre": "Salud",
+        "ponderacion": 8.21,
+        "variacion_esperada": 0.6,
+        "variacion_real": 0.6,
+        "notas": "Seguros + medicamentos estables."
+      },
+      {
+        "nombre": "Transporte",
+        "ponderacion": 13.45,
+        "variacion_esperada": -1.3,
+        "variacion_real": -1.3,
+        "notas": "Bencina baja (-1,3% típico). UF estable. Dólar moderado."
+      },
+      {
+        "nombre": "Información y comunicación",
+        "ponderacion": 6.65,
+        "variacion_esperada": 0.2,
+        "variacion_real": 0.2,
+        "notas": "Telefonía estable."
+      },
+      {
+        "nombre": "Recreación, deportes y cultura",
+        "ponderacion": 4.75,
+        "variacion_esperada": 3.5,
+        "variacion_real": 0.8,
+        "notas": "Entradas + servicios moderados."
+      },
+      {
+        "nombre": "Educación",
+        "ponderacion": 4.2,
+        "variacion_esperada": 0.0,
+        "variacion_real": 0.0,
+        "notas": "Aranceles ajustados en marzo."
+      },
+      {
+        "nombre": "Restaurantes y alojamiento",
+        "ponderacion": 6.22,
+        "variacion_esperada": 0.4,
+        "variacion_real": 0.4,
+        "notas": "Demanda estable."
+      },
+      {
+        "nombre": "Seguros y servicios financieros",
+        "ponderacion": 1.1,
+        "variacion_esperada": 3.4,
+        "variacion_real": 3.4,
+        "notas": "Seguros con volatilidad."
+      },
+      {
+        "nombre": "Bienes y servicios diversos",
+        "ponderacion": 3.73,
+        "variacion_esperada": -0.7,
+        "variacion_real": -0.7,
+        "notas": "Servicios personales moderados."
+      }
+    ]
   }
 }
