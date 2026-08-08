@@ -629,7 +629,7 @@
                 // Cargar predicción_actual.json (generado por arimax_predictor_dinamico.py)
                 let prediccionActual = null;
                 try {
-                    const r_actual = await fetch(`${currentAPI.replace('/api', '')}/prediccion_actual.json?t=${ts}`, {
+                    const r_actual = await fetch(`${currentAPI}/prediccion-actual?t=${ts}`, {
                         cache: 'no-store'
                     });
                     if (r_actual.ok) {
