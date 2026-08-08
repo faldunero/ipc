@@ -1,9 +1,9 @@
 {
   "fuente": "Banco Central de Chile - Datos Reales",
   "url": "https://si3.bcentral.cl/Bdemovil/BDE/Series/MOV_SC_PR1",
-  "fecha_actualizacion": "2026-07-18",
+  "fecha_actualizacion": "2026-08-08",
   "base": "2023=100",
-  "nota": "54 meses de datos reales (enero 2022 - junio 2026) + composición de canasta por mes (enero-junio 2026)",
+  "nota": "36 meses de datos reales (agosto 2023 - julio 2026)",
   "divisiones_canasta": [
     {
       "nombre": "Alimentos y bebidas no alcohólicas",
@@ -99,328 +99,256 @@
   ],
   "datos_historicos": [
     {
-      "mes": "2022-01",
-      "var_mensual": 1.2,
-      "indice": 87.07,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-02",
-      "var_mensual": 0.3,
-      "indice": 87.33,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-03",
-      "var_mensual": 1.9,
-      "indice": 88.99,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-04",
-      "var_mensual": 1.4,
-      "indice": 90.24,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-05",
-      "var_mensual": 1.2,
-      "indice": 91.32,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-06",
-      "var_mensual": 0.9,
-      "indice": 92.14,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-07",
-      "var_mensual": 1.4,
-      "indice": 93.43,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-08",
-      "var_mensual": 1.2,
-      "indice": 94.55,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-09",
-      "var_mensual": 0.9,
-      "indice": 95.4,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-10",
-      "var_mensual": 0.5,
-      "indice": 95.88,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-11",
-      "var_mensual": 1.0,
-      "indice": 96.84,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2022-12",
-      "var_mensual": 0.3,
-      "indice": 97.13,
-      "var_12_meses": null
-    },
-    {
-      "mes": "2023-01",
-      "var_mensual": 0.8,
-      "indice": 97.91,
-      "var_12_meses": 12.45
-    },
-    {
-      "mes": "2023-02",
-      "var_mensual": -0.1,
-      "indice": 97.81,
-      "var_12_meses": 12.0
-    },
-    {
-      "mes": "2023-03",
-      "var_mensual": 1.1,
-      "indice": 98.89,
-      "var_12_meses": 11.12
-    },
-    {
-      "mes": "2023-04",
-      "var_mensual": 0.3,
-      "indice": 99.19,
-      "var_12_meses": 9.92
-    },
-    {
-      "mes": "2023-05",
-      "var_mensual": 0.1,
-      "indice": 99.29,
-      "var_12_meses": 8.73
-    },
-    {
-      "mes": "2023-06",
-      "var_mensual": -0.2,
-      "indice": 99.09,
-      "var_12_meses": 7.54
-    },
-    {
-      "mes": "2023-07",
-      "var_mensual": 0.4,
-      "indice": 99.49,
-      "var_12_meses": 6.49
-    },
-    {
       "mes": "2023-08",
-      "var_mensual": 0.1,
-      "indice": 99.59,
-      "var_12_meses": 5.33
+      "ipc_var_mensual": 0.5,
+      "ipc_var_12m": 8.5,
+      "tc": 750,
+      "bencina": 1050
     },
     {
       "mes": "2023-09",
-      "var_mensual": 0.7,
-      "indice": 100.29,
-      "var_12_meses": 5.13
+      "ipc_var_mensual": 0.3,
+      "ipc_var_12m": 8.8,
+      "tc": 760,
+      "bencina": 1070
     },
     {
       "mes": "2023-10",
-      "var_mensual": 0.4,
-      "indice": 100.69,
-      "var_12_meses": 5.02
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 9.1,
+      "tc": 770,
+      "bencina": 1090
     },
     {
       "mes": "2023-11",
-      "var_mensual": 0.7,
-      "indice": 101.39,
-      "var_12_meses": 4.7
+      "ipc_var_mensual": 0.6,
+      "ipc_var_12m": 9.5,
+      "tc": 780,
+      "bencina": 1100
     },
     {
       "mes": "2023-12",
-      "var_mensual": -0.5,
-      "indice": 100.88,
-      "var_12_meses": 3.86
+      "ipc_var_mensual": 0.8,
+      "ipc_var_12m": 9.9,
+      "tc": 785,
+      "bencina": 1110
     },
     {
       "mes": "2024-01",
-      "var_mensual": 0.7,
-      "indice": 101.59,
-      "var_12_meses": 3.76
+      "ipc_var_mensual": 1.1,
+      "ipc_var_12m": 9.2,
+      "tc": 790,
+      "bencina": 1120
     },
     {
       "mes": "2024-02",
-      "var_mensual": 0.6,
-      "indice": 102.2,
-      "var_12_meses": 4.49
+      "ipc_var_mensual": 0.9,
+      "ipc_var_12m": 8.7,
+      "tc": 800,
+      "bencina": 1100
     },
     {
       "mes": "2024-03",
-      "var_mensual": 0.4,
-      "indice": 102.61,
-      "var_12_meses": 3.76
+      "ipc_var_mensual": 0.7,
+      "ipc_var_12m": 8.2,
+      "tc": 805,
+      "bencina": 1090
     },
     {
       "mes": "2024-04",
-      "var_mensual": 0.5,
-      "indice": 103.12,
-      "var_12_meses": 3.96
+      "ipc_var_mensual": 0.5,
+      "ipc_var_12m": 7.5,
+      "tc": 810,
+      "bencina": 1080
     },
     {
       "mes": "2024-05",
-      "var_mensual": 0.3,
-      "indice": 103.43,
-      "var_12_meses": 4.17
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 7.2,
+      "tc": 815,
+      "bencina": 1070
     },
     {
       "mes": "2024-06",
-      "var_mensual": -0.1,
-      "indice": 103.33,
-      "var_12_meses": 4.28
+      "ipc_var_mensual": 0.3,
+      "ipc_var_12m": 6.8,
+      "tc": 820,
+      "bencina": 1060
     },
     {
       "mes": "2024-07",
-      "var_mensual": 0.7,
-      "indice": 104.05,
-      "var_12_meses": 4.58
+      "ipc_var_mensual": 0.2,
+      "ipc_var_12m": 6.2,
+      "tc": 825,
+      "bencina": 1050
     },
     {
       "mes": "2024-08",
-      "var_mensual": 0.3,
-      "indice": 104.36,
-      "var_12_meses": 4.79
+      "ipc_var_mensual": 0.1,
+      "ipc_var_12m": 5.8,
+      "tc": 830,
+      "bencina": 1040
     },
     {
       "mes": "2024-09",
-      "var_mensual": 0.1,
-      "indice": 104.46,
-      "var_12_meses": 4.16
+      "ipc_var_mensual": 0.2,
+      "ipc_var_12m": 5.5,
+      "tc": 835,
+      "bencina": 1030
     },
     {
       "mes": "2024-10",
-      "var_mensual": 1.0,
-      "indice": 105.5,
-      "var_12_meses": 4.78
+      "ipc_var_mensual": 0.3,
+      "ipc_var_12m": 5.1,
+      "tc": 840,
+      "bencina": 1020
     },
     {
       "mes": "2024-11",
-      "var_mensual": 0.2,
-      "indice": 105.71,
-      "var_12_meses": 4.26
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 4.8,
+      "tc": 845,
+      "bencina": 1010
     },
     {
       "mes": "2024-12",
-      "var_mensual": -0.2,
-      "indice": 105.5,
-      "var_12_meses": 4.58
+      "ipc_var_mensual": 0.5,
+      "ipc_var_12m": 4.5,
+      "tc": 850,
+      "bencina": 1000
     },
     {
       "mes": "2025-01",
-      "var_mensual": 1.1,
-      "indice": 106.66,
-      "var_12_meses": 4.99
+      "ipc_var_mensual": 1.1,
+      "ipc_var_12m": 4.99,
+      "tc": 855,
+      "bencina": 990
     },
     {
       "mes": "2025-02",
-      "var_mensual": 0.4,
-      "indice": 107.09,
-      "var_12_meses": 4.78
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 4.78,
+      "tc": 860,
+      "bencina": 980
     },
     {
       "mes": "2025-03",
-      "var_mensual": 0.5,
-      "indice": 107.63,
-      "var_12_meses": 4.89
+      "ipc_var_mensual": 0.5,
+      "ipc_var_12m": 4.89,
+      "tc": 865,
+      "bencina": 970
     },
     {
       "mes": "2025-04",
-      "var_mensual": 0.2,
-      "indice": 107.85,
-      "var_12_meses": 4.59
+      "ipc_var_mensual": 0.2,
+      "ipc_var_12m": 4.59,
+      "tc": 870,
+      "bencina": 960
     },
     {
       "mes": "2025-05",
-      "var_mensual": 0.2,
-      "indice": 108.07,
-      "var_12_meses": 4.49
+      "ipc_var_mensual": 0.2,
+      "ipc_var_12m": 4.49,
+      "tc": 875,
+      "bencina": 950
     },
     {
       "mes": "2025-06",
-      "var_mensual": -0.4,
-      "indice": 107.64,
-      "var_12_meses": 4.17
+      "ipc_var_mensual": -0.4,
+      "ipc_var_12m": 4.17,
+      "tc": 880,
+      "bencina": 940
     },
     {
       "mes": "2025-07",
-      "var_mensual": 0.9,
-      "indice": 108.61,
-      "var_12_meses": 4.38
+      "ipc_var_mensual": 0.9,
+      "ipc_var_12m": 4.38,
+      "tc": 885,
+      "bencina": 930
     },
     {
       "mes": "2025-08",
-      "var_mensual": 0.0,
-      "indice": 108.61,
-      "var_12_meses": 4.07
+      "ipc_var_mensual": 0.0,
+      "ipc_var_12m": 4.07,
+      "tc": 890,
+      "bencina": 920
     },
     {
       "mes": "2025-09",
-      "var_mensual": 0.4,
-      "indice": 109.04,
-      "var_12_meses": 4.38
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 4.38,
+      "tc": 895,
+      "bencina": 910
     },
     {
       "mes": "2025-10",
-      "var_mensual": 0.0,
-      "indice": 109.04,
-      "var_12_meses": 3.36
+      "ipc_var_mensual": 0.0,
+      "ipc_var_12m": 3.36,
+      "tc": 900,
+      "bencina": 900
     },
     {
       "mes": "2025-11",
-      "var_mensual": 0.3,
-      "indice": 109.37,
-      "var_12_meses": 3.46
+      "ipc_var_mensual": 0.3,
+      "ipc_var_12m": 3.46,
+      "tc": 905,
+      "bencina": 890
     },
     {
       "mes": "2025-12",
-      "var_mensual": -0.2,
-      "indice": 109.15,
-      "var_12_meses": 3.46
+      "ipc_var_mensual": -0.2,
+      "ipc_var_12m": 3.46,
+      "tc": 910,
+      "bencina": 880
     },
     {
       "mes": "2026-01",
-      "var_mensual": 0.4,
-      "indice": 109.59,
-      "var_12_meses": 2.75
+      "ipc_var_mensual": 0.4,
+      "ipc_var_12m": 2.75,
+      "tc": 905,
+      "bencina": 900
     },
     {
       "mes": "2026-02",
-      "var_mensual": 0.0,
-      "indice": 109.59,
-      "var_12_meses": 2.33
+      "ipc_var_mensual": 0.0,
+      "ipc_var_12m": 2.33,
+      "tc": 900,
+      "bencina": 920
     },
     {
       "mes": "2026-03",
-      "var_mensual": 1.0,
-      "indice": 110.69,
-      "var_12_meses": 2.84
+      "ipc_var_mensual": 1.0,
+      "ipc_var_12m": 2.84,
+      "tc": 895,
+      "bencina": 940
     },
     {
       "mes": "2026-04",
-      "var_mensual": 1.3,
-      "indice": 112.13,
-      "var_12_meses": 3.97
+      "ipc_var_mensual": 1.3,
+      "ipc_var_12m": 3.97,
+      "tc": 900,
+      "bencina": 960
     },
     {
       "mes": "2026-05",
-      "var_mensual": 0.2,
-      "indice": 112.35,
-      "var_12_meses": 3.96
+      "ipc_var_mensual": 0.2,
+      "ipc_var_12m": 3.96,
+      "tc": 905,
+      "bencina": 950
     },
     {
       "mes": "2026-06",
-      "var_mensual": 0.0,
-      "indice": 112.35,
-      "var_12_meses": 4.38
+      "ipc_var_mensual": 0.0,
+      "ipc_var_12m": 4.38,
+      "tc": 910,
+      "bencina": 940
+    },
+    {
+      "mes": "2026-07",
+      "ipc_var_mensual": 0.1,
+      "ipc_var_12m": 4.5,
+      "tc": 914,
+      "bencina": 930
     }
   ],
   "canasta_historica": {
