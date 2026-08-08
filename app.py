@@ -618,17 +618,20 @@ def datos():
         with open('datos_bcch.json', 'r', encoding='utf-8') as f:
             bcch = json.load(f)
 
-        # Filtrar SOLO 2025-01 a 2026-06
+        # Filtrar SOLO 2025-01 en adelante
         datos_list = []
         for d in bcch.get('datos_historicos', []):
             mes = d.get('mes', '')
             if '2025-01' <= mes:  # Sin límite superior, trae todos los datos
+                # Usar campos correctos: ipc_var_mensual, ipc_var_12m
+                var_mensual = float(d.get('ipc_var_mensual', 0))
+                var_12m = d.get('ipc_var_12m')
                 datos_list.append({
                     "mes": mes,
-                    "ipc_percent": float(d.get('indice', 0) - 100),
-                    "ipc_index": float(d.get('indice', 0)),
-                    "variacion_mensual": float(d.get('var_mensual', 0)),
-                    "variacion_12_meses": float(d.get('var_12_meses', 0)) if d.get('var_12_meses') else None
+                    "ipc_percent": var_mensual,  # Variación mensual, no índice
+                    "ipc_index": var_mensual,    # Para compatibilidad
+                    "variacion_mensual": var_mensual,
+                    "variacion_12_meses": float(var_12m) if var_12m is not None else None
                 })
 
         # Ordenar ASC (antiguos primero)
