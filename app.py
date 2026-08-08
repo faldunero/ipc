@@ -723,47 +723,33 @@ def historico_predicciones():
                 print(f"⏰ Caché expirado (edad: {int(age/60)} min > {cache_age_minutes})")
 
         # 2️⃣ CACHÉ EXPIRADO O NO EXISTE - CARGAR DE FUENTE
-        historico_real = {}
-        predicciones_dict = {}
-
-        # Cargar datos reales
-        if os.path.exists('predicciones_historico.json'):
-            print("📥 Cargando reales desde predicciones_historico.json...")
-            with open('predicciones_historico.json', 'r', encoding='utf-8') as f:
-                reales = json.load(f)
-                for r in reales:
-                    mes = r.get('mes', '')
-                    historico_real[mes] = {
-                        "mes": mes,
-                        "variacion_mensual_real": r.get('variacion_mensual'),
-                        "indice": r.get('indice'),
-                        "variacion_12_meses_real": r.get('variacion_12_meses'),
-                        "fuente": "Banco Central",
-                        "tipo": "dato-real"
-                    }
-
-        # Cargar predicciones del modelo
-        if os.path.exists('backtest_proper_resultados.json'):
-            print("📥 Cargando predicciones desde backtest_proper_resultados.json...")
-            with open('backtest_proper_resultados.json', 'r', encoding='utf-8') as f:
-                backtest = json.load(f)
-                for res in backtest.get('resultados', []):
-                    mes = res.get('mes', '')
-                    predicciones_dict[mes] = {
-                        "prediccion_ensemble": res.get('prediccion'),
-                        "real": res.get('real'),
-                        "error": res.get('error'),
-                        "direccion_correcta": res.get('direccion_correcta'),
-                        "mae_local": res.get('error')
-                    }
-
-        # Combinar: predicciones + reales
         historico = []
-        for mes in historico_real:
-            item = historico_real[mes].copy()
-            if mes in predicciones_dict:
-                item.update(predicciones_dict[mes])
-            historico.append(item)
+
+        # Leer desde historico_validaciones.json (archivo actualizado automáticamente)
+        if os.path.exists('historico_validaciones.json'):
+            print("📥 Cargando desde historico_validaciones.json (actualizado automáticamente)...")
+            with open('historico_validaciones.json', 'r', encoding='utf-8') as f:
+                validaciones = json.load(f)
+                # Convertir dict a list si es necesario
+                if isinstance(validaciones, dict):
+                    historico = [
+                        {
+                            "mes": mes,
+                            "prediccion": v.get('prediccion', 0),
+                            "prediccion_ensemble": v.get('prediccion', 0),
+                            "real": v.get('real', 0),
+                            "variacion_mensual_real": v.get('real', 0),
+                            "error": v.get('error_absoluto', 0),
+                            "dentro_intervalo_confianza": v.get('dentro_intervalo_confianza', False),
+                            "nivel_confianza": v.get('nivel_confianza', 'N/A'),
+                            "completitud": v.get('completitud_recoleccion', 'N/A')
+                        }
+                        for mes, v in validaciones.items()
+                    ]
+                else:
+                    historico = validaciones
+        else:
+            print("⚠️ historico_validaciones.json no existe")
 
         # Ordenar DESC (más reciente primero)
         historico = sorted(historico, key=lambda x: x.get('mes', ''), reverse=True)
